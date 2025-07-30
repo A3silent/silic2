@@ -1,0 +1,103 @@
+{
+  "version": "1.0",
+  "worldSettings": {
+    "gravity": -9.8,
+    "ambientLight": [0.1, 0.1, 0.2],
+    "backgroundColor": [0.05, 0.05, 0.1]
+  },
+  "geometry": {
+    "brushes": [
+      {
+        "id": 1,
+        "material": "floor",
+        "color": [0.3, 0.3, 0.3],
+        "vertices": [
+          -2.0, 0.0, -20.0,
+           2.0, 0.0, -20.0,
+           2.0, 0.0,  20.0,
+          -2.0, 0.0,  20.0
+        ],
+        "faces": [0, 1, 2, 2, 3, 0]
+      },
+      {
+        "id": 2,
+        "material": "wall_left",
+        "color": [0.5, 0.2, 0.2],
+        "vertices": [
+          -2.0, 0.0, -20.0,
+          -2.0, 4.0, -20.0,
+          -2.0, 4.0,  20.0,
+          -2.0, 0.0,  20.0
+        ],
+        "faces": [0, 1, 2, 2, 3, 0]
+      },
+      {
+        "id": 3,
+        "material": "wall_right",
+        "color": [0.2, 0.5, 0.2],
+        "vertices": [
+           2.0, 0.0, -20.0,
+           2.0, 0.0,  20.0,
+           2.0, 4.0,  20.0,
+           2.0, 4.0, -20.0
+        ],
+        "faces": [0, 1, 2, 2, 3, 0]
+      },
+      {
+        "id": 4,
+        "material": "wall_back",
+        "color": [0.4, 0.4, 0.2],
+        "vertices": [
+          -2.0, 0.0, -20.0,
+          -2.0, 4.0, -20.0,
+           2.0, 4.0, -20.0,
+           2.0, 0.0, -20.0
+        ],
+        "faces": [0, 1, 2, 2, 3, 0]
+      },
+      {
+        "id": 5,
+        "material": "wall_front",
+        "color": [0.4, 0.4, 0.2],
+        "vertices": [
+           2.0, 0.0,  20.0,
+           2.0, 4.0,  20.0,
+          -2.0, 4.0,  20.0,
+          -2.0, 0.0,  20.0
+        ],
+        "faces": [0, 1, 2, 2, 3, 0]
+      }
+    ]
+  },
+  "entities": [
+    {
+      "type": "player_start",
+      "name": "PlayerStart",
+      "position": [0.0, 1.5, 15.0],
+      "rotation": [0.0, 180.0, 0.0]
+    }
+  ],
+  "lights": [
+    {
+      "type": "point",
+      "position": [0.0, 3.0, 10.0],
+      "color": [1.0, 0.8, 0.6],
+      "intensity": 1.0,
+      "range": 12.0
+    },
+    {
+      "type": "point",
+      "position": [0.0, 3.0, 0.0],
+      "color": [1.0, 0.8, 0.6],
+      "intensity": 1.0,
+      "range": 12.0
+    },
+    {
+      "type": "point",
+      "position": [0.0, 3.0, -10.0],
+      "color": [1.0, 0.8, 0.6],
+      "intensity": 1.0,
+      "range": 12.0
+    }
+  ]
+}

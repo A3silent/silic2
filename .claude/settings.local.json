@@ -1,0 +1,22 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(mkdir:*)",
+      "Bash(xcopy:*)",
+      "Bash(cp:*)",
+      "Bash(make:*)",
+      "Bash(./PixelFPS.exe)",
+      "Bash(ls:*)",
+      "Bash(g++:*)",
+      "Bash(./test_opengl.exe)",
+      "Bash(claude settings)",
+      "Bash(claude config --help)",
+      "Bash(claude config list)",
+      "Bash(claude doctor)",
+      "Bash(timeout:*)",
+      "Bash(git commit:*)"
+    ],
+    "deny": [],
+    "includeCoAuthoredBy": false
+  }
+}
