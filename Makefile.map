@@ -1,0 +1,91 @@
+# Silic2 FPS Engine Makefile
+
+# Compiler settings
+CXX = g++
+CC = gcc
+CXXFLAGS = -std=c++17 -Wall -Wextra -O2 -g
+CFLAGS = -Wall -O2 -g
+LDFLAGS = -L./lib
+
+# Include paths
+INCLUDES = -I./include \
+           -I./include/glad \
+           -I./include/GLFW \
+           -I./include/glm \
+           -I./include/stb
+
+# Libraries (Windows)
+LIBS = -lglfw3 -lopengl32 -lgdi32 -luser32 -lkernel32
+
+# Directories
+BIN_DIR = bin
+SRC_DIR = src
+
+# Source files for integrated system
+APP_SRCS = $(SRC_DIR)/main.cpp \
+           $(SRC_DIR)/app.cpp \
+           $(SRC_DIR)/map.cpp \
+           $(SRC_DIR)/map_renderer.cpp \
+           $(SRC_DIR)/pixel_renderer.cpp \
+           $(SRC_DIR)/simple_json.cpp \
+           $(SRC_DIR)/shader.cpp \
+           $(SRC_DIR)/glad.c
+
+# Source files for simple FPS
+SIMPLE_SRCS = $(SRC_DIR)/simple_fps.cpp \
+              $(SRC_DIR)/shader.cpp \
+              $(SRC_DIR)/glad.c
+
+# Object files
+APP_OBJS = $(APP_SRCS:$(SRC_DIR)/%.cpp=$(BIN_DIR)/%.o)
+APP_OBJS := $(APP_OBJS:$(SRC_DIR)/%.c=$(BIN_DIR)/%.o)
+
+SIMPLE_OBJS = $(SIMPLE_SRCS:$(SRC_DIR)/%.cpp=$(BIN_DIR)/%.o)
+SIMPLE_OBJS := $(SIMPLE_OBJS:$(SRC_DIR)/%.c=$(BIN_DIR)/%.o)
+
+# Output binaries
+APP_TARGET = silic2.exe
+SIMPLE_TARGET = silic2_simple.exe
+
+# Default target
+all: $(APP_TARGET) $(SIMPLE_TARGET)
+
+# Build integrated app
+$(APP_TARGET): $(APP_OBJS) | $(BIN_DIR)
+	$(CXX) $(APP_OBJS) -o $@ $(LDFLAGS) $(LIBS)
+
+# Build simple FPS
+$(SIMPLE_TARGET): $(SIMPLE_OBJS) | $(BIN_DIR)
+	$(CXX) $(SIMPLE_OBJS) -o $@ $(LDFLAGS) $(LIBS)
+
+# Create bin directory
+$(BIN_DIR):
+	if not exist $(BIN_DIR) mkdir $(BIN_DIR)
+
+# Compile C++ sources
+$(BIN_DIR)/%.o: $(SRC_DIR)/%.cpp | $(BIN_DIR)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) -c $< -o $@
+
+# Compile C sources
+$(BIN_DIR)/%.o: $(SRC_DIR)/%.c | $(BIN_DIR)
+	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
+
+# Clean
+clean:
+	del /Q $(BIN_DIR)\*.o $(APP_TARGET) $(SIMPLE_TARGET) 2>nul || echo Clean completed
+
+# Run targets
+run: $(APP_TARGET)
+	./$(APP_TARGET)
+
+run-simple: $(SIMPLE_TARGET)
+	./$(SIMPLE_TARGET)
+
+# Run with specific map
+test-room: $(APP_TARGET)
+	./$(APP_TARGET) res/maps/test_room.json
+
+corridor: $(APP_TARGET)
+	./$(APP_TARGET) res/maps/simple_corridor.json
+
+.PHONY: all clean run run-simple test-room corridor
