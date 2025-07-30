@@ -31,27 +31,9 @@
 make
 
 # 运行游戏
-make run
+make -f Makefile.map
 # 或直接运行
 ./silic2.exe
-
-# 运行地图编辑器模式
-./silic2.exe --editor
-
-# 加载指定地图
-./silic2.exe --map res/maps/level1.json
-```
-
-### CMake构建（推荐）
-```bash
-# 配置构建
-cmake -B build -S . -DCMAKE_BUILD_TYPE=Release
-
-# 编译项目
-cmake --build build
-
-# 运行游戏
-./build/silic2.exe
 ```
 
 ## 游戏控制
@@ -125,6 +107,10 @@ silic2/
 - 添加适当的注释和文档
 - 测试新功能和修复
 
+## ScreenShots
+
+- ScreenShots在 res\screenshot 里面，仅供参考
+
 ## 许可证
 
 本项目采用MIT许可证 - 详见 [LICENSE](LICENSE) 文件
@@ -135,3 +121,4 @@ silic2/
 - **GLM** - OpenGL数学库
 - **stb_image** - 图像加载
 - **Dear ImGui** - 编辑器用户界面
+- **Claude Code** - 部分代码支持
