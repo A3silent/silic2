@@ -32,6 +32,7 @@ make
 
 # 运行游戏
 make -f Makefile.map
+
 # 或直接运行
 ./silic2.exe
 ```
