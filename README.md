@@ -28,12 +28,9 @@
 ### 快速开始
 ```bash
 # 编译游戏
-make
-
-# 运行游戏
 make -f Makefile.map
 
-# 或直接运行
+# 运行
 ./silic2.exe
 ```
 
