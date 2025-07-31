@@ -3,10 +3,13 @@ out vec4 FragColor;
 
 in vec3 FragPos;
 in vec3 Normal;
+in vec2 TexCoord;
 
 uniform vec3 objectColor;
 uniform vec3 ambientLight;
 uniform bool lightingEnabled;
+uniform bool useTexture;
+uniform sampler2D texture1;
 
 // Point lights
 struct Light {
@@ -37,7 +40,15 @@ vec3 toPalette(vec3 color) {
 }
 
 void main() {
-    vec3 result = ambientLight * objectColor;
+    vec3 baseColor = objectColor;
+    
+    // 使用纹理颜色
+    if (useTexture) {
+        vec4 texColor = texture(texture1, TexCoord);
+        baseColor = texColor.rgb * objectColor; // 混合纹理颜色和物体颜色
+    }
+    
+    vec3 result = ambientLight * baseColor;
     
     if (lightingEnabled && numLights > 0) {
         vec3 norm = normalize(Normal);
@@ -59,7 +70,7 @@ void main() {
                 float diff = max(dot(norm, lightDir), 0.0);
                 vec3 diffuse = diff * lights[i].color * lights[i].intensity * attenuation;
                 
-                result += diffuse * objectColor;
+                result += diffuse * baseColor;
             }
         }
     }

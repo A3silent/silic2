@@ -2,35 +2,47 @@
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include "game_config.h"
+
+struct GLFWwindow;
 
 namespace silic2 {
 
-enum CameraMovement {
-    UP,
-    DOWN,
-    FORWARD,
-    BACKWARD,
-    LEFT,
-    RIGHT
-};
-
 class Camera {
 public:
-    Camera(glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f),
-           glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f),
-           float yaw = -90.0f,
-           float pitch = 0.0f);
+    Camera(glm::vec3 position = glm::vec3(0.0f, 5.0f, 5.0f));
 
-    glm::mat4 getViewMatrix() const;
-    glm::mat4 getProjectionMatrix(int width, int height) const;
-
-    void processKeyboard(CameraMovement direction, float deltaTime);
-    void processMouseMovement(float xpos, float ypos, bool constrainPitch = true);
+    // Movement
+    void processKeyboard(GLFWwindow* window, float deltaTime);
+    void processMouseMovement(float xoffset, float yoffset, bool constrainPitch = true);
     void processMouseScroll(float yoffset);
-    void update(float deltaTime);
 
+    // Update camera vectors
+    void update();
+
+    // Getters
+    glm::mat4 getViewMatrix() const;
+    glm::mat4 getProjectionMatrix(float aspectRatio) const;
+    glm::mat4 getProjectionMatrix(float aspectRatio, float customFov) const;
     glm::vec3 getPosition() const { return position; }
     glm::vec3 getFront() const { return front; }
+    glm::vec3 getUp() const { return up; }
+    glm::vec3 getRight() const { return right; }
+    float getYaw() const { return yaw; }
+    float getPitch() const { return pitch; }
+    float getFov() const { return fov; }
+
+    // Setters
+    void setPosition(const glm::vec3& pos) { position = pos; }
+    void setFov(float newFov);
+    // Note: Movement speed and sensitivity are now handled by GameConfig
+
+    // Mouse state management
+    void setFirstMouse(bool first) { firstMouse = first; }
+    bool isFirstMouse() const { return firstMouse; }
+    void setLastMousePos(float x, float y) { lastX = x; lastY = y; }
+    float getLastX() const { return lastX; }
+    float getLastY() const { return lastY; }
 
 private:
     // Camera attributes
@@ -44,16 +56,15 @@ private:
     float yaw;
     float pitch;
 
-    // Camera options
-    float movementSpeed;
-    float mouseSensitivity;
-    float fov;
+    // Camera options (use GameConfig)
+    float fov = 45.0f;
 
     // Mouse state
-    bool firstMouse;
-    float lastX;
-    float lastY;
+    bool firstMouse = true;
+    float lastX = 640.0f;
+    float lastY = 360.0f;
 
+    // Update camera vectors based on updated Euler angles
     void updateCameraVectors();
 };
 
