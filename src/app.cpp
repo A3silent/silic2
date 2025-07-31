@@ -6,17 +6,14 @@
 #include "map.h"
 #include "map_renderer.h"
 #include "pixel_renderer.h"
+#include "player.h"
+#include "game_config.h"
 #include <iostream>
 #include <stdexcept>
 
 namespace silic2 {
 
-App::App() : window(nullptr),
-             cameraPos(0.0f, 5.0f, 5.0f),
-             cameraFront(0.0f, -0.5f, -0.5f),
-             cameraUp(0.0f, 1.0f, 0.0f),
-             yaw(-90.0f), pitch(-30.0f),
-             lastX(WINDOW_WIDTH / 2.0f), lastY(WINDOW_HEIGHT / 2.0f) {
+App::App() : window(nullptr) {
              
     if (!initWindow()) {
         throw std::runtime_error("Failed to initialize window");
@@ -37,11 +34,20 @@ App::App() : window(nullptr),
         
         std::cout << "Creating PixelRenderer..." << std::endl;
         pixelRenderer = std::make_unique<PixelRenderer>();
-        // Initialize with 320x200 resolution for authentic retro look
-        if (!pixelRenderer->init(320, 200)) {
+        // Initialize with configured resolution
+        const auto& renderConfig = GameConfig::getInstance().render;
+        if (!pixelRenderer->init(renderConfig.pixelWidth, renderConfig.pixelHeight)) {
             throw std::runtime_error("Failed to initialize PixelRenderer");
         }
         std::cout << "PixelRenderer created successfully" << std::endl;
+        
+        // Create camera
+        camera = std::make_unique<Camera>(glm::vec3(0.0f, 5.0f, 5.0f));
+        const auto& windowConfig = GameConfig::getInstance().window;
+        camera->setLastMousePos(windowConfig.width / 2.0f, windowConfig.height / 2.0f);
+        
+        // Create player
+        player = std::make_unique<Player>(glm::vec3(0.0f, 2.0f, 0.0f));
     } catch (const std::exception& e) {
         std::cerr << "Failed to initialize rendering system: " << e.what() << std::endl;
         throw;
@@ -82,7 +88,8 @@ bool App::initWindow() {
     
     std::cout << "Creating window..." << std::endl;
     
-    window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "Silic2 FPS Engine", nullptr, nullptr);
+    const auto& config = GameConfig::getInstance().window;
+    window = glfwCreateWindow(config.width, config.height, config.title.c_str(), nullptr, nullptr);
     if (!window) {
         std::cerr << "Failed to create GLFW window" << std::endl;
         glfwTerminate();
@@ -105,8 +112,13 @@ bool App::initOpenGL() {
     std::cout << "OpenGL Version: " << glGetString(GL_VERSION) << std::endl;
     std::cout << "GLSL Version: " << glGetString(GL_SHADING_LANGUAGE_VERSION) << std::endl;
     
-    glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
-    glEnable(GL_DEPTH_TEST);
+    const auto& config = GameConfig::getInstance().window;
+    glViewport(0, 0, config.width, config.height);
+    
+    const auto& renderConfig = GameConfig::getInstance().render;
+    if (renderConfig.enableDepthTest) {
+        glEnable(GL_DEPTH_TEST);
+    }
     // Temporarily disable face culling to see if that's the issue
     // glEnable(GL_CULL_FACE);
     // glCullFace(GL_BACK);
@@ -135,30 +147,24 @@ void App::processInput() {
         glfwSetWindowShouldClose(window, true);
     }
     
-    // Camera movement
-    float velocity = MOVEMENT_SPEED * deltaTime;
-    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-        cameraPos += velocity * cameraFront;
-    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-        cameraPos -= velocity * cameraFront;
-    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-        cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * velocity;
-    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-        cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * velocity;
-    // Vertical movement
-    if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
-        cameraPos += velocity * cameraUp;
-    if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
-        cameraPos -= velocity * cameraUp;
+    // Player movement and input
+    if (player) {
+        player->processInput(window, camera.get(), deltaTime);
+    }
 }
 
 void App::update(float deltaTime) {
-    // Update camera direction vectors based on yaw and pitch
-    glm::vec3 front;
-    front.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
-    front.y = sin(glm::radians(pitch));
-    front.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
-    cameraFront = glm::normalize(front);
+    // Update player
+    if (player) {
+        player->update(deltaTime, currentMap.get());
+        
+        // Update camera to follow player
+        glm::vec3 eyePos = player->getEyePosition();
+        camera->setPosition(eyePos);
+    }
+    
+    // Update camera
+    camera->update();
 }
 
 void App::render() {
@@ -167,10 +173,18 @@ void App::render() {
     
     // Create view and projection matrices
     // Use pixel buffer dimensions for proper aspect ratio
-    glm::mat4 view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
-    glm::mat4 projection = glm::perspective(glm::radians(45.0f), 
-                                          (float)pixelRenderer->getPixelWidth() / (float)pixelRenderer->getPixelHeight(), 
-                                          0.1f, 100.0f);
+    glm::mat4 view = camera->getViewMatrix();
+    
+    // Use player's current FOV if player exists
+    glm::mat4 projection;
+    if (player) {
+        projection = camera->getProjectionMatrix(
+            (float)pixelRenderer->getPixelWidth() / (float)pixelRenderer->getPixelHeight(),
+            player->getCurrentFov());
+    } else {
+        projection = camera->getProjectionMatrix(
+            (float)pixelRenderer->getPixelWidth() / (float)pixelRenderer->getPixelHeight());
+    }
     
     // Render map if loaded
     if (currentMap && mapRenderer) {
@@ -184,7 +198,8 @@ void App::render() {
     }
     
     // End pixel rendering and display to screen
-    pixelRenderer->endPixelRender(WINDOW_WIDTH, WINDOW_HEIGHT);
+    const auto& config = GameConfig::getInstance().window;
+    pixelRenderer->endPixelRender(config.width, config.height);
 }
 
 void App::framebufferSizeCallback(GLFWwindow* window, int width, int height) {
@@ -198,35 +213,29 @@ void App::mouseCallback(GLFWwindow* window, double xpos, double ypos) {
     float xposf = static_cast<float>(xpos);
     float yposf = static_cast<float>(ypos);
     
-    if (app->firstMouse) {
-        app->lastX = xposf;
-        app->lastY = yposf;
-        app->firstMouse = false;
+    if (app->camera->isFirstMouse()) {
+        app->camera->setLastMousePos(xposf, yposf);
+        app->camera->setFirstMouse(false);
     }
     
-    float xoffset = xposf - app->lastX;
-    float yoffset = app->lastY - yposf; // Reversed since y coordinates go from bottom to top
-    app->lastX = xposf;
-    app->lastY = yposf;
+    float xoffset = xposf - app->camera->getLastX();
+    float yoffset = app->camera->getLastY() - yposf; // Reversed since y coordinates go from bottom to top
+    app->camera->setLastMousePos(xposf, yposf);
     
-    xoffset *= MOUSE_SENSITIVITY;
-    yoffset *= MOUSE_SENSITIVITY;
-    
-    app->yaw += xoffset;
-    app->pitch += yoffset;
-    
-    // Constrain pitch
-    if (app->pitch > 89.0f)
-        app->pitch = 89.0f;
-    if (app->pitch < -89.0f)
-        app->pitch = -89.0f;
+    // Use player's mouse handling if player exists, otherwise use camera directly
+    if (app->player) {
+        app->player->processMouseMovement(app->camera.get(), xoffset, yoffset);
+    } else {
+        app->camera->processMouseMovement(xoffset, yoffset);
+    }
 }
 
 void App::scrollCallback(GLFWwindow* window, double xoffset, double yoffset) {
-    // For now, we don't need scroll functionality, but keep the callback
-    (void)window;
-    (void)xoffset; 
-    (void)yoffset;
+    auto* app = static_cast<App*>(glfwGetWindowUserPointer(window));
+    if (!app || !app->camera) return;
+    
+    app->camera->processMouseScroll(static_cast<float>(yoffset));
+    (void)xoffset; // Unused
 }
 
 bool App::loadMap(const std::string& mapFile) {
@@ -248,13 +257,17 @@ bool App::loadMap(const std::string& mapFile) {
     
     std::cout << "Map loaded into renderer successfully" << std::endl;
     
-    // Position camera at player start if available
+    // Position player at player start if available
     Entity* playerStart = currentMap->getPlayerStart();
     if (playerStart) {
-        cameraPos = playerStart->position;
-        std::cout << "Player start position: " << cameraPos.x << ", " << cameraPos.y << ", " << cameraPos.z << std::endl;
+        if (player) {
+            player->setPosition(playerStart->position);
+        }
+        camera->setPosition(playerStart->position + glm::vec3(0.0f, 1.6f, 0.0f));
+        std::cout << "Player start position: " << playerStart->position.x << ", " 
+                  << playerStart->position.y << ", " << playerStart->position.z << std::endl;
     } else {
-        std::cout << "No player start found, using default camera position" << std::endl;
+        std::cout << "No player start found, using default position" << std::endl;
     }
     
     return true;

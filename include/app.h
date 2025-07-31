@@ -2,7 +2,7 @@
 
 #include <memory>
 #include <string>
-#include <glm/glm.hpp>
+#include "camera.h"
 
 // Forward declaration
 struct GLFWwindow;
@@ -12,6 +12,7 @@ namespace silic2 {
 class MapRenderer;
 class Map;
 class PixelRenderer;
+class Player;
 
 class App {
 public:
@@ -22,30 +23,16 @@ public:
     bool loadMap(const std::string& mapFile);
 
 private:
-    static constexpr int WINDOW_WIDTH = 1280;
-    static constexpr int WINDOW_HEIGHT = 720;
-    static constexpr const char* WINDOW_TITLE = "Silic2 FPS Engine";
-
     GLFWwindow* window;
     std::unique_ptr<Map> currentMap;
     std::unique_ptr<MapRenderer> mapRenderer;
     std::unique_ptr<PixelRenderer> pixelRenderer;
-
-    // Camera
-    glm::vec3 cameraPos;
-    glm::vec3 cameraFront;  
-    glm::vec3 cameraUp;
-    float yaw, pitch;
+    std::unique_ptr<Camera> camera;
+    std::unique_ptr<Player> player;
     
-    // Timing and input
+    // Timing
     float deltaTime = 0.0f;
     float lastFrame = 0.0f;
-    float lastX, lastY;
-    bool firstMouse = true;
-    
-    // Movement settings
-    static constexpr float MOVEMENT_SPEED = 5.0f;
-    static constexpr float MOUSE_SENSITIVITY = 0.1f;
 
     bool initWindow();
     bool initOpenGL();
