@@ -33,6 +33,11 @@ bool MapRenderer::loadMap(const Map& map) {
         renderable->color = brush.color;
         renderable->material = brush.material;
         
+        // 加载纹理
+        if (!brush.texture.empty()) {
+            renderable->texture = TextureManager::getInstance().loadTexture(brush.texture);
+        }
+        
         setupBrushGeometry(brush, *renderable);
         renderableBrushes.push_back(std::move(renderable));
     }
@@ -131,9 +136,12 @@ void MapRenderer::setupBrushGeometry(const Brush& brush, RenderableBrush& render
         return;
     }
     
-    // Prepare vertex data (position + normal)
+    // Prepare vertex data (position + normal + texCoord)
     std::vector<float> vertexData;
-    for (const auto& vertex : brush.vertices) {
+    for (size_t i = 0; i < brush.vertices.size(); ++i) {
+        const auto& vertex = brush.vertices[i];
+        
+        // Position
         vertexData.push_back(vertex.x);
         vertexData.push_back(vertex.y);
         vertexData.push_back(vertex.z);
@@ -142,6 +150,16 @@ void MapRenderer::setupBrushGeometry(const Brush& brush, RenderableBrush& render
         vertexData.push_back(0.0f);
         vertexData.push_back(1.0f);
         vertexData.push_back(0.0f);
+        
+        // Texture coordinates
+        if (i < brush.texCoords.size()) {
+            vertexData.push_back(brush.texCoords[i].x);
+            vertexData.push_back(brush.texCoords[i].y);
+        } else {
+            // 默认纹理坐标
+            vertexData.push_back(0.0f);
+            vertexData.push_back(0.0f);
+        }
     }
     
     // Generate OpenGL objects
@@ -161,12 +179,16 @@ void MapRenderer::setupBrushGeometry(const Brush& brush, RenderableBrush& render
     
     // Set up vertex attributes
     // Position (location 0)
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
     
     // Normal (location 1)
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
     glEnableVertexAttribArray(1);
+    
+    // Texture coordinates (location 2)
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+    glEnableVertexAttribArray(2);
     
     glBindVertexArray(0);
     
@@ -205,11 +227,17 @@ void MapRenderer::renderBrush(const RenderableBrush& brush, const glm::mat4& mod
         return;
     }
     
-    // std::cout << "Drawing brush: VAO=" << brush.VAO << ", indices=" << brush.indexCount 
-    //           << ", color=(" << brush.color.r << "," << brush.color.g << "," << brush.color.b << ")" << std::endl;
-    
     mapShader->setMat4("model", model);
     mapShader->setVec3("objectColor", brush.color);
+    
+    // 绑定纹理
+    if (brush.texture) {
+        mapShader->setBool("useTexture", true);
+        mapShader->setInt("texture1", 0);
+        brush.texture->bind(0);
+    } else {
+        mapShader->setBool("useTexture", false);
+    }
     
     glBindVertexArray(brush.VAO);
     glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(brush.indexCount), GL_UNSIGNED_INT, 0);

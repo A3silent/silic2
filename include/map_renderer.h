@@ -4,6 +4,7 @@
 #include <memory>
 #include <glad/glad.h>
 #include "map.h"
+#include "texture.h"
 
 namespace silic2 {
 
@@ -14,6 +15,7 @@ struct RenderableBrush {
     size_t indexCount;
     glm::vec3 color;
     std::string material;
+    std::shared_ptr<Texture> texture;
     
     RenderableBrush() : VAO(0), VBO(0), EBO(0), indexCount(0) {}
     ~RenderableBrush() {

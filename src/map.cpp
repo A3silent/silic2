@@ -233,6 +233,9 @@ bool Map::parseBrushes(const SimpleJson& json) {
             brush.color.z = brushJson["color"][2].getNumber();
         }
         
+        // Parse texture if present
+        brush.texture = brushJson.getString("texture", "");
+        
         // Parse vertices
         if (brushJson.hasKey("vertices") && brushJson["vertices"].isArray()) {
             const SimpleJson& vertArray = brushJson["vertices"];
@@ -244,6 +247,20 @@ bool Map::parseBrushes(const SimpleJson& json) {
                         vertArray[v + 2].getNumber()
                     );
                     brush.vertices.push_back(vertex);
+                }
+            }
+        }
+        
+        // Parse texture coordinates
+        if (brushJson.hasKey("texCoords") && brushJson["texCoords"].isArray()) {
+            const SimpleJson& texArray = brushJson["texCoords"];
+            for (size_t t = 0; t < texArray.size(); t += 2) {
+                if (t + 1 < texArray.size()) {
+                    glm::vec2 texCoord(
+                        texArray[t].getNumber(),
+                        texArray[t + 1].getNumber()
+                    );
+                    brush.texCoords.push_back(texCoord);
                 }
             }
         }
@@ -375,6 +392,10 @@ SimpleJson Map::brushesToJson() const {
         color.push_back(SimpleJson(brush.color.z));
         brushJson["color"] = color;
         
+        if (!brush.texture.empty()) {
+            brushJson["texture"] = SimpleJson(brush.texture);
+        }
+        
         SimpleJson vertices;
         for (const auto& vertex : brush.vertices) {
             vertices.push_back(SimpleJson(vertex.x));
@@ -382,6 +403,15 @@ SimpleJson Map::brushesToJson() const {
             vertices.push_back(SimpleJson(vertex.z));
         }
         brushJson["vertices"] = vertices;
+        
+        if (!brush.texCoords.empty()) {
+            SimpleJson texCoords;
+            for (const auto& texCoord : brush.texCoords) {
+                texCoords.push_back(SimpleJson(texCoord.x));
+                texCoords.push_back(SimpleJson(texCoord.y));
+            }
+            brushJson["texCoords"] = texCoords;
+        }
         
         SimpleJson faces;
         for (uint32_t face_idx : brush.faces) {

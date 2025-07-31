@@ -32,6 +32,10 @@ make -f Makefile.map
 
 # 运行
 ./silic2.exe
+
+# 选择地图
+./silic2.exe res/maps/textured_room.json 
+./silic2.exe res/maps/test_room.json
 ```
 
 ## 游戏控制
