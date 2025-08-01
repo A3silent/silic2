@@ -1,0 +1,170 @@
+{
+  "worldSettings": {
+    "gravity": 9.8,
+    "ambientLight": [0.3, 0.3, 0.3],
+    "backgroundColor": [0.05, 0.05, 0.1]
+  },
+  "geometry": {
+    "brushes": [
+      {
+        "id": 0,
+        "material": "concrete",
+        "texture": "res/texture/resourcenotfound/kailiang.png",
+        "color": [1.0, 1.0, 1.0],
+        "vertices": [
+          -20.0, 0.0, -20.0,
+          20.0, 0.0, -20.0,
+          20.0, 0.0, 20.0,
+          -20.0, 0.0, 20.0
+        ],
+        "texCoords": [
+          0.0, 0.0,
+          4.0, 0.0,
+          4.0, 4.0,
+          0.0, 4.0
+        ],
+        "faces": [0, 1, 2, 0, 2, 3]
+      },
+      {
+        "id": 1,
+        "material": "concrete",
+        "texture": "res/texture/resourcenotfound/kailiang.png",
+        "color": [1.0, 1.0, 1.0],
+        "vertices": [
+          -20.0, 0.0, -20.0,
+          -20.0, 15.0, -20.0,
+          20.0, 15.0, -20.0,
+          20.0, 0.0, -20.0
+        ],
+        "texCoords": [
+          0.0, 0.0,
+          0.0, 3.0,
+          4.0, 3.0,
+          4.0, 0.0
+        ],
+        "faces": [0, 1, 2, 0, 2, 3]
+      },
+      {
+        "id": 2,
+        "material": "concrete",
+        "texture": "res/texture/resourcenotfound/kailiang.png",
+        "color": [1.0, 1.0, 1.0],
+        "vertices": [
+          20.0, 0.0, -20.0,
+          20.0, 15.0, -20.0,
+          20.0, 15.0, 20.0,
+          20.0, 0.0, 20.0
+        ],
+        "texCoords": [
+          0.0, 0.0,
+          0.0, 3.0,
+          4.0, 3.0,
+          4.0, 0.0
+        ],
+        "faces": [0, 1, 2, 0, 2, 3]
+      },
+      {
+        "id": 3,
+        "material": "concrete",
+        "texture": "res/texture/resourcenotfound/kailiang.png",
+        "color": [1.0, 1.0, 1.0],
+        "vertices": [
+          20.0, 0.0, 20.0,
+          20.0, 15.0, 20.0,
+          -20.0, 15.0, 20.0,
+          -20.0, 0.0, 20.0
+        ],
+        "texCoords": [
+          0.0, 0.0,
+          0.0, 3.0,
+          4.0, 3.0,
+          4.0, 0.0
+        ],
+        "faces": [0, 1, 2, 0, 2, 3]
+      },
+      {
+        "id": 4,
+        "material": "concrete",
+        "texture": "res/texture/resourcenotfound/kailiang.png",
+        "color": [1.0, 1.0, 1.0],
+        "vertices": [
+          -20.0, 0.0, 20.0,
+          -20.0, 15.0, 20.0,
+          -20.0, 15.0, -20.0,
+          -20.0, 0.0, -20.0
+        ],
+        "texCoords": [
+          0.0, 0.0,
+          0.0, 3.0,
+          4.0, 3.0,
+          4.0, 0.0
+        ],
+        "faces": [0, 1, 2, 0, 2, 3]
+      },
+      {
+        "id": 5,
+        "material": "concrete",
+        "texture": "res/texture/resourcenotfound/kailiang.png",
+        "color": [0.8, 0.8, 0.8],
+        "vertices": [
+          -20.0, 15.0, -20.0,
+          -20.0, 15.0, 20.0,
+          20.0, 15.0, 20.0,
+          20.0, 15.0, -20.0
+        ],
+        "texCoords": [
+          0.0, 0.0,
+          0.0, 4.0,
+          4.0, 4.0,
+          4.0, 0.0
+        ],
+        "faces": [0, 1, 2, 0, 2, 3]
+      }
+    ]
+  },
+  "entities": [
+    {
+      "type": "player_start",
+      "name": "PlayerStart",
+      "position": [0.0, 2.0, 10.0],
+      "rotation": [0.0, 0.0, 0.0]
+    }
+  ],
+  "lights": [
+    {
+      "type": "point",
+      "position": [0.0, 10.0, 0.0],
+      "color": [1.0, 1.0, 0.8],
+      "intensity": 2.0,
+      "range": 30.0
+    },
+    {
+      "type": "point",
+      "position": [-15.0, 8.0, -15.0],
+      "color": [1.0, 0.8, 0.6],
+      "intensity": 1.5,
+      "range": 20.0
+    },
+    {
+      "type": "point",
+      "position": [15.0, 8.0, -15.0],
+      "color": [0.6, 0.8, 1.0],
+      "intensity": 1.5,
+      "range": 20.0
+    },
+    {
+      "type": "point",
+      "position": [-15.0, 8.0, 15.0],
+      "color": [0.8, 1.0, 0.6],
+      "intensity": 1.5,
+      "range": 20.0
+    },
+    {
+      "type": "point",
+      "position": [15.0, 8.0, 15.0],
+      "color": [1.0, 0.6, 0.8],
+      "intensity": 1.5,
+      "range": 20.0
+    }
+  ]
+}

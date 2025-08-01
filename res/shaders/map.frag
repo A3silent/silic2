@@ -19,7 +19,7 @@ struct Light {
     float range;
 };
 
-uniform Light lights[8];
+uniform Light lights[128];
 uniform int numLights;
 
 // Quantize color to create pixel art effect (Eclipsium-style)
@@ -53,7 +53,7 @@ void main() {
     if (lightingEnabled && numLights > 0) {
         vec3 norm = normalize(Normal);
         
-        for (int i = 0; i < numLights && i < 8; i++) {
+        for (int i = 0; i < numLights && i < 128; i++) {
             vec3 lightDir = lights[i].position - FragPos;
             float distance = length(lightDir);
             

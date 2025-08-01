@@ -37,6 +37,10 @@ public:
     // Render the current map
     void render(const glm::mat4& view, const glm::mat4& projection);
     
+    // Add dynamic lights (e.g., from bullets)
+    void addDynamicLight(const glm::vec3& position, const glm::vec3& color, float intensity = 1.0f, float range = 10.0f);
+    void clearDynamicLights();
+    
     // Settings
     void setWireframeMode(bool enabled) { wireframeMode = enabled; }
     void setLightingEnabled(bool enabled) { lightingEnabled = enabled; }
@@ -60,6 +64,7 @@ private:
         float range;
     };
     std::vector<LightData> lightData;
+    std::vector<LightData> dynamicLights;
     
     void initShaders();
     void setupBrushGeometry(const Brush& brush, RenderableBrush& renderable);

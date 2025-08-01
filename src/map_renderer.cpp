@@ -51,6 +51,7 @@ bool MapRenderer::loadMap(const Map& map) {
 void MapRenderer::clearMap() {
     renderableBrushes.clear();
     lightData.clear();
+    dynamicLights.clear();
     currentMap = nullptr;
 }
 
@@ -83,16 +84,20 @@ void MapRenderer::render(const glm::mat4& view, const glm::mat4& projection) {
     mapShader->setVec3("ambientLight", worldSettings.ambientLight);
     mapShader->setBool("lightingEnabled", lightingEnabled);
     
+    // Combine static and dynamic lights
+    std::vector<LightData> allLights = lightData;
+    allLights.insert(allLights.end(), dynamicLights.begin(), dynamicLights.end());
+    
     // Set lighting data
-    if (lightingEnabled && !lightData.empty()) {
-        mapShader->setInt("numLights", std::min(static_cast<int>(lightData.size()), 8)); // Max 8 lights
+    if (lightingEnabled && !allLights.empty()) {
+        mapShader->setInt("numLights", std::min(static_cast<int>(allLights.size()), 128)); // Max 128 lights
         
-        for (size_t i = 0; i < std::min(lightData.size(), size_t(8)); ++i) {
+        for (size_t i = 0; i < std::min(allLights.size(), size_t(128)); ++i) {
             std::string base = "lights[" + std::to_string(i) + "]";
-            mapShader->setVec3(base + ".position", lightData[i].position);
-            mapShader->setVec3(base + ".color", lightData[i].color);
-            mapShader->setFloat(base + ".intensity", lightData[i].intensity);
-            mapShader->setFloat(base + ".range", lightData[i].range);
+            mapShader->setVec3(base + ".position", allLights[i].position);
+            mapShader->setVec3(base + ".color", allLights[i].color);
+            mapShader->setFloat(base + ".intensity", allLights[i].intensity);
+            mapShader->setFloat(base + ".range", allLights[i].range);
         }
     } else {
         mapShader->setInt("numLights", 0);
@@ -248,6 +253,19 @@ void MapRenderer::renderBrush(const RenderableBrush& brush, const glm::mat4& mod
     if (error != GL_NO_ERROR) {
         std::cout << "OpenGL error after drawing brush: " << error << std::endl;
     }
+}
+
+void MapRenderer::addDynamicLight(const glm::vec3& position, const glm::vec3& color, float intensity, float range) {
+    LightData light;
+    light.position = position;
+    light.color = color;
+    light.intensity = intensity;
+    light.range = range;
+    dynamicLights.push_back(light);
+}
+
+void MapRenderer::clearDynamicLights() {
+    dynamicLights.clear();
 }
 
 } // namespace silic2

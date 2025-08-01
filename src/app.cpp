@@ -7,6 +7,7 @@
 #include "map_renderer.h"
 #include "pixel_renderer.h"
 #include "player.h"
+#include "weapon.h"
 #include "game_config.h"
 #include <iostream>
 #include <stdexcept>
@@ -48,6 +49,10 @@ App::App() : window(nullptr) {
         
         // Create player
         player = std::make_unique<Player>(glm::vec3(0.0f, 2.0f, 0.0f));
+        
+        // Create weapon
+        weapon = std::make_unique<Weapon>();
+        weapon->init();
     } catch (const std::exception& e) {
         std::cerr << "Failed to initialize rendering system: " << e.what() << std::endl;
         throw;
@@ -151,6 +156,14 @@ void App::processInput() {
     if (player) {
         player->processInput(window, camera.get(), deltaTime);
     }
+    
+    // Weapon input - Left mouse button to fire
+    static bool wasMousePressed = false;
+    bool isMousePressed = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS;
+    if (isMousePressed && !wasMousePressed && weapon) {
+        weapon->fire(*camera);
+    }
+    wasMousePressed = isMousePressed;
 }
 
 void App::update(float deltaTime) {
@@ -165,6 +178,11 @@ void App::update(float deltaTime) {
     
     // Update camera
     camera->update();
+    
+    // Update weapon
+    if (weapon) {
+        weapon->update(deltaTime, currentMap.get());
+    }
 }
 
 void App::render() {
@@ -194,7 +212,24 @@ void App::render() {
                      worldSettings.backgroundColor.b, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         
+        // Clear dynamic lights before rendering
+        mapRenderer->clearDynamicLights();
+        
+        // Add bullet lights to map renderer
+        if (weapon) {
+            auto bulletLights = weapon->getActiveLights();
+            for (const auto& [pos, color] : bulletLights) {
+                // color已经包含了强度，所以这里intensity设为1.0
+                mapRenderer->addDynamicLight(pos, color, 1.0f, 3.0f);
+            }
+        }
+        
         mapRenderer->render(view, projection);
+    }
+    
+    // Render weapon bullets
+    if (weapon) {
+        weapon->render(view, projection);
     }
     
     // End pixel rendering and display to screen
