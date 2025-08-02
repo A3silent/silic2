@@ -14,6 +14,13 @@ struct WorldSettings {
     glm::vec3 backgroundColor = glm::vec3(0.1f, 0.1f, 0.2f);
 };
 
+enum class SurfaceType {
+    UNKNOWN,
+    FLOOR,
+    CEILING,
+    WALL
+};
+
 struct Brush {
     uint32_t id;
     std::vector<glm::vec3> vertices;
@@ -22,6 +29,7 @@ struct Brush {
     std::string material;
     std::string texture;  // 纹理文件路径
     glm::vec3 color = glm::vec3(0.8f, 0.8f, 0.8f);
+    SurfaceType surfaceType = SurfaceType::UNKNOWN;  // Automatically determined from geometry
 };
 
 enum class EntityType {
@@ -80,6 +88,12 @@ public:
     const std::vector<Entity>& getEntities() const { return entities; }
     const std::vector<Light>& getLights() const { return lights; }
     
+    // Geometry separation getters
+    std::vector<const Brush*> getFloorBrushes() const;
+    std::vector<const Brush*> getCeilingBrushes() const;
+    std::vector<const Brush*> getWallBrushes() const;
+    std::vector<const Brush*> getBrushesByType(SurfaceType type) const;
+    
     // Entity queries
     Entity* getPlayerStart();
     std::vector<Entity*> getEntitiesByType(EntityType type);
@@ -111,6 +125,11 @@ private:
     bool parseBrushes(const SimpleJson& json);
     bool parseEntities(const SimpleJson& json);
     bool parseLights(const SimpleJson& json);
+    
+    // Geometry analysis helpers
+    void analyzeSurfaceTypes();
+    SurfaceType determineSurfaceType(const Brush& brush);
+    glm::vec3 calculateFaceNormal(const glm::vec3& v0, const glm::vec3& v1, const glm::vec3& v2);
     
     // Helper functions for JSON writing
     SimpleJson worldSettingsToJson() const;

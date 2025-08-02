@@ -8,6 +8,8 @@
 #include "pixel_renderer.h"
 #include "player.h"
 #include "weapon.h"
+#include "particle_system.h"
+#include "groundparticle.h"
 #include "game_config.h"
 #include <iostream>
 #include <stdexcept>
@@ -53,6 +55,9 @@ App::App() : window(nullptr) {
         // Create weapon
         weapon = std::make_unique<Weapon>();
         weapon->init();
+        
+        // Create enhanced ground particle system
+        groundParticles = createEnhancedGroundParticleSystem(2000);
     } catch (const std::exception& e) {
         std::cerr << "Failed to initialize rendering system: " << e.what() << std::endl;
         throw;
@@ -183,6 +188,11 @@ void App::update(float deltaTime) {
     if (weapon) {
         weapon->update(deltaTime, currentMap.get());
     }
+    
+    // Update ground particle system
+    if (groundParticles) {
+        groundParticles->update(deltaTime);
+    }
 }
 
 void App::render() {
@@ -230,6 +240,12 @@ void App::render() {
     // Render weapon bullets
     if (weapon) {
         weapon->render(view, projection);
+    }
+    
+    // Render ground particle system if enabled
+    const auto& effectsConfig = GameConfig::getInstance().effects;
+    if (groundParticles && effectsConfig.enableGroundParticles) {
+        groundParticles->render(view, projection);
     }
     
     // End pixel rendering and display to screen
@@ -303,6 +319,19 @@ bool App::loadMap(const std::string& mapFile) {
                   << playerStart->position.y << ", " << playerStart->position.z << std::endl;
     } else {
         std::cout << "No player start found, using default position" << std::endl;
+    }
+    
+    // Initialize ground particle system with the loaded map
+    const auto& effectsConfig = GameConfig::getInstance().effects;
+    if (groundParticles && effectsConfig.enableGroundParticles) {
+        groundParticles->initialize(*currentMap);
+        groundParticles->setEmissionRate(effectsConfig.groundParticleEmissionRate);
+        groundParticles->setFireIntensity(effectsConfig.groundParticleIntensity);
+        groundParticles->setEnabled(true);
+        std::cout << "Ground particle system initialized with map floor data" << std::endl;
+    } else if (groundParticles) {
+        groundParticles->setEnabled(false);
+        std::cout << "Ground particle system disabled by config" << std::endl;
     }
     
     return true;

@@ -55,6 +55,12 @@ struct CameraConfig {
     glm::vec3 worldUp = glm::vec3(0.0f, 1.0f, 0.0f);
 };
 
+struct EffectsConfig {
+    bool enableGroundParticles = true;  // Enable/disable ground fire particles
+    float groundParticleIntensity = 3.0f;  // Particle brightness multiplier
+    float groundParticleEmissionRate = 100.0f;  // Particles per second
+};
+
 class GameConfig {
 public:
     static GameConfig& getInstance();
@@ -64,6 +70,7 @@ public:
     RenderConfig render;
     PlayerConfig player;
     CameraConfig camera;
+    EffectsConfig effects;
     
     // Load/Save configuration
     bool loadFromFile(const std::string& filename);

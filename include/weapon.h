@@ -23,7 +23,7 @@ struct Bullet {
     Bullet(const glm::vec3& pos, const glm::vec3& dir, float spd = 50.0f) 
         : position(pos), direction(glm::normalize(dir)), speed(spd),
           lifetime(0.0f), maxLifetime(3.0f), 
-          color(1.0f, 0.8f, 0.3f), intensity(2.0f), length(0.3f) {
+          color(0.5f, 0.8f, 1.0f), intensity(2.0f), length(0.3f) {  // Sky blue color
         velocity = direction * speed;
     }
     

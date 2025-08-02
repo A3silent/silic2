@@ -78,6 +78,14 @@ bool GameConfig::loadFromFile(const std::string& filename) {
             camera.maxPitch = (float)cameraObj.getNumber("maxPitch", camera.maxPitch);
         }
         
+        // Parse effects config
+        if (json.hasKey("effects")) {
+            auto effectsObj = json["effects"];
+            effects.enableGroundParticles = effectsObj.getBool("enableGroundParticles", effects.enableGroundParticles);
+            effects.groundParticleIntensity = (float)effectsObj.getNumber("groundParticleIntensity", effects.groundParticleIntensity);
+            effects.groundParticleEmissionRate = (float)effectsObj.getNumber("groundParticleEmissionRate", effects.groundParticleEmissionRate);
+        }
+        
         return true;
     }
     catch (const std::exception& e) {
@@ -135,6 +143,12 @@ bool GameConfig::saveToFile(const std::string& filename) const {
         file << "    \"pitch\": " << camera.pitch << ",\n";
         file << "    \"minPitch\": " << camera.minPitch << ",\n";
         file << "    \"maxPitch\": " << camera.maxPitch << "\n";
+        file << "  },\n";
+        
+        file << "  \"effects\": {\n";
+        file << "    \"enableGroundParticles\": " << (effects.enableGroundParticles ? "true" : "false") << ",\n";
+        file << "    \"groundParticleIntensity\": " << effects.groundParticleIntensity << ",\n";
+        file << "    \"groundParticleEmissionRate\": " << effects.groundParticleEmissionRate << "\n";
         file << "  }\n";
         file << "}\n";
         
@@ -152,6 +166,7 @@ void GameConfig::resetToDefaults() {
     render = RenderConfig{};
     player = PlayerConfig{};
     camera = CameraConfig{};
+    effects = EffectsConfig{};
 }
 
 } // namespace silic2

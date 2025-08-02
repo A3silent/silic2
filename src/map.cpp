@@ -73,10 +73,21 @@ bool Map::loadFromFile(const std::string& filename) {
         this->filename = filename;
         loaded = true;
         
+        // Analyze surface types after loading
+        analyzeSurfaceTypes();
+        
         std::cout << "Successfully loaded map: " << filename << std::endl;
         std::cout << "  Brushes: " << brushes.size() << std::endl;
         std::cout << "  Entities: " << entities.size() << std::endl;
         std::cout << "  Lights: " << lights.size() << std::endl;
+        
+        // Report surface type distribution
+        auto floors = getFloorBrushes();
+        auto ceilings = getCeilingBrushes();
+        auto walls = getWallBrushes();
+        std::cout << "  Floor surfaces: " << floors.size() << std::endl;
+        std::cout << "  Ceiling surfaces: " << ceilings.size() << std::endl;
+        std::cout << "  Wall surfaces: " << walls.size() << std::endl;
         
         return validate();
         
@@ -235,6 +246,18 @@ bool Map::parseBrushes(const SimpleJson& json) {
         
         // Parse texture if present
         brush.texture = brushJson.getString("texture", "");
+        
+        // Parse surface type if present
+        std::string typeStr = brushJson.getString("type", "");
+        if (typeStr == "floor") {
+            brush.surfaceType = SurfaceType::FLOOR;
+        } else if (typeStr == "ceiling") {
+            brush.surfaceType = SurfaceType::CEILING;
+        } else if (typeStr == "wall") {
+            brush.surfaceType = SurfaceType::WALL;
+        } else {
+            brush.surfaceType = SurfaceType::UNKNOWN;
+        }
         
         // Parse vertices
         if (brushJson.hasKey("vertices") && brushJson["vertices"].isArray()) {
@@ -396,6 +419,22 @@ SimpleJson Map::brushesToJson() const {
             brushJson["texture"] = SimpleJson(brush.texture);
         }
         
+        // Save surface type
+        switch (brush.surfaceType) {
+            case SurfaceType::FLOOR:
+                brushJson["type"] = SimpleJson("floor");
+                break;
+            case SurfaceType::CEILING:
+                brushJson["type"] = SimpleJson("ceiling");
+                break;
+            case SurfaceType::WALL:
+                brushJson["type"] = SimpleJson("wall");
+                break;
+            default:
+                // Don't save type for UNKNOWN
+                break;
+        }
+        
         SimpleJson vertices;
         for (const auto& vertex : brush.vertices) {
             vertices.push_back(SimpleJson(vertex.x));
@@ -497,6 +536,106 @@ SimpleJson Map::lightsToJson() const {
     }
     
     return lightsJson;
+}
+
+std::vector<const Brush*> Map::getFloorBrushes() const {
+    return getBrushesByType(SurfaceType::FLOOR);
+}
+
+std::vector<const Brush*> Map::getCeilingBrushes() const {
+    return getBrushesByType(SurfaceType::CEILING);
+}
+
+std::vector<const Brush*> Map::getWallBrushes() const {
+    return getBrushesByType(SurfaceType::WALL);
+}
+
+std::vector<const Brush*> Map::getBrushesByType(SurfaceType type) const {
+    std::vector<const Brush*> result;
+    for (const auto& brush : brushes) {
+        if (brush.surfaceType == type) {
+            result.push_back(&brush);
+        }
+    }
+    return result;
+}
+
+void Map::analyzeSurfaceTypes() {
+    for (auto& brush : brushes) {
+        // Only automatically determine surface type if not explicitly set
+        if (brush.surfaceType == SurfaceType::UNKNOWN) {
+            brush.surfaceType = determineSurfaceType(brush);
+        }
+    }
+}
+
+SurfaceType Map::determineSurfaceType(const Brush& brush) {
+    if (brush.vertices.size() < 3 || brush.faces.size() < 3) {
+        return SurfaceType::UNKNOWN;
+    }
+    
+    // Calculate the average normal of all faces in this brush
+    glm::vec3 avgNormal(0.0f);
+    int validFaces = 0;
+    
+    for (size_t i = 0; i < brush.faces.size(); i += 3) {
+        if (i + 2 < brush.faces.size()) {
+            uint32_t idx0 = brush.faces[i];
+            uint32_t idx1 = brush.faces[i + 1];
+            uint32_t idx2 = brush.faces[i + 2];
+            
+            if (idx0 < brush.vertices.size() && idx1 < brush.vertices.size() && idx2 < brush.vertices.size()) {
+                glm::vec3 normal = calculateFaceNormal(
+                    brush.vertices[idx0],
+                    brush.vertices[idx1],
+                    brush.vertices[idx2]
+                );
+                
+                // Only count valid normals
+                if (glm::length(normal) > 0.001f) {
+                    avgNormal += normal;
+                    validFaces++;
+                }
+            }
+        }
+    }
+    
+    if (validFaces == 0) {
+        return SurfaceType::UNKNOWN;
+    }
+    
+    avgNormal = glm::normalize(avgNormal);
+    
+    // Determine surface type based on normal direction
+    // Floor: normal points mostly upward (Y+)
+    // Ceiling: normal points mostly downward (Y-)
+    // Wall: normal is mostly horizontal
+    
+    float upwardDot = glm::dot(avgNormal, glm::vec3(0.0f, 1.0f, 0.0f));
+    float downwardDot = glm::dot(avgNormal, glm::vec3(0.0f, -1.0f, 0.0f));
+    
+    const float threshold = 0.7f; // cos(45 degrees) approximately
+    
+    if (upwardDot > threshold) {
+        return SurfaceType::FLOOR;
+    } else if (downwardDot > threshold) {
+        return SurfaceType::CEILING;
+    } else {
+        return SurfaceType::WALL;
+    }
+}
+
+glm::vec3 Map::calculateFaceNormal(const glm::vec3& v0, const glm::vec3& v1, const glm::vec3& v2) {
+    glm::vec3 edge1 = v1 - v0;
+    glm::vec3 edge2 = v2 - v0;
+    glm::vec3 normal = glm::cross(edge1, edge2);
+    
+    // Return normalized normal, or zero vector if degenerate
+    float length = glm::length(normal);
+    if (length > 0.001f) {
+        return normal / length;
+    }
+    return glm::vec3(0.0f);
 }
 
 } // namespace silic2
