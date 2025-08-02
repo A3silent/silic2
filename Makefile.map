@@ -35,6 +35,8 @@ APP_SRCS = $(SRC_DIR)/main.cpp \
            $(SRC_DIR)/simple_json.cpp \
            $(SRC_DIR)/shader.cpp \
            $(SRC_DIR)/weapon.cpp \
+           $(SRC_DIR)/particle_system.cpp \
+           $(SRC_DIR)/groundparticle.cpp \
            $(SRC_DIR)/glad.c
 
 
