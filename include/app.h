@@ -14,6 +14,7 @@ class Map;
 class PixelRenderer;
 class Player;
 class Weapon;
+class GroundParticleSystem;
 
 class App {
 public:
@@ -31,6 +32,7 @@ private:
     std::unique_ptr<Camera> camera;
     std::unique_ptr<Player> player;
     std::unique_ptr<Weapon> weapon;
+    std::unique_ptr<GroundParticleSystem> groundParticles;
     
     // Timing
     float deltaTime = 0.0f;
