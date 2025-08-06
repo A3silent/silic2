@@ -1,126 +1,161 @@
-# Silic2 - 像素风格FPS游戏
+# Silic2 - Retro-Style First Person Shooter
 
-一个使用OpenGL实现的像素艺术风格第一人称射击游戏，采用Doom风格的快节奏战斗和复古3D视觉效果。
+A pixel art style first-person shooter game built with OpenGL, featuring Doom-style fast-paced combat and retro 3D visual effects.
 
-## 游戏特色
+## Game Features
 
-### 🎮 游戏体验
-- **复古像素美学** - 低分辨率渲染营造90年代FPS游戏氛围
-- **快节奏战斗** - Doom风格的流畅移动和激烈战斗
-- **关卡编辑器** - 内置地图编辑器，支持实时预览和测试
-- **多样化武器** - 近战武器、火器和特殊武器系统
+### 🎮 Gameplay Experience
+- **Retro Pixel Aesthetics** - Low-resolution rendering creates authentic 90s FPS atmosphere
+- **Fast-Paced Combat** - Doom-style fluid movement and intense battles
+- **Built-in Level Editor** - Map editor with real-time preview and testing (planned)
+- **Diverse Weapon System** - Projectile weapons with dynamic lighting effects
 
-### 🔧 技术特性
-- **OpenGL 4.3+渲染** - 现代图形API实现复古视觉效果
-- **像素完美渲染** - 320x200/640x400低分辨率渲染目标
-- **粒子效果系统** - GPU计算着色器驱动的爆炸、烟雾、枪口闪光等效果
-- **智能AI系统** - 敌人状态机AI (巡逻、警戒、攻击、死亡)
-- **JSON地图格式** - 灵活的关卡数据存储和加载
+### 🔧 Technical Features
+- **OpenGL 3.3 Core Profile** - Modern graphics API achieving retro visual effects
+- **Pixel-Perfect Rendering** - 320x200 default low-resolution render target (configurable)
+- **Particle Effect System** - Advanced particle effects for explosions, smoke, muzzle flash
+- **Dynamic Lighting** - Real-time lighting with up to 128 light sources
+- **JSON Map Format** - Flexible level data storage and loading
 
-## 编译和运行
+## Build and Run
 
-### 环境要求
-- **操作系统**: Windows 10/11
-- **编译器**: MinGW-w64 (GCC)
-- **图形API**: OpenGL 4.3+
-- **构建系统**: Make或CMake
+### Requirements
+- **Operating System**: Windows 10/11
+- **Compiler**: MinGW-w64 (GCC)
+- **Graphics API**: OpenGL 3.3+
+- **Build System**: Make
 
-### 快速开始
+### Quick Start
 ```bash
-# 编译游戏
+# Build the game
 make -f Makefile.map
 
-# 运行
+# Run
 ./silic2.exe
 
-# 选择地图
+# Load specific map
 ./silic2.exe res/maps/textured_room.json 
 ./silic2.exe res/maps/test_room.json
+./silic2.exe res/maps/corridor.json
+
+# Quick test commands
+make -f Makefile.map test-room      # Run with test room map
+make -f Makefile.map corridor       # Run with corridor map
+make -f Makefile.map textured-room  # Run with textured room map
 ```
 
-## 游戏控制
+## Game Controls
 
-### 基础操作
-- **WASD** - 角色移动
-- **鼠标移动** - 摄像机视角控制
-- **鼠标左键** - 开火/攻击
-- **鼠标右键** - 瞄准/副武器
-- **滚轮** - 切换武器
-- **空格** - 跳跃
-- **Shift** - 奔跑
-- **Ctrl** - 蹲下
+### Basic Controls
+- **WASD** - Character movement
+- **Mouse** - Camera view control
+- **Left Mouse Button** - Fire weapon
+- **Space** - Jump
+- **Shift + W** - Sprint
+- **G** - Toggle god mode (free flight + noclip)
 
-### 编辑器操作
-- **F1** - 切换编辑器界面
-- **鼠标中键拖拽** - 平移视图
-- **Alt + 鼠标** - 旋转摄像机
-- **Ctrl + S** - 保存地图
-- **Ctrl + O** - 打开地图
+### God Mode Controls
+- **WASD** - Horizontal movement
+- **Space** - Move up
+- **Shift** - Move down
+- **Mouse** - Look around
 
-## 项目结构
+### Editor Controls (Planned)
+- **F1** - Toggle editor interface
+- **Middle Mouse Drag** - Pan view
+- **Alt + Mouse** - Rotate camera
+- **Ctrl + S** - Save map
+- **Ctrl + O** - Open map
+
+## Project Structure
 ```
 silic2/
-├── src/
-│   ├── engine/          # 核心引擎代码
-│   │   ├── renderer/    # 渲染系统
-│   │   ├── particles/   # 粒子效果系统
-│   │   └── audio/       # 音频系统
-│   ├── game/            # 游戏逻辑
-│   │   ├── player/      # 玩家控制器
-│   │   ├── weapons/     # 武器系统
-│   │   └── enemies/     # 敌人AI
-│   └── editor/          # 地图编辑器
+├── src/                 # Source code
+│   ├── main.cpp        # Entry point
+│   ├── app.cpp/h       # Main application controller
+│   ├── camera.cpp/h    # FPS camera system
+│   ├── player.cpp/h    # Player controller with physics
+│   ├── weapon.cpp/h    # Weapon and bullet system
+│   ├── collision.cpp/h # AABB collision detection
+│   ├── map.cpp/h       # Level data management
+│   ├── map_renderer.cpp/h    # World geometry renderer
+│   ├── pixel_renderer.cpp/h  # Low-res framebuffer system
+│   ├── shader.cpp/h    # OpenGL shader wrapper
+│   ├── texture.cpp/h   # Texture management
+│   ├── game_config.cpp/h     # Configuration system
+│   └── simple_json.cpp/h     # JSON parser
 ├── res/
-│   ├── shaders/         # GLSL着色器文件
-│   ├── textures/        # 64x64像素材质
-│   ├── maps/            # JSON格式地图文件
-│   └── audio/           # 音效和音乐
-├── include/             # 头文件
-├── lib/                 # 静态库 (GLFW, GLM等)
-└── bin/                 # 编译输出
+│   ├── shaders/        # GLSL shader files
+│   │   ├── map.vert/frag     # World geometry shaders
+│   │   ├── pixel.vert/frag   # Pixel post-processing
+│   │   ├── bullet.vert/frag  # Bullet rendering
+│   │   └── glow.vert/frag    # Glow effect shaders
+│   ├── textures/       # 64x64 pixel textures
+│   ├── maps/           # JSON format map files
+│   └── screenshots/    # Game screenshots
+├── include/            # Header files
+├── lib/               # Static libraries (GLFW, GLM, etc)
+└── bin/               # Build output
 ```
 
-## 技术架构
+## Technical Architecture
 
-### 渲染管线
-- **低分辨率目标** - 像素完美的复古视觉效果
-- **量化光照** - 8级光照量化模拟早期3D游戏
-- **批量渲染** - 优化的几何体渲染性能
-- **视锥剔除** - 提升大型关卡渲染效率
+### Rendering Pipeline
+- **Low-Resolution Target** - Pixel-perfect retro visual effects
+- **Quantized Lighting** - 8-level light quantization simulating early 3D games
+- **Multi-Pass Rendering** - Separate passes for world, bullets, and effects
+- **Dynamic Light System** - Bullets act as moving light sources
 
-### 游戏系统
-- **实体组件系统(ECS)** - 灵活的游戏对象管理
-- **对象池** - 粒子、子弹等临时对象的内存优化
-- **智能指针** - 自动内存管理避免内存泄漏
-- **观察者模式** - 事件驱动的系统通信
+### Core Systems
+- **Configuration-Driven** - Centralized GameConfig with JSON persistence
+- **Resource Management** - Texture caching with singleton pattern
+- **Smart Pointers** - RAII and automatic memory management
+- **Collision System** - AABB physics with swept collision detection
 
-### 开发阶段
-1. ✅ **核心引擎** - 渲染、输入、摄像机系统
-2. 🔄 **基础游戏系统** - 玩家控制、物理、音频
-3. 📋 **地图编辑器** - 编辑界面和功能实现
-4. 📋 **粒子效果** - 视觉效果和动画系统
-5. 📋 **游戏内容** - 武器、AI、关卡设计
-6. 📋 **优化打磨** - 性能优化和用户体验
+### Development Progress
+1. ✅ **Core Engine** - Rendering, input, camera systems
+2. ✅ **Basic Game Systems** - Player control, physics, collision
+3. ✅ **Weapon System** - Bullet shooting with dynamic lighting
+4. ✅ **Configuration System** - JSON-based settings management
+5. 🔄 **Particle Effects** - Advanced visual effects (in progress)
+6. 📋 **Map Editor** - Level design tools (planned)
+7. 📋 **Enemy AI** - Intelligent adversaries (planned)
+8. 📋 **Audio System** - Sound effects and music (planned)
+9. 📋 **Game Content** - Additional weapons, levels (planned)
 
-## 贡献指南
+## Recent Features
 
-欢迎提交Issue和Pull Request！请确保：
-- 遵循现有的代码风格
-- 添加适当的注释和文档
-- 测试新功能和修复
+### Weapon System
+- **Bullet Physics** - Realistic projectile motion with gravity
+- **Visual Effects** - Elongated bullets with glowing halos
+- **Dynamic Lighting** - Each bullet emits light affecting the scene
+- **Impact Effects** - Lingering light at impact points (0.2s fade)
+- **Configurable** - Toggle bullet lighting while keeping visual effects
 
-## ScreenShots
+### God Mode
+- Press **G** to toggle god mode for development
+- Free flight movement with no collision
+- Useful for testing and exploring maps
 
-- ScreenShots在 res\screenshot 里面，仅供参考
+## Contributing
 
-## 许可证
+Issues and Pull Requests are welcome! Please ensure:
+- Follow existing code style
+- Add appropriate comments in English
+- Test new features and fixes
 
-本项目采用MIT许可证 - 详见 [LICENSE](LICENSE) 文件
+## Screenshots
 
-## 致谢
+Screenshots are available in `res/screenshots/` directory for reference.
 
-- **GLFW** - 窗口和输入管理
-- **GLM** - OpenGL数学库
-- **stb_image** - 图像加载
-- **Dear ImGui** - 编辑器用户界面
-- **Claude Code** - 部分代码支持
+## License
+
+This project is licensed under the MIT License - see [LICENSE](LICENSE) file for details.
+
+## Acknowledgments
+
+- **GLFW** - Window and input management
+- **GLM** - OpenGL mathematics library
+- **stb_image** - Image loading
+- **GLAD** - OpenGL function loader
+- **Claude Code** - Development assistance
