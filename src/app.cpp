@@ -176,9 +176,10 @@ void App::update(float deltaTime) {
     if (player) {
         player->update(deltaTime, currentMap.get());
         
-        // Update camera to follow player
+        // Update camera to follow player with bobbing/shake effects
         glm::vec3 eyePos = player->getEyePosition();
-        camera->setPosition(eyePos);
+        glm::vec3 cameraOffset = player->getCameraOffset();
+        camera->setPosition(eyePos + cameraOffset);
     }
     
     // Update camera
@@ -229,7 +230,7 @@ void App::render() {
         if (weapon) {
             auto bulletLights = weapon->getActiveLights();
             for (const auto& [pos, color] : bulletLights) {
-                // color已经包含了强度，所以这里intensity设为1.0
+                // color already includes intensity, so set intensity to 1.0 here
                 mapRenderer->addDynamicLight(pos, color, 1.0f, 3.0f);
             }
         }

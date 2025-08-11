@@ -18,7 +18,7 @@ struct Bullet {
     float speed;
     glm::vec3 color;
     float intensity;
-    float length;  // 子弹长度
+    float length;  // Bullet length
     
     Bullet(const glm::vec3& pos, const glm::vec3& dir, float spd = 50.0f) 
         : position(pos), direction(glm::normalize(dir)), speed(spd),
@@ -36,7 +36,7 @@ struct Bullet {
         return lifetime < maxLifetime;
     }
     
-    // 获取子弹作为光源的数据
+    // Get bullet data as light source
     glm::vec3 getLightPosition() const {
         return position;
     }
@@ -46,17 +46,17 @@ struct Bullet {
     }
     
     float getLightRange() const {
-        return 3.0f; // 光源范围
+        return 3.0f; // Light range
     }
 };
 
-// 撞击光效结构体
+// Impact light effect structure
 struct ImpactLight {
     glm::vec3 position;
     glm::vec3 color;
     float intensity;
-    float lifetime;     // 剩余生命时间
-    float maxLifetime;  // 最大生命时间（用于渐隐）
+    float lifetime;     // Remaining lifetime
+    float maxLifetime;  // Maximum lifetime (for fading)
     
     ImpactLight(const glm::vec3& pos, const glm::vec3& col, float intens) 
         : position(pos), color(col), intensity(intens),
@@ -70,7 +70,7 @@ struct ImpactLight {
         return lifetime > 0.0f;
     }
     
-    // 获取渐隐后的强度
+    // Get faded intensity
     float getFadedIntensity() const {
         return intensity * (lifetime / maxLifetime);
     }
@@ -85,16 +85,16 @@ public:
     void update(float deltaTime, const Map* map);
     void render(const glm::mat4& view, const glm::mat4& projection);
     
-    // 发射子弹，从屏幕右下角向中心射击
+    // Fire bullet from screen bottom-right towards center
     void fire(const Camera& camera);
     
-    // 获取活跃子弹的光源数据
+    // Get active bullets' light source data
     std::vector<std::pair<glm::vec3, glm::vec3>> getActiveLights() const;
     
-    // 获取活跃子弹数量
+    // Get active bullet count
     size_t getActiveBulletCount() const { return bullets.size(); }
     
-    // 控制子弹光照效果的开关
+    // Control bullet lighting effects toggle
     void setBulletLightingEnabled(bool enabled) { bulletLightingEnabled = enabled; }
     bool isBulletLightingEnabled() const { return bulletLightingEnabled; }
 
@@ -104,9 +104,9 @@ private:
     std::unique_ptr<Shader> bulletShader;
     std::unique_ptr<Shader> glowShader;
     
-    // 子弹网格数据
+    // Bullet mesh data
     unsigned int bulletVAO, bulletVBO;
-    // 光晕网格数据
+    // Glow mesh data
     unsigned int glowVAO, glowVBO;
     
     void setupBulletMesh();
@@ -116,11 +116,11 @@ private:
     bool checkBulletCollision(const Bullet& bullet, const Map* map);
     void createImpactLight(const glm::vec3& position, const glm::vec3& color, float intensity);
     
-    // 射击冷却
+    // Fire cooldown
     float fireCooldown;
     float fireRate;
     
-    // 子弹光照效果开关
+    // Bullet lighting effects toggle
     bool bulletLightingEnabled;
 };
 

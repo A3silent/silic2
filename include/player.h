@@ -60,6 +60,9 @@ public:
     // Get current FOV for camera
     float getCurrentFov() const { return currentFov; }
     
+    // Get camera effects
+    glm::vec3 getCameraOffset() const { return headBobOffset + cameraShakeOffset; }
+    
 private:
     // Player attributes
     glm::vec3 position;
@@ -81,6 +84,17 @@ private:
     float currentFov = 45.0f;
     float targetFov = 45.0f;
     
+    // Camera bobbing/shake effects
+    float bobTime = 0.0f;
+    glm::vec3 headBobOffset = glm::vec3(0.0f);
+    glm::vec3 cameraShakeOffset = glm::vec3(0.0f);
+    
+    // Momentum/Inertia system
+    glm::vec3 momentum = glm::vec3(0.0f);  // Persistent velocity that gradually decays
+    float airControl = 0.4f;               // How much control player has in air
+    float groundFriction = 25.0f;          // Very high friction = immediate stop
+    float airResistance = 0.8f;            // How quickly momentum decays in air (lower = more gliding)
+    
     // Physics update
     void updatePhysics(float deltaTime, const Map* map);
     
@@ -98,6 +112,9 @@ private:
     
     // Update FOV based on sprinting state
     void updateFov(float deltaTime);
+    
+    // Update camera effects
+    void updateCameraEffects(float deltaTime);
 };
 
 } // namespace silic2

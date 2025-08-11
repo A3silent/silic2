@@ -33,7 +33,7 @@ bool MapRenderer::loadMap(const Map& map) {
         renderable->color = brush.color;
         renderable->material = brush.material;
         
-        // 加载纹理
+        // Load texture
         if (!brush.texture.empty()) {
             renderable->texture = TextureManager::getInstance().loadTexture(brush.texture);
         }
@@ -161,7 +161,7 @@ void MapRenderer::setupBrushGeometry(const Brush& brush, RenderableBrush& render
             vertexData.push_back(brush.texCoords[i].x);
             vertexData.push_back(brush.texCoords[i].y);
         } else {
-            // 默认纹理坐标
+            // Default texture coordinates
             vertexData.push_back(0.0f);
             vertexData.push_back(0.0f);
         }
@@ -235,7 +235,7 @@ void MapRenderer::renderBrush(const RenderableBrush& brush, const glm::mat4& mod
     mapShader->setMat4("model", model);
     mapShader->setVec3("objectColor", brush.color);
     
-    // 绑定纹理
+    // Bind texture
     if (brush.texture) {
         mapShader->setBool("useTexture", true);
         mapShader->setInt("texture1", 0);

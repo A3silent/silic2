@@ -12,17 +12,17 @@ public:
     Texture();
     ~Texture();
     
-    // 从文件加载纹理
+    // Load texture from file
     bool loadFromFile(const std::string& filePath);
     
-    // 绑定纹理到指定纹理单元
+    // Bind texture to specified texture unit
     void bind(unsigned int unit = 0) const;
     void unbind() const;
     
-    // 获取纹理ID
+    // Get texture ID
     GLuint getID() const { return textureID; }
     
-    // 获取纹理尺寸
+    // Get texture dimensions
     int getWidth() const { return width; }
     int getHeight() const { return height; }
     
@@ -33,22 +33,22 @@ private:
     int channels;
 };
 
-// 纹理管理器 - 单例模式
+// Texture manager - Singleton pattern
 class TextureManager {
 public:
     static TextureManager& getInstance();
     
-    // 加载纹理（如果已加载则返回现有纹理）
+    // Load texture (return existing texture if already loaded)
     std::shared_ptr<Texture> loadTexture(const std::string& filePath);
     
-    // 清理所有纹理
+    // Clear all textures
     void clear();
     
 private:
     TextureManager() = default;
     ~TextureManager() = default;
     
-    // 禁止拷贝
+    // Disable copying
     TextureManager(const TextureManager&) = delete;
     TextureManager& operator=(const TextureManager&) = delete;
     

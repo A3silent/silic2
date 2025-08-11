@@ -12,23 +12,23 @@ CollisionResult CollisionSystem::sweepAABB(const AABB& movingBox, const glm::vec
                                           const AABB& staticBox, float deltaTime) {
     CollisionResult result;
     
-    // 扩展静态盒子的大小（Minkowski sum）
+    // Expand static box size (Minkowski sum)
     AABB expandedBox;
     expandedBox.min = staticBox.min - movingBox.getSize() * 0.5f;
     expandedBox.max = staticBox.max + movingBox.getSize() * 0.5f;
     
-    // 创建从移动盒子中心发出的射线
+    // Create ray from moving box center
     glm::vec3 center = movingBox.getCenter();
     Ray ray(center, velocity);
     
-    // 射线与扩展盒子的碰撞检测
+    // Ray vs expanded box collision detection
     result = raycastAABB(ray, expandedBox, glm::length(velocity) * deltaTime);
     
     if (result.collided) {
-        // 计算实际碰撞点（考虑盒子大小）
+        // Calculate actual collision point (considering box size)
         glm::vec3 halfSize = movingBox.getSize() * 0.5f;
         
-        // 根据法线方向调整碰撞点
+        // Adjust collision point based on normal direction
         if (std::abs(result.normal.x) > 0.5f) {
             result.point.x += halfSize.x * -result.normal.x;
         }
@@ -57,14 +57,14 @@ CollisionResult CollisionSystem::raycastAABB(const Ray& ray, const AABB& box, fl
     float tFar = std::min(std::min(tMax.x, tMax.y), tMax.z);
     
     if (tNear > tFar || tFar < 0.0f || tNear > maxDistance) {
-        return result; // 没有碰撞
+        return result; // No collision
     }
     
     result.collided = true;
     result.distance = tNear >= 0.0f ? tNear : tFar;
     result.point = ray.origin + ray.direction * result.distance;
     
-    // 计算碰撞法线
+    // Calculate collision normal
     glm::vec3 center = box.getCenter();
     glm::vec3 localPoint = result.point - center;
     glm::vec3 halfSize = box.getSize() * 0.5f;
@@ -92,7 +92,7 @@ glm::vec3 CollisionSystem::getAABBPenetration(const AABB& a, const AABB& b) {
     
     glm::vec3 penetration(0.0f);
     
-    // X轴
+    // X axis
     float xOverlap = std::min(a.max.x, b.max.x) - std::max(a.min.x, b.min.x);
     if (xOverlap > 0) {
         if (a.getCenter().x < b.getCenter().x) {
@@ -102,7 +102,7 @@ glm::vec3 CollisionSystem::getAABBPenetration(const AABB& a, const AABB& b) {
         }
     }
     
-    // Y轴
+    // Y axis
     float yOverlap = std::min(a.max.y, b.max.y) - std::max(a.min.y, b.min.y);
     if (yOverlap > 0) {
         if (a.getCenter().y < b.getCenter().y) {
@@ -112,7 +112,7 @@ glm::vec3 CollisionSystem::getAABBPenetration(const AABB& a, const AABB& b) {
         }
     }
     
-    // Z轴
+    // Z axis
     float zOverlap = std::min(a.max.z, b.max.z) - std::max(a.min.z, b.min.z);
     if (zOverlap > 0) {
         if (a.getCenter().z < b.getCenter().z) {
@@ -132,7 +132,7 @@ glm::vec3 CollisionSystem::resolveAABBCollision(const AABB& movingBox, const AAB
         return glm::vec3(0.0f);
     }
     
-    // 找到最小穿透轴
+    // Find minimum penetration axis
     float minPenetration = std::numeric_limits<float>::max();
     glm::vec3 resolution(0.0f);
     

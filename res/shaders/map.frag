@@ -42,10 +42,10 @@ vec3 toPalette(vec3 color) {
 void main() {
     vec3 baseColor = objectColor;
     
-    // 使用纹理颜色
+    // Use texture color
     if (useTexture) {
         vec4 texColor = texture(texture1, TexCoord);
-        baseColor = texColor.rgb * objectColor; // 混合纹理颜色和物体颜色
+        baseColor = texColor.rgb * objectColor; // Blend texture color and object color
     }
     
     vec3 result = ambientLight * baseColor;

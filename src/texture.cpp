@@ -1,7 +1,7 @@
 #include "texture.h"
 #include <iostream>
 
-// 需要定义STB_IMAGE_IMPLEMENTATION来实现stb_image
+// Need to define STB_IMAGE_IMPLEMENTATION to implement stb_image
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb/stb_image.h"
 
@@ -17,10 +17,10 @@ Texture::~Texture() {
 }
 
 bool Texture::loadFromFile(const std::string& filePath) {
-    // 翻转图像，因为OpenGL的纹理坐标原点在左下角
+    // Flip image vertically because OpenGL texture coordinate origin is at bottom-left
     stbi_set_flip_vertically_on_load(true);
     
-    // 加载图像数据
+    // Load image data
     unsigned char* data = stbi_load(filePath.c_str(), &width, &height, &channels, 0);
     if (!data) {
         std::cerr << "Failed to load texture: " << filePath << std::endl;
@@ -28,11 +28,11 @@ bool Texture::loadFromFile(const std::string& filePath) {
         return false;
     }
     
-    // 生成OpenGL纹理
+    // Generate OpenGL texture
     glGenTextures(1, &textureID);
     glBindTexture(GL_TEXTURE_2D, textureID);
     
-    // 设置纹理格式
+    // Set texture format
     GLenum format = GL_RGB;
     if (channels == 1)
         format = GL_RED;
@@ -41,20 +41,20 @@ bool Texture::loadFromFile(const std::string& filePath) {
     else if (channels == 4)
         format = GL_RGBA;
     
-    // 上传纹理数据
+    // Upload texture data
     glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
     
-    // 生成mipmap
+    // Generate mipmap
     glGenerateMipmap(GL_TEXTURE_2D);
     
-    // 设置纹理参数
-    // 使用最近邻过滤以保持像素化效果
+    // Set texture parameters
+    // Use nearest neighbor filtering to maintain pixelated effect
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
     
-    // 释放图像数据
+    // Free image data
     stbi_image_free(data);
     
     std::cout << "Loaded texture: " << filePath << " (" << width << "x" << height << ", " << channels << " channels)" << std::endl;
@@ -78,13 +78,13 @@ TextureManager& TextureManager::getInstance() {
 }
 
 std::shared_ptr<Texture> TextureManager::loadTexture(const std::string& filePath) {
-    // 检查缓存
+    // Check cache
     auto it = textureCache.find(filePath);
     if (it != textureCache.end()) {
         return it->second;
     }
     
-    // 加载新纹理
+    // Load new texture
     auto texture = std::make_shared<Texture>();
     if (texture->loadFromFile(filePath)) {
         textureCache[filePath] = texture;
