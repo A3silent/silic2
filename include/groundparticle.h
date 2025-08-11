@@ -12,6 +12,6 @@ namespace silic2 {
 // - Uses orange/yellow/red fire colors
 // - Particles live for exactly 2.5 seconds
 // - Particles float upward from the ground
-std::unique_ptr<GroundParticleSystem> createEnhancedGroundParticleSystem(size_t maxParticles = 2000);
+std::unique_ptr<GroundParticleSystem> createEnhancedGroundParticleSystem(size_t maxParticles, GroundParticleSystem::particleMode mode);
 
 } // namespace silic2

@@ -57,7 +57,7 @@ App::App() : window(nullptr) {
         weapon->init();
         
         // Create enhanced ground particle system
-        groundParticles = createEnhancedGroundParticleSystem(2000);
+        groundParticles = createEnhancedGroundParticleSystem(2000, GroundParticleSystem::particleMode::FIRE);
     } catch (const std::exception& e) {
         std::cerr << "Failed to initialize rendering system: " << e.what() << std::endl;
         throw;
