@@ -26,7 +26,7 @@ Weapon::~Weapon() {
 }
 
 void Weapon::init() {
-    // 初始化子弹着色器
+    // Initialize bullet shaders
     try {
         bulletShader = std::make_unique<Shader>("res/shaders/bullet.vert", "res/shaders/bullet.frag");
         glowShader = std::make_unique<Shader>("res/shaders/glow.vert", "res/shaders/glow.frag");
@@ -40,9 +40,9 @@ void Weapon::init() {
 }
 
 void Weapon::setupBulletMesh() {
-    // 创建长条形子弹网格（沿着Z轴的长方体）
+    // Create elongated bullet mesh (rectangular box along Z axis)
     float bulletVertices[] = {
-        // 前面
+        // Front face
         -0.02f, -0.02f,  0.15f,  0.0f,  0.0f,  1.0f,
          0.02f, -0.02f,  0.15f,  0.0f,  0.0f,  1.0f,
          0.02f,  0.02f,  0.15f,  0.0f,  0.0f,  1.0f,
@@ -50,7 +50,7 @@ void Weapon::setupBulletMesh() {
         -0.02f,  0.02f,  0.15f,  0.0f,  0.0f,  1.0f,
         -0.02f, -0.02f,  0.15f,  0.0f,  0.0f,  1.0f,
         
-        // 后面
+        // Back face
         -0.02f, -0.02f, -0.15f,  0.0f,  0.0f, -1.0f,
          0.02f, -0.02f, -0.15f,  0.0f,  0.0f, -1.0f,
          0.02f,  0.02f, -0.15f,  0.0f,  0.0f, -1.0f,
@@ -58,7 +58,7 @@ void Weapon::setupBulletMesh() {
         -0.02f,  0.02f, -0.15f,  0.0f,  0.0f, -1.0f,
         -0.02f, -0.02f, -0.15f,  0.0f,  0.0f, -1.0f,
         
-        // 左面
+        // Left face
         -0.02f,  0.02f,  0.15f, -1.0f,  0.0f,  0.0f,
         -0.02f,  0.02f, -0.15f, -1.0f,  0.0f,  0.0f,
         -0.02f, -0.02f, -0.15f, -1.0f,  0.0f,  0.0f,
@@ -66,7 +66,7 @@ void Weapon::setupBulletMesh() {
         -0.02f, -0.02f,  0.15f, -1.0f,  0.0f,  0.0f,
         -0.02f,  0.02f,  0.15f, -1.0f,  0.0f,  0.0f,
         
-        // 右面
+        // Right face
          0.02f,  0.02f,  0.15f,  1.0f,  0.0f,  0.0f,
          0.02f,  0.02f, -0.15f,  1.0f,  0.0f,  0.0f,
          0.02f, -0.02f, -0.15f,  1.0f,  0.0f,  0.0f,
@@ -74,7 +74,7 @@ void Weapon::setupBulletMesh() {
          0.02f, -0.02f,  0.15f,  1.0f,  0.0f,  0.0f,
          0.02f,  0.02f,  0.15f,  1.0f,  0.0f,  0.0f,
         
-        // 上面
+        // Top face
         -0.02f,  0.02f, -0.15f,  0.0f,  1.0f,  0.0f,
          0.02f,  0.02f, -0.15f,  0.0f,  1.0f,  0.0f,
          0.02f,  0.02f,  0.15f,  0.0f,  1.0f,  0.0f,
@@ -82,7 +82,7 @@ void Weapon::setupBulletMesh() {
         -0.02f,  0.02f,  0.15f,  0.0f,  1.0f,  0.0f,
         -0.02f,  0.02f, -0.15f,  0.0f,  1.0f,  0.0f,
         
-        // 下面
+        // Bottom face
         -0.02f, -0.02f, -0.15f,  0.0f, -1.0f,  0.0f,
          0.02f, -0.02f, -0.15f,  0.0f, -1.0f,  0.0f,
          0.02f, -0.02f,  0.15f,  0.0f, -1.0f,  0.0f,
@@ -98,11 +98,11 @@ void Weapon::setupBulletMesh() {
     glBindBuffer(GL_ARRAY_BUFFER, bulletVBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(bulletVertices), bulletVertices, GL_STATIC_DRAW);
     
-    // 位置属性
+    // Position attribute
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
     
-    // 法线属性
+    // Normal attribute
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
     glEnableVertexAttribArray(1);
     
@@ -110,9 +110,9 @@ void Weapon::setupBulletMesh() {
 }
 
 void Weapon::setupGlowMesh() {
-    // 创建一个更大的billboard四边形用于光晕效果
+    // Create a larger billboard quad for glow effect
     float glowVertices[] = {
-        // 位置              // 纹理坐标
+        // Position          // Texture coordinates
         -0.5f, -0.5f, 0.0f,  0.0f, 0.0f,
          0.5f, -0.5f, 0.0f,  1.0f, 0.0f,
          0.5f,  0.5f, 0.0f,  1.0f, 1.0f,
@@ -128,11 +128,11 @@ void Weapon::setupGlowMesh() {
     glBindBuffer(GL_ARRAY_BUFFER, glowVBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(glowVertices), glowVertices, GL_STATIC_DRAW);
     
-    // 位置属性
+    // Position attribute
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
     
-    // 纹理坐标属性
+    // Texture coordinate attribute
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
     glEnableVertexAttribArray(1);
     
@@ -140,37 +140,37 @@ void Weapon::setupGlowMesh() {
 }
 
 void Weapon::update(float deltaTime, const Map* map) {
-    // 更新射击冷却
+    // Update fire cooldown
     if (fireCooldown > 0.0f) {
         fireCooldown -= deltaTime;
     }
     
-    // 更新所有子弹并检查碰撞
+    // Update all bullets and check collisions
     for (auto it = bullets.begin(); it != bullets.end(); ) {
         it->update(deltaTime);
         
-        // 检查碰撞
+        // Check collision
         if (map && checkBulletCollision(*it, map)) {
-            // 在撞击点创建光效（仅当光照开启时）
+            // Create light effect at impact point (only when lighting enabled)
             if (bulletLightingEnabled) {
                 createImpactLight(it->position, it->color, it->intensity);
             }
-            // 移除子弹
+            // Remove bullet
             it = bullets.erase(it);
         } else if (!it->isAlive()) {
-            // 子弹超时
+            // Bullet timeout
             it = bullets.erase(it);
         } else {
             ++it;
         }
     }
     
-    // 更新撞击光效
+    // Update impact lights
     for (auto& light : impactLights) {
         light.update(deltaTime);
     }
     
-    // 清理死亡光效
+    // Clean up dead lights
     cleanupDeadLights();
 }
 
@@ -195,9 +195,9 @@ bool Weapon::checkBulletCollision(const Bullet& bullet, const Map* map) {
     
     const auto& brushes = map->getBrushes();
     
-    // 对每个brush进行碰撞检测
+    // Check collision with each brush
     for (const auto& brush : brushes) {
-        // 计算AABB
+        // Calculate AABB
         float minX = 1e9f, minY = 1e9f, minZ = 1e9f;
         float maxX = -1e9f, maxY = -1e9f, maxZ = -1e9f;
         
@@ -210,27 +210,27 @@ bool Weapon::checkBulletCollision(const Bullet& bullet, const Map* map) {
             maxZ = std::max(maxZ, vertex.z);
         }
         
-        // 子弹半径
+        // Bullet radius
         float bulletRadius = 0.05f;
         
-        // 检查子弹是否碰撞到AABB的表面
+        // Check if bullet collides with AABB surface
         glm::vec3 pos = bullet.position;
         
-        // 找到最近的点
+        // Find closest point
         float closestX = glm::clamp(pos.x, minX, maxX);
         float closestY = glm::clamp(pos.y, minY, maxY);
         float closestZ = glm::clamp(pos.z, minZ, maxZ);
         
-        // 计算到最近点的距离
+        // Calculate distance to closest point
         float distX = pos.x - closestX;
         float distY = pos.y - closestY;
         float distZ = pos.z - closestZ;
         float distSq = distX * distX + distY * distY + distZ * distZ;
         
-        // 如果子弹中心到AABB最近点的距离小于子弹半径，则发生碰撞
+        // If distance from bullet center to AABB closest point is less than bullet radius, collision occurs
         if (distSq < bulletRadius * bulletRadius) {
-            // 额外检查：确保子弹不是从内部开始的（避免刚发射就碰撞）
-            if (bullet.lifetime > 0.1f) {  // 子弹存活超过0.1秒才检测碰撞
+            // Extra check: ensure bullet doesn't start from inside (avoid immediate collision after firing)
+            if (bullet.lifetime > 0.1f) {  // Only detect collision after bullet survives 0.1 seconds
                 return true;
             }
         }
@@ -247,28 +247,28 @@ void Weapon::createImpactLight(const glm::vec3& position, const glm::vec3& color
 
 void Weapon::fire(const Camera& camera) {
     if (fireCooldown > 0.0f) {
-        return; // 还在冷却中
+        return; // Still cooling down
     }
     
-    // 获取相机位置和方向
+    // Get camera position and direction
     glm::vec3 cameraPos = camera.getPosition();
     glm::vec3 cameraFront = camera.getFront();
     glm::vec3 cameraRight = camera.getRight();
     glm::vec3 cameraUp = camera.getUp();
     
-    // 计算子弹起始位置（屏幕右下角）
+    // Calculate bullet start position (screen bottom right)
     glm::vec3 bulletStartPos = cameraPos;
-    bulletStartPos += cameraFront * 0.3f;  // 向前偏移
-    bulletStartPos += cameraRight * 0.2f;  // 向右偏移
-    bulletStartPos -= cameraUp * 0.15f;    // 向下偏移
+    bulletStartPos += cameraFront * 0.3f;  // Forward offset
+    bulletStartPos += cameraRight * 0.2f;  // Right offset
+    bulletStartPos -= cameraUp * 0.15f;    // Down offset
     
-    // 子弹方向指向屏幕中心（相机前方）
+    // Bullet direction points to screen center (camera front)
     glm::vec3 bulletDirection = cameraFront;
     
-    // 创建新子弹
+    // Create new bullet
     bullets.emplace_back(bulletStartPos, bulletDirection, 65.0f);
     
-    // 重置冷却时间
+    // Reset cooldown time
     fireCooldown = fireRate;
 }
 
@@ -277,10 +277,10 @@ void Weapon::render(const glm::mat4& view, const glm::mat4& projection) {
         return;
     }
     
-    // 首先渲染光晕（在子弹后面，使用混合）
+    // First render glow (behind bullets, using blending)
     glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE); // 加法混合
-    glDepthMask(GL_FALSE); // 禁止写入深度缓冲
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE); // Additive blending
+    glDepthMask(GL_FALSE); // Disable depth buffer writing
     
     glowShader->use();
     glowShader->setMat4("view", view);
@@ -288,16 +288,16 @@ void Weapon::render(const glm::mat4& view, const glm::mat4& projection) {
     
     glBindVertexArray(glowVAO);
     
-    // 渲染每个子弹的光晕
+    // Render glow for each bullet
     for (const auto& bullet : bullets) {
         glm::mat4 model = glm::mat4(1.0f);
         model = glm::translate(model, bullet.position);
         
-        // Billboard效果 - 始终面向相机
+        // Billboard effect - always face camera
         glm::vec3 cameraRight = glm::vec3(view[0][0], view[1][0], view[2][0]);
         glm::vec3 cameraUp = glm::vec3(view[0][1], view[1][1], view[2][1]);
         
-        model[0] = glm::vec4(cameraRight * 0.8f, 0.0f); // 光晕大小
+        model[0] = glm::vec4(cameraRight * 0.8f, 0.0f); // Glow size
         model[1] = glm::vec4(cameraUp * 0.8f, 0.0f);
         model[2] = glm::vec4(0.0f, 0.0f, 0.8f, 0.0f);
         
@@ -310,24 +310,24 @@ void Weapon::render(const glm::mat4& view, const glm::mat4& projection) {
     
     glBindVertexArray(0);
     
-    // 恢复深度写入和混合模式
+    // Restore depth writing and blend mode
     glDepthMask(GL_TRUE);
     glDisable(GL_BLEND);
     
-    // 然后渲染子弹本体
+    // Then render bullet bodies
     bulletShader->use();
     bulletShader->setMat4("view", view);
     bulletShader->setMat4("projection", projection);
     
     glBindVertexArray(bulletVAO);
     
-    // 渲染每个子弹
+    // Render each bullet
     for (const auto& bullet : bullets) {
-        // 计算子弹的模型矩阵
+        // Calculate bullet model matrix
         glm::mat4 model = glm::mat4(1.0f);
         model = glm::translate(model, bullet.position);
         
-        // 根据子弹方向旋转
+        // Rotate according to bullet direction
         glm::vec3 forward = bullet.direction;
         glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
         if (glm::abs(glm::dot(forward, up)) > 0.99f) {
@@ -343,12 +343,12 @@ void Weapon::render(const glm::mat4& view, const glm::mat4& projection) {
         
         model = model * rotation;
         
-        // 设置着色器参数
+        // Set shader parameters
         bulletShader->setMat4("model", model);
         bulletShader->setVec3("bulletColor", bullet.color);
         bulletShader->setFloat("intensity", bullet.intensity);
         
-        // 绘制子弹
+        // Draw bullet
         glDrawArrays(GL_TRIANGLES, 0, 36);
     }
     
@@ -358,19 +358,19 @@ void Weapon::render(const glm::mat4& view, const glm::mat4& projection) {
 std::vector<std::pair<glm::vec3, glm::vec3>> Weapon::getActiveLights() const {
     std::vector<std::pair<glm::vec3, glm::vec3>> lights;
     
-    // 如果子弹光照被禁用，只返回空列表（但子弹本身的光晕仍然显示）
+    // If bullet lighting is disabled, just return empty list (but bullet glows still show)
     if (!bulletLightingEnabled) {
         return lights;
     }
     
-    // 添加子弹光源
+    // Add bullet light sources
     for (const auto& bullet : bullets) {
         lights.emplace_back(bullet.getLightPosition(), bullet.getLightColor());
     }
     
-    // 添加撞击光效
+    // Add impact lights
     for (const auto& impact : impactLights) {
-        // 使用渐隐的强度
+        // Use fading intensity
         glm::vec3 fadedColor = impact.color * impact.getFadedIntensity();
         lights.emplace_back(impact.position, fadedColor);
     }

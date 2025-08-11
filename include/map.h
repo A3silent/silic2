@@ -24,10 +24,10 @@ enum class SurfaceType {
 struct Brush {
     uint32_t id;
     std::vector<glm::vec3> vertices;
-    std::vector<glm::vec2> texCoords;  // 纹理坐标
+    std::vector<glm::vec2> texCoords;  // Texture coordinates
     std::vector<uint32_t> faces;  // indices into vertices array (triangles)
     std::string material;
-    std::string texture;  // 纹理文件路径
+    std::string texture;  // Texture file path
     glm::vec3 color = glm::vec3(0.8f, 0.8f, 0.8f);
     SurfaceType surfaceType = SurfaceType::UNKNOWN;  // Automatically determined from geometry
 };
