@@ -25,6 +25,26 @@ glm::vec3 randomVec3(float min, float max) {
     );
 }
 
+//building a lookup table for fade values for better runtime
+const std::vector<float>& ParticleSystem::getFadeLUT(float fadeRatio) {
+    // Check if LUT for this fadeRatio exists
+    auto it = fadeLUTCache.find(fadeRatio);
+    if (it != fadeLUTCache.end()) {
+        return it->second;
+    }
+
+    // Build new LUT
+    std::vector<float> newLUT(fadeOutSmoothness + 1);
+    for (int i = 0; i <= fadeOutSmoothness; ++i) {
+        float r = static_cast<float>(i) / fadeOutSmoothness;
+        newLUT[i] = std::pow(r, fadeRatio);
+    }
+
+    // Store in cache and return
+    fadeLUTCache[fadeRatio] = std::move(newLUT);
+    return fadeLUTCache[fadeRatio];
+}
+
 // ParticleSystem Implementation
 ParticleSystem::ParticleSystem(size_t maxParticles)
     : maxParticleCount(maxParticles), nextDeadParticle(0), 
@@ -80,7 +100,7 @@ void ParticleSystem::initRenderingResources() {
     glEnableVertexAttribArray(1);
     
     glVertexAttribPointer(2, 1, GL_FLOAT, GL_FALSE, 7 * sizeof(float), (void*)(6 * sizeof(float)));
-    glEnableVertexAttribArray(2);
+
     
     glBindVertexArray(0);
     
@@ -189,6 +209,7 @@ void ParticleSystem::setupBoxMesh() {
 }
 
 void ParticleSystem::update(float deltaTime) {
+    
     for (auto& particle : particles) {
         if (!particle.isAlive()) continue;
         
@@ -200,12 +221,31 @@ void ParticleSystem::update(float deltaTime) {
         // Update life
         particle.life -= deltaTime;
         
+        
         // Fade out color based on life if enabled
         if (fadeOutEnabled && particle.maxLife > 0.0f) {
-            float lifeRatio = particle.life / particle.maxLife;
-            // Keep the hue but fade the intensity
-            particle.color *= glm::max(0.1f, lifeRatio);
+            float invMaxLife = 1.0f / particle.maxLife;
+            float lifeRatio  = particle.life * invMaxLife;
+            float nextRatio  = (particle.life - deltaTime) * invMaxLife;
+
+            float fadeRatio = particle.fadeRatio;
+
+            // Build LUT if fadeRatio changed
+            if (fadeRatio != lastFadeRatio || fadeLUTCache.empty()) {
+                getFadeLUT(fadeRatio);
+                lastFadeRatio = fadeRatio;
+            }
+            auto fadeLUTIt = fadeLUTCache.find(fadeRatio);
+            const auto& fadeLUT = fadeLUTIt->second;
+
+            // Clamp & lookup
+            int idxCurr = std::max(0, std::min(fadeOutSmoothness, int(lifeRatio  * fadeOutSmoothness)));
+            int idxNext = std::max(0, std::min(fadeOutSmoothness, int(nextRatio * fadeOutSmoothness)));
+
+            particle.color *= fadeLUT[idxNext] / fadeLUT[idxCurr];
+            
         }
+            
     }
 }
 
@@ -278,7 +318,7 @@ void ParticleSystem::render(const glm::mat4& view, const glm::mat4& projection) 
 }
 
 void ParticleSystem::emit(const glm::vec3& position, const glm::vec3& velocity, 
-                         const glm::vec3& color, float life, float size) {
+                         const glm::vec3& color, float life, float size, float gravity, float fadeRatio) {
     size_t deadIndex = findDeadParticle();
     if (deadIndex >= particles.size()) return;
     
@@ -286,15 +326,17 @@ void ParticleSystem::emit(const glm::vec3& position, const glm::vec3& velocity,
     p.position = position;
     p.velocity = velocity;
     p.color = color;
+    p.baseColor = color;
     p.life = life;
     p.maxLife = life;
     p.size = size;
-    p.gravity = 1.0f;
+    p.gravity = gravity;
+    p.fadeRatio = fadeRatio;
 }
 
 void ParticleSystem::emitBurst(const glm::vec3& position, int count, 
                               const glm::vec3& baseVelocity, const glm::vec3& velocityVariation,
-                              const glm::vec3& color, float life, float size) {
+                              const glm::vec3& color, float life, float size, float gravity, float fadeRatio) {
     for (int i = 0; i < count; ++i) {
         glm::vec3 vel = baseVelocity + glm::vec3(
             randomFloat(-velocityVariation.x, velocityVariation.x),
@@ -309,7 +351,7 @@ void ParticleSystem::emitBurst(const glm::vec3& position, int count,
         particleColor.b += randomFloat(-0.1f, 0.1f);
         particleColor = glm::clamp(particleColor, 0.0f, 1.0f);
         
-        emit(position, vel, particleColor, life, size);
+        emit(position, vel, particleColor, life, size, gravity, fadeRatio);
     }
 }
 
@@ -418,31 +460,54 @@ void GroundParticleSystem::update(float deltaTime) {
     float emissionInterval = 1.0f / emissionRate;
     while (emissionTimer >= emissionInterval) {
         emissionTimer -= emissionInterval;
-        
-        // Spawn single fire particle at random floor position
-        {  // Single particle per emission for 100/second rate
-            glm::vec3 spawnPos = getRandomFloorPosition();
-            
-            // Add slight randomness to position 
-            spawnPos.x += randomFloat(-0.5f, 0.5f);
-            spawnPos.z += randomFloat(-0.5f, 0.5f);
-            spawnPos.y += fireConfig.spawnHeight;
-            
-            // Calculate fire velocity (upward with high variation for different heights)
-            glm::vec3 velocity = glm::vec3(
-                randomFloat(-0.5f, 0.5f),  // Horizontal drift
-                fireConfig.baseVelocity + randomFloat(-3.0f, fireConfig.velocityVariation),  // Much more speed variation for height differences
-                randomFloat(-0.5f, 0.5f)
-            );
-            
-            // Fixed particle lifetime of 2.5 seconds
-            float life = fireConfig.particleLife;
-            float size = fireConfig.particleSize + randomFloat(-0.5f, 0.5f);
-            
-            glm::vec3 color = calculateFireColor(1.0f);  // Start with full intensity color
-            
-            particleSystem->emit(spawnPos, velocity, color, life, size);
+        auto& config = fireConfig;
+        switch (currentMode) {
+            case particleMode::FIRE: {
+                // Point to the fire configuration
+                config = fireConfig;
+                break;
+            }
+            case particleMode::DUST:{
+                config = dustConfig;
+                break;
+            }
         }
+
+        // Spawn single fire particle at random floor position
+        glm::vec3 spawnPos = getRandomFloorPosition();
+                
+        // Add slight randomness to position 
+        spawnPos.x += randomFloat(-0.5f, 0.5f);
+        spawnPos.z += randomFloat(-0.5f, 0.5f);
+        spawnPos.y += config.spawnHeight;
+                
+        // Calculate fire velocity (upward with high variation for different heights)
+        glm::vec3 velocity = glm::vec3(
+            randomFloat(-0.5f, 0.5f),  // Horizontal drift
+            config.baseVelocity + randomFloat(-1.0 * config.velocityVariation, config.velocityVariation),  // Much more speed variation for height differences
+            randomFloat(-0.5f, 0.5f)
+        );
+                
+        // Fixed particle lifetime of 2.5 seconds
+        float life = config.particleLife;
+        float size = config.particleSize + randomFloat(-0.5f, 0.5f);
+        float gravity = config.particleGravity;
+        float fadeRatio = config.particleFadeRatio;
+        glm::vec3 color;
+        switch (currentMode) {
+            case particleMode::FIRE: {
+                // Point to the fire configuration
+                color = calculateFireColor(1.0f);  // Start with full intensity color
+                break;
+            }
+            case particleMode::DUST:{
+                color = glm::vec3(0.3f, 0.3f, 0.5f);  // Start with full intensity color
+                break;
+            }
+        }
+        
+                
+        particleSystem->emit(spawnPos, velocity, color, life, size, gravity, fadeRatio);
     }
     
     particleSystem->update(deltaTime);
