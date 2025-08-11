@@ -5,7 +5,7 @@
 
 namespace silic2 {
 
-// 轴对齐包围盒（AABB）
+// Axis-Aligned Bounding Box (AABB)
 struct AABB {
     glm::vec3 min;
     glm::vec3 max;
@@ -13,29 +13,29 @@ struct AABB {
     AABB() : min(0.0f), max(0.0f) {}
     AABB(const glm::vec3& min, const glm::vec3& max) : min(min), max(max) {}
     
-    // 从中心点和半尺寸创建
+    // Create from center point and half size
     static AABB fromCenterHalfSize(const glm::vec3& center, const glm::vec3& halfSize) {
         return AABB(center - halfSize, center + halfSize);
     }
     
-    // 获取中心点
+    // Get center point
     glm::vec3 getCenter() const {
         return (min + max) * 0.5f;
     }
     
-    // 获取尺寸
+    // Get size
     glm::vec3 getSize() const {
         return max - min;
     }
     
-    // 检查点是否在包围盒内
+    // Check if point is inside bounding box
     bool contains(const glm::vec3& point) const {
         return point.x >= min.x && point.x <= max.x &&
                point.y >= min.y && point.y <= max.y &&
                point.z >= min.z && point.z <= max.z;
     }
     
-    // 检查与另一个AABB是否相交
+    // Check if intersects with another AABB
     bool intersects(const AABB& other) const {
         return min.x <= other.max.x && max.x >= other.min.x &&
                min.y <= other.max.y && max.y >= other.min.y &&
@@ -43,7 +43,7 @@ struct AABB {
     }
 };
 
-// 射线
+// Ray
 struct Ray {
     glm::vec3 origin;
     glm::vec3 direction;
@@ -52,34 +52,34 @@ struct Ray {
         : origin(origin), direction(glm::normalize(direction)) {}
 };
 
-// 碰撞结果
+// Collision result
 struct CollisionResult {
     bool collided = false;
-    glm::vec3 point;      // 碰撞点
-    glm::vec3 normal;     // 碰撞法线
-    float distance = 0.0f; // 碰撞距离
+    glm::vec3 point;      // Collision point
+    glm::vec3 normal;     // Collision normal
+    float distance = 0.0f; // Collision distance
     
     CollisionResult() = default;
     CollisionResult(bool collided) : collided(collided) {}
 };
 
-// 碰撞检测系统
+// Collision detection system
 class CollisionSystem {
 public:
-    // AABB vs AABB 碰撞检测
+    // AABB vs AABB collision detection
     static bool checkAABB(const AABB& a, const AABB& b);
     
-    // 移动AABB碰撞检测（扫掠测试）
+    // Moving AABB collision detection (sweep test)
     static CollisionResult sweepAABB(const AABB& movingBox, const glm::vec3& velocity, 
                                      const AABB& staticBox, float deltaTime);
     
-    // 射线与AABB碰撞检测
+    // Ray vs AABB collision detection
     static CollisionResult raycastAABB(const Ray& ray, const AABB& box, float maxDistance = 1000.0f);
     
-    // 获取AABB穿透深度和分离向量
+    // Get AABB penetration depth and separation vector
     static glm::vec3 getAABBPenetration(const AABB& a, const AABB& b);
     
-    // 解决AABB碰撞（推出重叠）
+    // Resolve AABB collision (push out overlap)
     static glm::vec3 resolveAABBCollision(const AABB& movingBox, const AABB& staticBox);
 };
 

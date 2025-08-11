@@ -7,24 +7,24 @@ uniform vec3 glowColor;
 uniform float intensity;
 
 void main() {
-    // 计算到中心的距离
+    // Calculate distance to center
     vec2 center = vec2(0.5, 0.5);
     float dist = distance(TexCoord, center);
     
-    // 创建柔和的光晕效果
+    // Create soft glow effect
     float glow = 1.0 - smoothstep(0.0, 0.5, dist);
-    glow = pow(glow, 2.0); // 使边缘更柔和
+    glow = pow(glow, 2.0); // Make edges softer
     
-    // 添加内部更亮的核心
+    // Add brighter inner core
     float core = 1.0 - smoothstep(0.0, 0.2, dist);
     core = pow(core, 3.0);
     
-    // 组合光晕和核心
+    // Combine glow and core
     float finalGlow = glow * 0.6 + core * 0.4;
     
-    // 应用颜色和强度
+    // Apply color and intensity
     vec3 color = glowColor * intensity * finalGlow;
     
-    // 输出带透明度的颜色
+    // Output color with transparency
     FragColor = vec4(color, finalGlow * 0.8);
 }
