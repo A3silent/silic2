@@ -40,7 +40,19 @@ struct PlayerConfig {
     float mouseSensitivity = 0.03f;
     float normalFov = 45.0f;
     float sprintFov = 60.0f;
+    float slideFov = 75.0f;             // Higher FOV during slide
     float fovTransitionSpeed = 5.0f;
+    
+    // Sliding settings
+    float slideSpeed = 15.0f;           // Initial slide speed (faster than sprint)
+    float slideFriction = 4.0f;         // Friction during slide (reduced for smoother flow)
+    float maxSlideTime = 2.0f;          // Maximum slide duration
+    
+    // Crouching settings
+    float crouchSpeed = 2.0f;           // Movement speed while crouching
+    float crouchHeight = 0.9f;          // Height when crouching (multiplier)
+    float crouchCameraOffset = -0.6f;   // Camera height offset when crouching
+    float slideCameraOffset = -0.8f;    // Camera height offset when sliding
     
     // God mode settings
     float godModeSpeed = 15.0f;         // Flight speed in god mode

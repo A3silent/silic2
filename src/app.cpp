@@ -57,7 +57,7 @@ App::App() : window(nullptr) {
         weapon->init();
         
         // Create enhanced ground particle system
-        groundParticles = createEnhancedGroundParticleSystem(2000, GroundParticleSystem::particleMode::FIRE);
+        groundParticles = createEnhancedGroundParticleSystem(2000, GroundParticleSystem::GParticleMode::FIRE);
     } catch (const std::exception& e) {
         std::cerr << "Failed to initialize rendering system: " << e.what() << std::endl;
         throw;
@@ -129,9 +129,6 @@ bool App::initOpenGL() {
     if (renderConfig.enableDepthTest) {
         glEnable(GL_DEPTH_TEST);
     }
-    // Temporarily disable face culling to see if that's the issue
-    // glEnable(GL_CULL_FACE);
-    // glCullFace(GL_BACK);
     
     std::cout << "OpenGL initialized successfully" << std::endl;
     return true;

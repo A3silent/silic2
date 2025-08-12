@@ -11,22 +11,20 @@ namespace silic2 {
 class Shader;
 
 struct Particle {
-    glm::vec3 position;
-    glm::vec3 velocity;
-    glm::vec3 color;
-    glm::vec3 baseColor;
-    float life;         // Current life (0.0 = dead, 1.0 = full life)
-    float maxLife;      // Maximum life duration
-    float size;         // Particle size
-    float gravity;      // Gravity effect multiplier
+    glm::vec3 pPosition;
+    glm::vec3 pVelocity;
+    glm::vec3 pColor;
+    float pLife;         // Current life (0.0 = dead, 1.0 = full life)
+    float pMaxLife;      // Maximum life duration
+    float pSize;         // Particle size
+    float pGravity;      // Gravity effect multiplier
 
-    float fadeRatio;
-    float brightnessRatio;
+    float pFadeRatio;
     
-    Particle() : position(0.0f), velocity(0.0f), color(1.0f), baseColor(1.0f),
-                 life(0.0f), maxLife(1.0f), size(1.0f), gravity(1.0f), fadeRatio(1.0f){}
+    Particle() : pPosition(0.0f), pVelocity(0.0f), pColor(1.0f),
+                 pLife(0.0f), pMaxLife(1.0f), pSize(1.0f), pGravity(1.0f), pFadeRatio(1.0f){}
     
-    bool isAlive() const { return life > 0.0f; }
+    bool isAlive() const { return pLife > 0.0f; }
 };
 
 class ParticleSystem {
@@ -42,15 +40,15 @@ public:
     
     // Emit particles
     void emit(const glm::vec3& position, const glm::vec3& velocity, 
-              const glm::vec3& color, float life, float size , float gravity, float fadeRatio = 1.0f);
+              const glm::vec3& color, float life, float size , float pgravity, float fadeRatio = 1.0f);
     
     // Batch emit particles (for efficiency)
     void emitBurst(const glm::vec3& position, int count, 
                    const glm::vec3& baseVelocity, const glm::vec3& velocityVariation,
-                   const glm::vec3& color, float life, float size , float gravity, float fadeRatio = 1.0f);
+                   const glm::vec3& color, float life, float size , float pgravity, float fadeRatio = 1.0f);
 
     // Settings
-    void setGravity(float gravity) { defaultGravity = gravity; }
+    void setGravity(float pgravity) { defaultGravity = pgravity; }
     void setWindForce(const glm::vec3& wind) { windForce = wind; }
     void setFadeOut(bool enabled) { fadeOutEnabled = enabled; }
     
@@ -97,7 +95,7 @@ private:
 
 class GroundParticleSystem {
 public:
-    enum class particleMode{
+    enum class GParticleMode{
         FIRE,
         DUST
     };
@@ -116,8 +114,8 @@ public:
     void setEmissionRate(float particlesPerSecond) { emissionRate = particlesPerSecond; }
     void setFireIntensity(float intensity) { fireIntensity = intensity; }
     void setEnabled(bool enabled) { particleSystemEnabled = enabled; }
-    void setParticleMode(particleMode mode){ currentMode = mode; }
-    particleMode getParticleMode() const { return currentMode; }
+    void setParticleMode(GParticleMode mode){ currentMode = mode; }
+    GParticleMode getParticleMode() const { return currentMode; }
     
     bool isEnabled() const { return particleSystemEnabled; }
 
@@ -130,7 +128,7 @@ private:
     float emissionTimer = 0.0f;
     float fireIntensity = 1.0f;
     bool particleSystemEnabled = true;
-    particleMode currentMode; //Current Particle Mode
+    GParticleMode currentMode; //Current Particle Mode
     
     struct ParticleConfig {
         glm::vec3 baseColor;
@@ -139,7 +137,7 @@ private:
         float velocityVariation;
         float particleLife;
         float particleSize;
-        float spawnHeight;
+        float particleSpawnHeight;
         float particleGravity;
         float particleFadeRatio;
     };
