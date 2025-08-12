@@ -17,8 +17,10 @@ enum class PlayerState {
     IDLE,
     WALKING,
     RUNNING,
+    CROUCHING,
     JUMPING,
-    FALLING
+    FALLING,
+    SLIDING
 };
 
 
@@ -38,7 +40,7 @@ public:
     glm::vec3 getPosition() const { return position; }
     glm::vec3 getEyePosition() const { 
         const auto& config = GameConfig::getInstance().player;
-        return position + glm::vec3(0.0f, config.eyeHeight, 0.0f); 
+        return position + glm::vec3(0.0f, config.eyeHeight + currentCameraHeight, 0.0f); 
     }
     
     // Get player velocity
@@ -79,6 +81,10 @@ private:
     bool wasJumpPressed = false;
     bool godModePressed = false;
     bool wasGodModePressed = false;
+    bool crouchPressed = false;
+    bool wasCrouchPressed = false;
+    bool shiftPressed = false;
+    bool wasShiftPressed = false;
     
     // FOV management
     float currentFov = 45.0f;
@@ -89,11 +95,27 @@ private:
     glm::vec3 headBobOffset = glm::vec3(0.0f);
     glm::vec3 cameraShakeOffset = glm::vec3(0.0f);
     
+    // Camera height adjustment for states
+    float currentCameraHeight = 0.0f;       // Current height offset from normal eye height
+    float targetCameraHeight = 0.0f;        // Target height offset
+    float cameraHeightTransitionSpeed = 8.0f; // Speed of height transitions
+    
     // Momentum/Inertia system
     glm::vec3 momentum = glm::vec3(0.0f);  // Persistent velocity that gradually decays
     float airControl = 0.4f;               // How much control player has in air
     float groundFriction = 25.0f;          // Very high friction = immediate stop
     float airResistance = 0.8f;            // How quickly momentum decays in air (lower = more gliding)
+    
+    // Sliding system
+    bool sliding = false;                   // Currently sliding
+    float slideTime = 0.0f;                // Time spent sliding
+    glm::vec3 slideDirection = glm::vec3(0.0f); // Direction of slide
+    
+    // Crouching system
+    bool crouching = false;                 // Currently crouching
+    
+    // Sprint toggle system
+    bool sprintToggled = false;             // Sprint state (toggled by Shift)
     
     // Physics update
     void updatePhysics(float deltaTime, const Map* map);
@@ -115,6 +137,9 @@ private:
     
     // Update camera effects
     void updateCameraEffects(float deltaTime);
+    
+    // Update camera height based on state
+    void updateCameraHeight(float deltaTime);
 };
 
 } // namespace silic2
