@@ -8,7 +8,7 @@ namespace silic2 {
 struct WindowConfig {
     int width = 1280;
     int height = 720;
-    std::string title = "Silic2 FPS Engine";
+    std::string title = "Silic2";
     bool fullscreen = false;
 };
 
