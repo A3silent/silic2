@@ -29,6 +29,9 @@ void Player::update(float deltaTime, const Map* map) {
     // Update camera effects (bobbing, shaking)
     updateCameraEffects(deltaTime);
     
+    // Update camera height for crouching/sliding
+    updateCameraHeight(deltaTime);
+    
     // Update state
     if (isGodMode()) {
         // In god mode, set state based on movement
@@ -40,15 +43,21 @@ void Player::update(float deltaTime, const Map* map) {
         }
     } else {
         if (onGround) {
-            float horizontalSpeed = glm::length(glm::vec2(velocity.x, velocity.z));
-            if (horizontalSpeed > 0.1f) {
-                if (sprinting) {
-                    state = PlayerState::RUNNING;
-                } else {
-                    state = PlayerState::WALKING;
-                }
+            if (sliding) {
+                state = PlayerState::SLIDING;
+            } else if (crouching) {
+                state = PlayerState::CROUCHING;
             } else {
-                state = PlayerState::IDLE;
+                float horizontalSpeed = glm::length(glm::vec2(velocity.x, velocity.z));
+                if (horizontalSpeed > 0.1f) {
+                    if (sprinting) {
+                        state = PlayerState::RUNNING;
+                    } else {
+                        state = PlayerState::WALKING;
+                    }
+                } else {
+                    state = PlayerState::IDLE;
+                }
             }
         } else {
             if (velocity.y > 0) {
@@ -69,7 +78,6 @@ void Player::processInput(GLFWwindow* window, Camera* camera, float deltaTime) {
     if (godModePressed && !wasGodModePressed) {
         auto& config = GameConfig::getInstance().player;
         config.enableGodMode = !config.enableGodMode;
-        std::cout << "God mode " << (config.enableGodMode ? "enabled" : "disabled") << std::endl;
     }
     
     // Get movement input
@@ -83,17 +91,23 @@ void Player::processInput(GLFWwindow* window, Camera* camera, float deltaTime) {
     } else {
         // Normal movement physics with momentum system
         if (onGround) {
-            // On ground: direct control with strong friction to cancel momentum when needed
-            velocity.x = movement.x;
-            velocity.z = movement.z;
-            
-            // When actively moving, override momentum for responsive control
-            if (glm::length(glm::vec2(movement.x, movement.z)) > 0.1f) {
-                // Store current movement as momentum for potential jumps
-                momentum.x = movement.x;
-                momentum.z = movement.z;
+            if (sliding) {
+                // During slide: no direct control, momentum controls movement
+                velocity.x = 0.0f;
+                velocity.z = 0.0f;
+            } else {
+                // On ground: direct control with strong friction to cancel momentum when needed
+                velocity.x = movement.x;
+                velocity.z = movement.z;
+                
+                // When actively moving, override momentum for responsive control
+                if (glm::length(glm::vec2(movement.x, movement.z)) > 0.1f) {
+                    // Store current movement as momentum for potential jumps
+                    momentum.x = movement.x;
+                    momentum.z = movement.z;
+                }
+                // When not moving, let friction naturally decay momentum (handled in updatePhysics)
             }
-            // When not moving, let friction naturally decay momentum (handled in updatePhysics)
         } else {
             // In air: preserve momentum from jump, add limited control
             glm::vec2 airInput(movement.x, movement.z);
@@ -106,15 +120,101 @@ void Player::processInput(GLFWwindow* window, Camera* camera, float deltaTime) {
             // Keep momentum separate - don't modify it directly from input in air
         }
         
+        // Ctrl input for crouching/sliding
+        wasCrouchPressed = crouchPressed;
+        crouchPressed = glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS;
+        
+        // Handle Ctrl press
+        if (crouchPressed && !wasCrouchPressed && onGround) {
+            if (sliding) {
+                // End sliding when Ctrl pressed during slide - convert momentum to sprint velocity
+                sliding = false;
+                slideTime = 0.0f;
+                
+                // Calculate current momentum speed
+                float momentumSpeed = glm::length(glm::vec2(momentum.x, momentum.z));
+                const auto& config = GameConfig::getInstance().player;
+                
+                // If momentum is strong enough, enable sprint and convert to velocity
+                if (momentumSpeed >= config.sprintSpeed && momentumSpeed > 0.1f) {
+                    sprintToggled = true;  // Enable sprint
+                    // Convert momentum back to normal velocity for sprinting
+                    glm::vec3 momentumDir = glm::normalize(glm::vec3(momentum.x, 0.0f, momentum.z));
+                    velocity.x = momentumDir.x * config.sprintSpeed;
+                    velocity.z = momentumDir.z * config.sprintSpeed;
+                    momentum.x = velocity.x;  // Set momentum to sprint speed
+                    momentum.z = velocity.z;
+                } else {
+                    // Not fast enough for sprint, just end slide normally
+                    velocity.x = momentum.x;
+                    velocity.z = momentum.z;
+                }
+            } else {
+                float currentSpeed = glm::length(glm::vec2(velocity.x, velocity.z));
+                
+                if (currentSpeed > 5.0f && !crouching) { // Need good speed for sliding
+                    // Start sliding
+                    const auto& config = GameConfig::getInstance().player;
+                    sliding = true;
+                    slideTime = 0.0f;
+                    crouching = false;
+                    
+                    // Use current movement direction, not just velocity
+                    glm::vec3 movementDir = glm::vec3(movement.x, 0.0f, movement.z);
+                    if (glm::length(movementDir) > 0.1f) {
+                        slideDirection = glm::normalize(movementDir);
+                    } else {
+                        slideDirection = glm::normalize(glm::vec3(velocity.x, 0.0f, velocity.z));
+                    }
+                    
+                    // Set strong initial slide momentum
+                    momentum.x = slideDirection.x * config.slideSpeed;
+                    momentum.z = slideDirection.z * config.slideSpeed;
+                } else if (!sliding) {
+                    // Start crouching
+                    crouching = true;
+                }
+            }
+        }
+        
+        // Stop crouching when Ctrl is released (but not sliding)
+        if (!crouchPressed && wasCrouchPressed && crouching && !sliding) {
+            crouching = false;
+        }
+        
+        // Sprint toggle with Shift
+        wasShiftPressed = shiftPressed;
+        shiftPressed = glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS;
+        
+        // Toggle sprint when Shift is first pressed (only if not crouching or sliding)
+        if (shiftPressed && !wasShiftPressed && !crouching && !sliding) {
+            sprintToggled = !sprintToggled;
+        }
+        
+        // Update sprinting state - only sprint if toggled and moving forward
+        bool wPressed = glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS;
+        sprinting = sprintToggled && wPressed && !crouching && !sliding;
+        
         // Jump input
         wasJumpPressed = jumpPressed;
         jumpPressed = glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS;
         
-        // Jump only when key is first pressed and on ground
+        // Jump interrupts slide or normal jump
         if (jumpPressed && !wasJumpPressed && onGround) {
             const auto& config = GameConfig::getInstance().player;
             velocity.y = config.jumpVelocity;
             onGround = false;
+            
+            // If sliding, interrupt slide
+            if (sliding) {
+                sliding = false;
+                slideTime = 0.0f;
+            }
+            
+            // Stop crouching when jumping
+            if (crouching) {
+                crouching = false;
+            }
             
             // Preserve horizontal momentum when jumping
             // Don't reset momentum - let it carry through the jump
@@ -141,8 +241,39 @@ void Player::updatePhysics(float deltaTime, const Map* map) {
         velocity.y = std::max(velocity.y, config.maxFallSpeed);
     }
     
+    // Update sliding
+    if (sliding) {
+        const auto& config = GameConfig::getInstance().player;
+        slideTime += deltaTime;
+        
+        // Check if slide should end
+        if (slideTime >= config.maxSlideTime || !onGround) {
+            sliding = false;
+            sprintToggled = false; // Reset sprint toggle to return to walking
+            slideTime = 0.0f;
+        } else {
+            // Apply slide friction - gradually reduce momentum
+            glm::vec2 horizontalMomentum(momentum.x, momentum.z);
+            float currentSpeed = glm::length(horizontalMomentum);
+            
+            if (currentSpeed > 0.3f) {  // Only apply friction if still moving at reasonable speed (reduced threshold)
+                glm::vec2 frictionForce = -glm::normalize(horizontalMomentum) * config.slideFriction * deltaTime;
+                momentum.x += frictionForce.x;
+                momentum.z += frictionForce.y;
+            } else if (currentSpeed <= 0.3f) {
+                // Slide stopped naturally due to low speed
+                momentum.x = 0.0f;
+                momentum.z = 0.0f;
+                sliding = false;
+                sprintToggled = false; // Reset sprint toggle to return to walking
+                sprinting = false; // Stop running if slide ends
+                slideTime = 0.0f;
+            }
+        }
+    }
+    
     // Apply momentum decay based on whether on ground or in air
-    if (onGround) {
+    if (onGround && !sliding) {
         // On ground: strong friction but only when not actively moving
         glm::vec2 inputVel(velocity.x, velocity.z);
         float inputSpeed = glm::length(inputVel);
@@ -398,15 +529,13 @@ glm::vec3 Player::getMovementInput(GLFWwindow* window, Camera* camera, float del
         right = glm::normalize(right);
     }
     
-    // Check for sprint input (Shift + W)
-    bool shiftPressed = glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS;
-    bool wPressed = glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS;
+    // Sprinting is now handled in processInput function
     
-    sprinting = shiftPressed && wPressed;
-    
-    // Update target FOV based on sprinting
+    // Update target FOV based on state
     const auto& config = GameConfig::getInstance().player;
-    if (sprinting) {
+    if (sliding) {
+        targetFov = config.slideFov;  // Highest FOV for sliding
+    } else if (sprinting) {
         targetFov = config.sprintFov;
     } else {
         targetFov = config.normalFov;
@@ -437,8 +566,12 @@ glm::vec3 Player::getMovementInput(GLFWwindow* window, Camera* camera, float del
         
         if (isGodMode()) {
             currentSpeed = config.godModeSpeed;
+        } else if (crouching) {
+            currentSpeed = config.crouchSpeed;
+        } else if (sprinting) {
+            currentSpeed = config.sprintSpeed;
         } else {
-            currentSpeed = sprinting ? config.sprintSpeed : config.moveSpeed;
+            currentSpeed = config.moveSpeed;
         }
         
         movement = glm::normalize(movement) * currentSpeed;
@@ -483,12 +616,27 @@ void Player::updateCameraEffects(float deltaTime) {
     
     float horizontalSpeed = glm::length(glm::vec2(velocity.x, velocity.z));
     
+    // For sliding, use momentum speed instead of direct velocity
+    if (sliding) {
+        horizontalSpeed = glm::length(glm::vec2(momentum.x, momentum.z));
+    }
+    
     // Head bobbing when moving
-    if (horizontalSpeed > 0.1f) {
-        // Different bob speeds and intensities for walking vs running
+    if (horizontalSpeed > 0.1f || sliding) {
+        // Different bob speeds and intensities for walking vs running vs sliding
         float bobSpeed, bobIntensity, sideIntensity;
         
-        if (sprinting) {
+        if (sliding) {
+            // Sliding effects - more intense and chaotic
+            bobSpeed = 20.0f;      // Very fast motion for sliding
+            bobIntensity = 0.15f;  // Strong vertical shake
+            sideIntensity = 0.08f; // Strong side shake
+        } else if (crouching) {
+            // Crouching effects - minimal and subtle
+            bobSpeed = 4.0f;       // Very slow bobbing when crouching
+            bobIntensity = 0.02f;  // Minimal vertical bob
+            sideIntensity = 0.01f; // Very subtle side sway
+        } else if (sprinting) {
             bobSpeed = 14.0f;      // Fast bobbing when sprinting
             bobIntensity = 0.10f;   // Moderate vertical bob
             sideIntensity = 0.05f;  // Moderate side-to-side sway
@@ -499,7 +647,8 @@ void Player::updateCameraEffects(float deltaTime) {
         }
         
         // Update bob time based on movement
-        bobTime += deltaTime * bobSpeed * (horizontalSpeed / (sprinting ? 10.0f : 5.0f));
+        float speedDivisor = sliding ? 15.0f : (crouching ? 2.0f : (sprinting ? 10.0f : 5.0f));
+        bobTime += deltaTime * bobSpeed * (horizontalSpeed / speedDivisor);
         
         // Vertical bobbing (sine wave)
         headBobOffset.y = sin(bobTime) * bobIntensity;
@@ -510,8 +659,23 @@ void Player::updateCameraEffects(float deltaTime) {
         // Subtle forward/backward movement
         headBobOffset.z = sin(bobTime * 2.0f) * bobIntensity * 0.3f;
         
-        // Additional shake for sprinting
-        if (sprinting) {
+        // Additional shake effects
+        if (sliding) {
+            // Intense sliding shake - chaotic and powerful
+            float shakeIntensity = 0.03f;  // Strong shake for sliding
+            cameraShakeOffset.x += (rand() / (float)RAND_MAX - 0.5f) * shakeIntensity;
+            cameraShakeOffset.y += (rand() / (float)RAND_MAX - 0.5f) * shakeIntensity;
+            cameraShakeOffset.z += (rand() / (float)RAND_MAX - 0.5f) * shakeIntensity * 0.8f;
+            
+            // Strong rhythmic shake for sliding impact
+            float rhythmicShake = sin(bobTime * 4.0f) * 0.025f;
+            cameraShakeOffset.y += rhythmicShake;
+            cameraShakeOffset.x += sin(bobTime * 3.5f) * 0.02f;
+            
+            // Add sliding-specific low-frequency rumble
+            float rumble = sin(bobTime * 0.8f) * 0.01f;
+            cameraShakeOffset.z += rumble;
+        } else if (sprinting) {
             // Moderate random shake
             float shakeIntensity = 0.015f;  // Reduced shake intensity
             cameraShakeOffset.x += (rand() / (float)RAND_MAX - 0.5f) * shakeIntensity;
@@ -526,6 +690,27 @@ void Player::updateCameraEffects(float deltaTime) {
     } else {
         // Gradually decay bob time when not moving
         bobTime *= 0.95f;
+    }
+}
+
+void Player::updateCameraHeight(float deltaTime) {
+    const auto& config = GameConfig::getInstance().player;
+    
+    // Set target camera height based on current state
+    if (sliding) {
+        targetCameraHeight = config.slideCameraOffset;
+    } else if (crouching) {
+        targetCameraHeight = config.crouchCameraOffset;
+    } else {
+        targetCameraHeight = 0.0f; // Normal height
+    }
+    
+    // Smoothly interpolate to target height
+    float heightDifference = targetCameraHeight - currentCameraHeight;
+    if (std::abs(heightDifference) > 0.01f) {
+        currentCameraHeight += heightDifference * cameraHeightTransitionSpeed * deltaTime;
+    } else {
+        currentCameraHeight = targetCameraHeight;
     }
 }
 

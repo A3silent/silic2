@@ -129,9 +129,6 @@ bool App::initOpenGL() {
     if (renderConfig.enableDepthTest) {
         glEnable(GL_DEPTH_TEST);
     }
-    // Temporarily disable face culling to see if that's the issue
-    // glEnable(GL_CULL_FACE);
-    // glCullFace(GL_BACK);
     
     std::cout << "OpenGL initialized successfully" << std::endl;
     return true;
