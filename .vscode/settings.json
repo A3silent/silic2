@@ -1,5 +1,6 @@
 {
     "files.associations": {
         "glad.h": "c"
-    }
+    },
+    "cmake.ignoreCMakeListsMissing": true
 }

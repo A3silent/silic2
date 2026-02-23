@@ -19,31 +19,29 @@ LIBS = -lglfw3 -lopengl32 -lgdi32 -luser32 -lkernel32
 
 # Directories
 BIN_DIR = bin
-SRC_DIR = src
 
-# Source files for integrated system
-APP_SRCS = $(SRC_DIR)/main.cpp \
-           $(SRC_DIR)/app.cpp \
-           $(SRC_DIR)/camera.cpp \
-           $(SRC_DIR)/player.cpp \
-           $(SRC_DIR)/collision.cpp \
-           $(SRC_DIR)/texture.cpp \
-           $(SRC_DIR)/game_config.cpp \
-           $(SRC_DIR)/map.cpp \
-           $(SRC_DIR)/map_renderer.cpp \
-           $(SRC_DIR)/pixel_renderer.cpp \
-           $(SRC_DIR)/simple_json.cpp \
-           $(SRC_DIR)/shader.cpp \
-           $(SRC_DIR)/weapon.cpp \
-           $(SRC_DIR)/particle_system.cpp \
-           $(SRC_DIR)/groundparticle.cpp \
-           $(SRC_DIR)/glad.c
+# Tell Make where to find source files by category
+vpath %.cpp src/engine src/player src/enemy src/effects src/hud
+vpath %.c   src/engine
 
+# Source files grouped by category
+ENGINE_SRCS  = main.cpp app.cpp camera.cpp collision.cpp shader.cpp texture.cpp \
+               map.cpp map_renderer.cpp pixel_renderer.cpp simple_json.cpp \
+               game_config.cpp
+ENGINE_C     = glad.c
 
-# Object files
-APP_OBJS = $(APP_SRCS:$(SRC_DIR)/%.cpp=$(BIN_DIR)/%.o)
-APP_OBJS := $(APP_OBJS:$(SRC_DIR)/%.c=$(BIN_DIR)/%.o)
+PLAYER_SRCS  = player.cpp weapon.cpp
 
+ENEMY_SRCS   = enemy.cpp enemy_manager.cpp
+
+EFFECTS_SRCS = particle_system.cpp groundparticle.cpp
+
+HUD_SRCS     = crosshair.cpp minimap.cpp
+
+# All object files (flattened into bin/)
+ALL_CPP  = $(ENGINE_SRCS) $(PLAYER_SRCS) $(ENEMY_SRCS) $(EFFECTS_SRCS) $(HUD_SRCS)
+APP_OBJS = $(patsubst %.cpp,$(BIN_DIR)/%.o,$(ALL_CPP)) \
+           $(patsubst %.c,$(BIN_DIR)/%.o,$(ENGINE_C))
 
 # Output binary
 APP_TARGET = silic2.exe
@@ -51,21 +49,20 @@ APP_TARGET = silic2.exe
 # Default target
 all: $(APP_TARGET)
 
-# Build integrated app
+# Link
 $(APP_TARGET): $(APP_OBJS) | $(BIN_DIR)
 	$(CXX) $(APP_OBJS) -o $@ $(LDFLAGS) $(LIBS)
-
 
 # Create bin directory
 $(BIN_DIR):
 	if not exist $(BIN_DIR) mkdir $(BIN_DIR)
 
-# Compile C++ sources
-$(BIN_DIR)/%.o: $(SRC_DIR)/%.cpp | $(BIN_DIR)
+# Compile C++ sources (vpath resolves the actual location)
+$(BIN_DIR)/%.o: %.cpp | $(BIN_DIR)
 	$(CXX) $(CXXFLAGS) $(INCLUDES) -c $< -o $@
 
 # Compile C sources
-$(BIN_DIR)/%.o: $(SRC_DIR)/%.c | $(BIN_DIR)
+$(BIN_DIR)/%.o: %.c | $(BIN_DIR)
 	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
 
 # Clean
@@ -76,8 +73,6 @@ clean:
 run: $(APP_TARGET)
 	./$(APP_TARGET)
 
-
-# Run with specific map
 test-room: $(APP_TARGET)
 	./$(APP_TARGET) res/maps/test_room.json
 

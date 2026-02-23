@@ -22,22 +22,6 @@ struct Light {
 uniform Light lights[128];
 uniform int numLights;
 
-// Quantize color to create pixel art effect (Eclipsium-style)
-vec3 quantizeColor(vec3 color, float levels) {
-    // More aggressive quantization for retro look
-    return floor(color * levels + 0.5) / levels;
-}
-
-// Convert to limited palette (simulate 16-color EGA/VGA palette)
-vec3 toPalette(vec3 color) {
-    // Reduce to 2 bits per channel (4 levels)
-    vec3 reduced = quantizeColor(color, 4.0);
-    
-    // Boost contrast
-    reduced = pow(reduced, vec3(0.8));
-    
-    return reduced;
-}
 
 void main() {
     vec3 baseColor = objectColor;
@@ -52,43 +36,36 @@ void main() {
     
     if (lightingEnabled && numLights > 0) {
         vec3 norm = normalize(Normal);
-        
+
         for (int i = 0; i < numLights && i < 128; i++) {
-            vec3 lightDir = lights[i].position - FragPos;
-            float distance = length(lightDir);
-            
-            // Attenuation
-            float attenuation = 1.0;
+            vec3 lightVec = lights[i].position - FragPos;
+            float distance = length(lightVec);
+
+            // Quadratic attenuation: bright center, smooth fade to edge
+            float attenuation = 0.0;
             if (lights[i].range > 0.0) {
-                attenuation = max(0.0, 1.0 - (distance / lights[i].range));
+                float t = clamp(distance / lights[i].range, 0.0, 1.0);
+                attenuation = (1.0 - t) * (1.0 - t);
             }
-            
-            if (attenuation > 0.0) {
-                lightDir = normalize(lightDir);
-                
-                // Diffuse lighting
-                float diff = max(dot(norm, lightDir), 0.0);
+
+            if (attenuation > 0.001) {
+                vec3 lightDir = normalize(lightVec);
+
+                // Half-Lambert so back-faces still catch some light
+                float diff = dot(norm, lightDir) * 0.5 + 0.5;
                 vec3 diffuse = diff * lights[i].color * lights[i].intensity * attenuation;
-                
+
                 result += diffuse * baseColor;
             }
         }
     }
-    
-    // Apply retro palette conversion
-    result = toPalette(result);
-    
-    // Hard lighting steps (no smooth gradients)
+
+    // Smooth brightness response: shadow floor ~0.35, continuous curve, no banding.
+    // Highlight boost adds up to +0.3 for bright pixels only (activates above brightness 0.4).
+    // Quantization is handled by pixel.frag (Bayer dithered, 16 levels).
     float brightness = dot(result, vec3(0.299, 0.587, 0.114));
-    if (brightness > 0.8) {
-        result *= 1.2;  // Bright
-    } else if (brightness > 0.5) {
-        result *= 1.0;  // Normal
-    } else if (brightness > 0.25) {
-        result *= 0.7;  // Dark
-    } else {
-        result *= 0.4;  // Very dark
-    }
+    float mult = 0.35 + 0.65 * pow(brightness, 0.55) + 0.3 * smoothstep(0.4, 1.0, brightness);
+    result *= mult;
     
     // Final clamp
     result = clamp(result, 0.0, 1.0);
