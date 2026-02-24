@@ -233,6 +233,18 @@ void Player::setPosition(const glm::vec3& pos) {
     currentHp = GameConfig::getInstance().player.maxHp;
 }
 
+void Player::respawn(const glm::vec3& pos) {
+    position  = pos;
+    velocity  = glm::vec3(0.0f);
+    momentum  = glm::vec3(0.0f);
+    currentHp = GameConfig::getInstance().player.maxHp;
+    state     = PlayerState::IDLE;
+    sliding   = false;
+    crouching = false;
+    sprinting = false;
+    sprintToggled = false;
+}
+
 AABB Player::getAABB() const {
     const auto& config = GameConfig::getInstance().player;
     glm::vec3 halfSize(config.radius, config.height * 0.5f, config.radius);

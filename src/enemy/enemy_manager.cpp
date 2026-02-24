@@ -89,23 +89,32 @@ void EnemyManager::update(float deltaTime, const glm::vec3& playerPos, const Map
 }
 
 void EnemyManager::render(const glm::mat4& view, const glm::mat4& projection,
-                           const glm::vec3& ambientLight) {
+                           const glm::vec3& ambientLight,
+                           const std::vector<MapRenderer::LightData>& lights) {
     if (!enemyShader || enemies.empty()) return;
 
     enemyShader->use();
     enemyShader->setMat4("view", view);
     enemyShader->setMat4("projection", projection);
     enemyShader->setVec3("ambientLight", ambientLight);
-    // Bright red so enemies are clearly visible
     enemyShader->setVec3("enemyColor", glm::vec3(1.0f, 0.25f, 0.05f));
+
+    // Upload the same light array the map uses
+    int numLights = std::min(static_cast<int>(lights.size()), 128);
+    enemyShader->setInt("numLights", numLights);
+    for (int i = 0; i < numLights; ++i) {
+        std::string base = "lights[" + std::to_string(i) + "]";
+        enemyShader->setVec3(base + ".position",  lights[i].position);
+        enemyShader->setVec3(base + ".color",     lights[i].color);
+        enemyShader->setFloat(base + ".intensity", lights[i].intensity);
+        enemyShader->setFloat(base + ".range",     lights[i].range);
+    }
 
     glBindVertexArray(boxVAO);
 
     for (const auto& enemy : enemies) {
-        glm::vec3 pos = enemy.getPosition();
-
         glm::mat4 model = glm::mat4(1.0f);
-        model = glm::translate(model, pos);
+        model = glm::translate(model, enemy.getPosition());
         model = glm::scale(model, glm::vec3(Enemy::BOX_WIDTH, Enemy::BOX_HEIGHT, Enemy::BOX_WIDTH));
 
         enemyShader->setMat4("model", model);

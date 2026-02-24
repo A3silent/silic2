@@ -36,7 +36,7 @@ ENEMY_SRCS   = enemy.cpp enemy_manager.cpp
 
 EFFECTS_SRCS = particle_system.cpp groundparticle.cpp
 
-HUD_SRCS     = crosshair.cpp minimap.cpp
+HUD_SRCS     = crosshair.cpp minimap.cpp hud_renderer.cpp
 
 # All object files (flattened into bin/)
 ALL_CPP  = $(ENGINE_SRCS) $(PLAYER_SRCS) $(ENEMY_SRCS) $(EFFECTS_SRCS) $(HUD_SRCS)

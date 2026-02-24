@@ -84,20 +84,20 @@ void MapRenderer::render(const glm::mat4& view, const glm::mat4& projection) {
     mapShader->setVec3("ambientLight", worldSettings.ambientLight);
     mapShader->setBool("lightingEnabled", lightingEnabled);
     
-    // Combine static and dynamic lights
-    std::vector<LightData> allLights = lightData;
-    allLights.insert(allLights.end(), dynamicLights.begin(), dynamicLights.end());
-    
+    // Combine static and dynamic lights — cache for other renderers (e.g. enemies)
+    combinedLights = lightData;
+    combinedLights.insert(combinedLights.end(), dynamicLights.begin(), dynamicLights.end());
+
     // Set lighting data
-    if (lightingEnabled && !allLights.empty()) {
-        mapShader->setInt("numLights", std::min(static_cast<int>(allLights.size()), 128)); // Max 128 lights
-        
-        for (size_t i = 0; i < std::min(allLights.size(), size_t(128)); ++i) {
+    if (lightingEnabled && !combinedLights.empty()) {
+        mapShader->setInt("numLights", std::min(static_cast<int>(combinedLights.size()), 128));
+
+        for (size_t i = 0; i < std::min(combinedLights.size(), size_t(128)); ++i) {
             std::string base = "lights[" + std::to_string(i) + "]";
-            mapShader->setVec3(base + ".position", allLights[i].position);
-            mapShader->setVec3(base + ".color", allLights[i].color);
-            mapShader->setFloat(base + ".intensity", allLights[i].intensity);
-            mapShader->setFloat(base + ".range", allLights[i].range);
+            mapShader->setVec3(base + ".position", combinedLights[i].position);
+            mapShader->setVec3(base + ".color", combinedLights[i].color);
+            mapShader->setFloat(base + ".intensity", combinedLights[i].intensity);
+            mapShader->setFloat(base + ".range", combinedLights[i].range);
         }
     } else {
         mapShader->setInt("numLights", 0);

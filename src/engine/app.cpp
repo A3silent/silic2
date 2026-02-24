@@ -13,6 +13,7 @@
 #include "enemy/enemy_manager.h"
 #include "hud/crosshair.h"
 #include "hud/minimap.h"
+#include "hud/hud_renderer.h"
 #include "engine/game_config.h"
 #include <algorithm>
 #include <iostream>
@@ -74,6 +75,10 @@ App::App() : window(nullptr) {
         // Create minimap
         minimap = std::make_unique<Minimap>();
         minimap->init();
+
+        // Create HUD renderer (player bar + enemy bars)
+        hudRenderer = std::make_unique<HudRenderer>();
+        hudRenderer->init();
     } catch (const std::exception& e) {
         std::cerr << "Failed to initialize rendering system: " << e.what() << std::endl;
         throw;
@@ -169,76 +174,107 @@ void App::run() {
 }
 
 void App::processInput() {
-    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
-        glfwSetWindowShouldClose(window, true);
+    // ESC key: toggle PAUSED <-> PLAYING (edge-triggered)
+    bool escNow = glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS;
+    if (escNow && !escWasPressed) {
+        if (gameState == GameState::PLAYING)
+            setState(GameState::PAUSED);
+        else if (gameState == GameState::PAUSED)
+            setState(GameState::PLAYING);
     }
-    
+    escWasPressed = escNow;
+
+    // Skip all other input when not PLAYING
+    if (gameState != GameState::PLAYING) return;
+
     // Player movement and input
     if (player) {
         player->processInput(window, camera.get(), deltaTime);
     }
-    
+
     // Weapon input - hold left mouse button to spray
     if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS && weapon) {
         weapon->fire(*camera);
     }
 }
 
+void App::setState(GameState next) {
+    gameState  = next;
+    stateTimer = 0.0f;
+}
+
 void App::update(float deltaTime) {
+    stateTimer += deltaTime;
+    switch (gameState) {
+        case GameState::PLAYING:      updatePlaying(deltaTime);      break;
+        case GameState::ROOM_CLEARED: handleRoomCleared(deltaTime);  break;
+        case GameState::PLAYER_DEAD:  handlePlayerDead(deltaTime);   break;
+        case GameState::PAUSED:       /* everything frozen */        break;
+    }
+}
+
+void App::updatePlaying(float dt) {
     // Update player
     if (player) {
-        player->update(deltaTime, currentMap.get());
-        
+        player->update(dt, currentMap.get());
+
         // Update camera to follow player with bobbing/shake effects
         glm::vec3 eyePos = player->getEyePosition();
         glm::vec3 cameraOffset = player->getCameraOffset();
         camera->setPosition(eyePos + cameraOffset);
     }
-    
+
     // Update camera
     camera->update();
-    
+
     // Update weapon — passes enemy manager for bullet-enemy collision
     if (weapon) {
-        weapon->update(deltaTime, currentMap.get(), enemyManager.get());
+        weapon->update(dt, currentMap.get(), enemyManager.get());
     }
 
     // Update enemies
     if (enemyManager && player) {
-        enemyManager->update(deltaTime, player->getPosition(), currentMap.get());
+        enemyManager->update(dt, player->getPosition(), currentMap.get());
 
         // Apply contact damage to player
         float dps = enemyManager->getContactDps(player->getPosition());
         if (dps > 0.0f) {
-            player->takeDamage(dps * deltaTime);
+            player->takeDamage(dps * dt);
         }
 
-        // Room clear detection
-        if (!roomCleared && enemyManager->getTotalCount() > 0 && enemyManager->allEnemiesDead()) {
-            roomCleared = true;
-            std::cout << "Room cleared!\n";
-        }
-
-        // Player death — trigger once on transition; respawn after 1 second
-        if (player->isDead() && !playerDead) {
-            playerDead = true;
-            std::cout << "Player died!\n";
-        }
-        if (playerDead) {
-            // Simple respawn: reset player to start position
-            Entity* playerStart = currentMap ? currentMap->getPlayerStart() : nullptr;
-            glm::vec3 respawnPos = playerStart ? playerStart->position : glm::vec3(0.0f, 2.0f, 0.0f);
-            player->setPosition(respawnPos);
-            playerDead = false;
-            roomCleared = false;
-            if (enemyManager) enemyManager->spawnFromMap(*currentMap);
+        // State transitions
+        if (player->isDead()) {
+            setState(GameState::PLAYER_DEAD);
+        } else if (enemyManager->allEnemiesDead() && enemyManager->getTotalCount() > 0) {
+            setState(GameState::ROOM_CLEARED);
         }
     }
 
     // Update ground particle system
     if (groundParticles) {
-        groundParticles->update(deltaTime);
+        groundParticles->update(dt);
     }
+}
+
+void App::handleRoomCleared(float dt) {
+    (void)dt;
+    // Phase 5.3: show augment select screen
+    // Phase 5.1: show node map
+    if (stateTimer < 0.1f)
+        std::cout << "Room cleared!\n";
+    if (stateTimer >= 1.0f)
+        setState(GameState::PLAYING);
+}
+
+void App::handlePlayerDead(float dt) {
+    (void)dt;
+    // Phase 5 later: show death screen while stateTimer < 2.0f
+    Entity* start = currentMap ? currentMap->getPlayerStart() : nullptr;
+    glm::vec3 pos = start ? start->position : glm::vec3(0.0f, 2.0f, 0.0f);
+    player->respawn(pos);
+    camera->setPosition(pos + glm::vec3(0.0f, 1.6f, 0.0f));
+    if (enemyManager) enemyManager->spawnFromMap(*currentMap);
+    setState(GameState::PLAYING);
 }
 
 void App::render() {
@@ -288,10 +324,11 @@ void App::render() {
         weapon->render(view, projection);
     }
 
-    // Render enemies
-    if (enemyManager && currentMap) {
+    // Render enemies with the same light list the map just used
+    if (enemyManager && currentMap && mapRenderer) {
         const auto& ws = currentMap->getWorldSettings();
-        enemyManager->render(view, projection, ws.ambientLight);
+        enemyManager->render(view, projection, ws.ambientLight,
+                             mapRenderer->getCombinedLights());
     }
     
     // Render ground particle system if enabled
@@ -313,6 +350,14 @@ void App::render() {
             camera->getFront(),
             enemyManager->getEnemyPositions(),
             config.width, config.height);
+    }
+
+    if (hudRenderer && player && enemyManager) {
+        hudRenderer->render(
+            config.width, config.height,
+            player->getHp(), player->getMaxHp(),
+            enemyManager->getEnemies(),
+            view, projection);
     }
 }
 
@@ -386,7 +431,7 @@ bool App::loadMap(const std::string& mapFile) {
     
     // Spawn enemies from map entities
     if (enemyManager) {
-        roomCleared = false;
+        setState(GameState::PLAYING);
         enemyManager->spawnFromMap(*currentMap);
     }
 

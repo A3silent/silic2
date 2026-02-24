@@ -27,6 +27,14 @@ struct RenderableBrush {
 
 class MapRenderer {
 public:
+    // Shared light descriptor used by map, enemy, and any future lit pass
+    struct LightData {
+        glm::vec3 position;
+        glm::vec3 color;
+        float intensity;
+        float range;
+    };
+
     MapRenderer();
     ~MapRenderer();
 
@@ -36,11 +44,14 @@ public:
 
     // Render the current map
     void render(const glm::mat4& view, const glm::mat4& projection);
-    
+
     // Add dynamic lights (e.g., from bullets)
     void addDynamicLight(const glm::vec3& position, const glm::vec3& color, float intensity = 1.0f, float range = 10.0f);
     void clearDynamicLights();
-    
+
+    // Returns the fully combined (static + dynamic) light list after the last render() call
+    const std::vector<LightData>& getCombinedLights() const { return combinedLights; }
+
     // Settings
     void setWireframeMode(bool enabled) { wireframeMode = enabled; }
     void setLightingEnabled(bool enabled) { lightingEnabled = enabled; }
@@ -48,23 +59,18 @@ public:
 private:
     std::vector<std::unique_ptr<RenderableBrush>> renderableBrushes;
     std::unique_ptr<Shader> mapShader;
-    
+
     // Current map data
     const Map* currentMap = nullptr;
-    
+
     // Render settings
     bool wireframeMode = false;
     bool lightingEnabled = true;
-    
-    // Lighting uniforms
-    struct LightData {
-        glm::vec3 position;
-        glm::vec3 color;
-        float intensity;
-        float range;
-    };
-    std::vector<LightData> lightData;
-    std::vector<LightData> dynamicLights;
+
+    // Lighting data
+    std::vector<LightData> lightData;       // static lights from map
+    std::vector<LightData> dynamicLights;   // per-frame dynamic lights (bullets, etc.)
+    std::vector<LightData> combinedLights;  // cached union built during render()
     
     void initShaders();
     void setupBrushGeometry(const Brush& brush, RenderableBrush& renderable);

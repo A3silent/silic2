@@ -6,6 +6,7 @@
 #include <glm/glm.hpp>
 #include "enemy/enemy.h"
 #include "engine/map.h"
+#include "engine/map_renderer.h"
 
 namespace silic2 {
 
@@ -24,9 +25,10 @@ public:
 
     void update(float deltaTime, const glm::vec3& playerPos, const Map* map);
 
-    // Render all live enemies
+    // Render all live enemies with the same point-light pipeline as the map
     void render(const glm::mat4& view, const glm::mat4& projection,
-                const glm::vec3& ambientLight);
+                const glm::vec3& ambientLight,
+                const std::vector<MapRenderer::LightData>& lights);
 
     // Returns true if the bullet segment (prevPos → pos) hit any live enemy; deals damage to it
     bool checkBulletHit(const glm::vec3& prevPos, const glm::vec3& pos, int damage);
@@ -40,6 +42,8 @@ public:
 
     // Returns XZ positions of all live enemies (used by minimap)
     std::vector<glm::vec3> getEnemyPositions() const;
+
+    const std::vector<Enemy>& getEnemies() const { return enemies; }
 
     void clear();
 

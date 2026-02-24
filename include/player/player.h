@@ -54,6 +54,9 @@ public:
     
     // Set position
     void setPosition(const glm::vec3& pos);
+
+    // Respawn: resets position, HP, and velocity
+    void respawn(const glm::vec3& pos);
     
     // Get player AABB
     AABB getAABB() const;
