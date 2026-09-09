@@ -20,18 +20,22 @@ A pixel art style first-person shooter game built with OpenGL, featuring Doom-st
 ## Build and Run
 
 ### Requirements
-- **Operating System**: Windows 10/11
-- **Compiler**: MinGW-w64 (GCC)
+- **Operating System**: Windows 10/11, macOS, or Linux
+- **Compiler**: MinGW-w64 (Windows), Apple Clang (macOS), or GCC (Linux)
 - **Graphics API**: OpenGL 3.3+
 - **Build System**: Make
+- **GLFW**: Bundled static library on Windows; install with `brew install glfw` on macOS
 
 ### Quick Start
 ```bash
 # Build the game
 make -f Makefile.map
 
-# Run
+# Run (Windows)
 ./silic2.exe
+
+# Run (macOS/Linux)
+./silic2
 
 # Load specific map
 ./silic2.exe res/maps/textured_room.json 
@@ -43,6 +47,9 @@ make -f Makefile.map test-room      # Run with test room map
 make -f Makefile.map corridor       # Run with corridor map
 make -f Makefile.map textured-room  # Run with textured room map
 ```
+
+The Makefile detects the host platform and selects the appropriate compiler,
+OpenGL libraries, and executable name automatically.
 
 ## Game Controls
 

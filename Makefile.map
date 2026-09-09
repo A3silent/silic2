@@ -1,24 +1,54 @@
 # Silic2 FPS Engine Makefile
 
-# Compiler settings
-CXX = g++
-CC = gcc
+# Platform detection
+UNAME_S := $(shell uname -s 2>/dev/null)
+ifeq ($(OS),Windows_NT)
+    PLATFORM := windows
+else ifeq ($(UNAME_S),Darwin)
+    PLATFORM := macos
+else
+    PLATFORM := linux
+endif
+
+# Common compiler settings
 CXXFLAGS = -std=c++17 -Wall -Wextra -O2 -g
 CFLAGS = -Wall -O2 -g
-LDFLAGS = -L./lib
-
-# Include paths
 INCLUDES = -I./include \
            -I./include/glad \
            -I./include/GLFW \
            -I./include/glm \
            -I./include/stb
 
-# Libraries (Windows)
-LIBS = -lglfw3 -lopengl32 -lgdi32 -luser32 -lkernel32
+ifeq ($(PLATFORM),windows)
+    CXX = g++
+    CC = gcc
+    LDFLAGS = -L./lib
+    LIBS = -lglfw3 -lopengl32 -lgdi32 -luser32 -lkernel32
+    APP_TARGET = silic2.exe
+    MKDIR_CMD = if not exist $(BIN_DIR) mkdir $(BIN_DIR)
+    CLEAN_CMD = del /Q $(BIN_DIR)\*.o $(APP_TARGET) 2>nul || echo Clean completed
+else ifeq ($(PLATFORM),macos)
+    CXX = clang++
+    CC = clang
+    INCLUDES += -I/opt/homebrew/include -I/usr/local/include
+    LDFLAGS = -L/opt/homebrew/lib -L/usr/local/lib
+    LIBS = -lglfw -framework OpenGL -framework Cocoa -framework IOKit -framework CoreVideo
+    APP_TARGET = silic2
+    MKDIR_CMD = mkdir -p $(BIN_DIR)
+    CLEAN_CMD = rm -f $(BIN_DIR)/*.o $(APP_TARGET)
+else
+    CXX = g++
+    CC = gcc
+    LDFLAGS = -L/usr/local/lib -L./lib
+    LIBS = -lglfw -lGL -ldl -lpthread
+    APP_TARGET = silic2
+    MKDIR_CMD = mkdir -p $(BIN_DIR)
+    CLEAN_CMD = rm -f $(BIN_DIR)/*.o $(APP_TARGET)
+endif
 
-# Directories
-BIN_DIR = bin
+# Keep platform-specific objects separate. This prevents checked-in Windows
+# objects from being reused by macOS or Linux builds.
+BIN_DIR = bin/$(PLATFORM)
 
 # Tell Make where to find source files by category
 vpath %.cpp src/engine src/player src/enemy src/effects src/hud
@@ -43,9 +73,6 @@ ALL_CPP  = $(ENGINE_SRCS) $(PLAYER_SRCS) $(ENEMY_SRCS) $(EFFECTS_SRCS) $(HUD_SRC
 APP_OBJS = $(patsubst %.cpp,$(BIN_DIR)/%.o,$(ALL_CPP)) \
            $(patsubst %.c,$(BIN_DIR)/%.o,$(ENGINE_C))
 
-# Output binary
-APP_TARGET = silic2.exe
-
 # Default target
 all: $(APP_TARGET)
 
@@ -55,7 +82,7 @@ $(APP_TARGET): $(APP_OBJS) | $(BIN_DIR)
 
 # Create bin directory
 $(BIN_DIR):
-	if not exist $(BIN_DIR) mkdir $(BIN_DIR)
+	$(MKDIR_CMD)
 
 # Compile C++ sources (vpath resolves the actual location)
 $(BIN_DIR)/%.o: %.cpp | $(BIN_DIR)
@@ -67,7 +94,7 @@ $(BIN_DIR)/%.o: %.c | $(BIN_DIR)
 
 # Clean
 clean:
-	del /Q $(BIN_DIR)\*.o $(APP_TARGET) 2>nul || echo Clean completed
+	$(CLEAN_CMD)
 
 # Run targets
 run: $(APP_TARGET)

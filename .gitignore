@@ -10,6 +10,7 @@ nul
 # Build files
 *.o
 *.exe
+/silic2
 bin/
 build/
 

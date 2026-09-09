@@ -116,6 +116,9 @@ bool App::initWindow() {
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+#ifdef __APPLE__
+    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GLFW_TRUE);
+#endif
     
     std::cout << "Creating window..." << std::endl;
     
@@ -143,8 +146,10 @@ bool App::initOpenGL() {
     std::cout << "OpenGL Version: " << glGetString(GL_VERSION) << std::endl;
     std::cout << "GLSL Version: " << glGetString(GL_SHADING_LANGUAGE_VERSION) << std::endl;
     
-    const auto& config = GameConfig::getInstance().window;
-    glViewport(0, 0, config.width, config.height);
+    int framebufferWidth = 0;
+    int framebufferHeight = 0;
+    glfwGetFramebufferSize(window, &framebufferWidth, &framebufferHeight);
+    glViewport(0, 0, framebufferWidth, framebufferHeight);
     
     const auto& renderConfig = GameConfig::getInstance().render;
     if (renderConfig.enableDepthTest) {
@@ -338,23 +343,27 @@ void App::render() {
     }
     
     // End pixel rendering and display to screen
-    const auto& config = GameConfig::getInstance().window;
-    pixelRenderer->endPixelRender(config.width, config.height);
+    int framebufferWidth = 0;
+    int framebufferHeight = 0;
+    glfwGetFramebufferSize(window, &framebufferWidth, &framebufferHeight);
+    if (framebufferWidth <= 0 || framebufferHeight <= 0) return;
+
+    pixelRenderer->endPixelRender(framebufferWidth, framebufferHeight);
 
     // Draw HUD overlays at native resolution on top of everything
-    crosshair->render(config.width, config.height);
+    crosshair->render(framebufferWidth, framebufferHeight);
 
     if (minimap && enemyManager) {
         minimap->render(
             camera->getPosition(),
             camera->getFront(),
             enemyManager->getEnemyPositions(),
-            config.width, config.height);
+            framebufferWidth, framebufferHeight);
     }
 
     if (hudRenderer && player && enemyManager) {
         hudRenderer->render(
-            config.width, config.height,
+            framebufferWidth, framebufferHeight,
             player->getHp(), player->getMaxHp(),
             enemyManager->getEnemies(),
             view, projection);
