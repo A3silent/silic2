@@ -1,0 +1,32 @@
+{
+  "/Users/ritzsun/Desktop/game/opengl/silic2/res/maps/simple_corridor.json": {
+    "before": "1b53a9acf31099eed5e05267c505abf1da37e3719180f6f21e8b774a29c86efa",
+    "after": "1b53a9acf31099eed5e05267c505abf1da37e3719180f6f21e8b774a29c86efa",
+    "unchanged": true
+  },
+  "/Users/ritzsun/Desktop/game/opengl/silic2/res/maps/starry_crystal_arena.json": {
+    "before": "fb13ec17ac44bb872d6a1ead9c110872b5e5e0d4dfef90161d11038d28ba227b",
+    "after": "32625c080e32b13e354c9cf3dbb9f11a2807e468c76e5532c110060b3beb48a1",
+    "unchanged": false
+  },
+  "/Users/ritzsun/Desktop/game/opengl/silic2/res/maps/test_room.json": {
+    "before": "ec0ba630d335bc1fa05a195404e867b57d3eb265476128c8b53343eabd39fe7d",
+    "after": "ec0ba630d335bc1fa05a195404e867b57d3eb265476128c8b53343eabd39fe7d",
+    "unchanged": true
+  },
+  "/Users/ritzsun/Desktop/game/opengl/silic2/res/maps/kailiang_room.json": {
+    "before": "9fc31c9e5870636e02e0724e5076b34833e0440240b675110bbe9e25166e6789",
+    "after": "9fc31c9e5870636e02e0724e5076b34833e0440240b675110bbe9e25166e6789",
+    "unchanged": true
+  },
+  "/Users/ritzsun/Desktop/game/opengl/silic2/res/maps/complex_base.json": {
+    "before": "308a9f0f4bbd15c15548104fcb65919ef5be482ad248320c6f627601a713145f",
+    "after": "308a9f0f4bbd15c15548104fcb65919ef5be482ad248320c6f627601a713145f",
+    "unchanged": true
+  },
+  "/Users/ritzsun/Desktop/game/opengl/silic2/res/maps/textured_room.json": {
+    "before": "8a89ffb100606ed6d0dfd5d7421fe1b38bd7cf056133e4e0520f13f908988029",
+    "after": "8a89ffb100606ed6d0dfd5d7421fe1b38bd7cf056133e4e0520f13f908988029",
+    "unchanged": true
+  }
+}

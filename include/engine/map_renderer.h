@@ -2,6 +2,7 @@
 
 #include <glm/glm.hpp>
 #include <memory>
+#include <array>
 #include <glad/glad.h>
 #include "engine/map.h"
 #include "engine/texture.h"
@@ -9,12 +10,16 @@
 namespace silic2 {
 
 class Shader;
+class EnvironmentRenderer;
 
 struct RenderableBrush {
     GLuint VAO, VBO, EBO;
     size_t indexCount;
     glm::vec3 color;
     std::string material;
+    SurfaceType surfaceType = SurfaceType::UNKNOWN;
+    glm::vec3 minimum{0.f};
+    glm::vec3 maximum{0.f};
     std::shared_ptr<Texture> texture;
     
     RenderableBrush() : VAO(0), VBO(0), EBO(0), indexCount(0) {}
@@ -45,6 +50,15 @@ public:
     // Render the current map
     void render(const glm::mat4& view, const glm::mat4& projection);
 
+    // Arena-only, simulation-clock presentation. Safe no-ops on legacy maps.
+    void setEnvironmentTime(float combatSeconds);
+    void setRiftWarnings(const std::array<float, 4>& progress);
+    void setEnvironmentParticleCount(size_t count);
+    void resetEnvironment();
+    float getEnvironmentTime() const;
+    size_t getEnvironmentParticleCount() const;
+    bool hasEnvironment() const { return environment != nullptr; }
+
     // Add dynamic lights (e.g., from bullets)
     void addDynamicLight(const glm::vec3& position, const glm::vec3& color, float intensity = 1.0f, float range = 10.0f);
     void clearDynamicLights();
@@ -59,6 +73,8 @@ public:
 private:
     std::vector<std::unique_ptr<RenderableBrush>> renderableBrushes;
     std::unique_ptr<Shader> mapShader;
+    std::unique_ptr<Shader> arenaShader;
+    std::unique_ptr<EnvironmentRenderer> environment;
 
     // Current map data
     const Map* currentMap = nullptr;
@@ -75,7 +91,7 @@ private:
     void initShaders();
     void setupBrushGeometry(const Brush& brush, RenderableBrush& renderable);
     void updateLighting();
-    void renderBrush(const RenderableBrush& brush, const glm::mat4& model);
+    void renderBrush(const RenderableBrush& brush, const glm::mat4& model, Shader& shader);
 };
 
 } // namespace silic2

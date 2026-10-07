@@ -1,0 +1,173 @@
+{
+  "restarts": {
+    "configuration": {
+      "event": "configuration",
+      "logical_width": 1280,
+      "logical_height": 720,
+      "framebuffer_width": 2560,
+      "framebuffer_height": 1440,
+      "internal_width": 320,
+      "internal_height": 200,
+      "vsync": true,
+      "audio_available": true,
+      "synthetic_input": true
+    },
+    "restarts": 50,
+    "all_resets_clean": true,
+    "warning_cycles": 25,
+    "post_warmup_rss_min": 71204864,
+    "post_warmup_rss_max": 73220096,
+    "post_warmup_rss_last_minus_first": -1474560,
+    "post_warmup_rss_slope_bytes_per_cycle": -39295.47
+  },
+  "performance": {
+    "configuration": {
+      "event": "configuration",
+      "logical_width": 1280,
+      "logical_height": 720,
+      "framebuffer_width": 2560,
+      "framebuffer_height": 1440,
+      "internal_width": 320,
+      "internal_height": 200,
+      "vsync": false,
+      "audio_available": true,
+      "synthetic_input": true
+    },
+    "runs": [
+      {
+        "run": 1,
+        "combat_seconds": 90.002518,
+        "frames": 46149,
+        "p95_ms": 7.47454,
+        "p99_ms": 8.55408,
+        "max_ms": 53.6141,
+        "longest_over_50ms": 1
+      },
+      {
+        "run": 2,
+        "combat_seconds": 90.001419,
+        "frames": 44499,
+        "p95_ms": 7.45592,
+        "p99_ms": 8.54808,
+        "max_ms": 124.172,
+        "longest_over_50ms": 1
+      },
+      {
+        "run": 3,
+        "combat_seconds": 90.000595,
+        "frames": 42198,
+        "p95_ms": 7.53508,
+        "p99_ms": 9.84721,
+        "max_ms": 103.734,
+        "longest_over_50ms": 1
+      }
+    ]
+  },
+  "stress": {
+    "configuration": {
+      "event": "configuration",
+      "logical_width": 1280,
+      "logical_height": 720,
+      "framebuffer_width": 2560,
+      "framebuffer_height": 1440,
+      "internal_width": 320,
+      "internal_height": 200,
+      "vsync": false,
+      "audio_available": true,
+      "synthetic_input": true
+    },
+    "runs": [
+      {
+        "run": 1,
+        "combat_seconds": 29.959475,
+        "frames": 14134,
+        "p95_ms": 6.13679,
+        "p99_ms": 7.37446,
+        "max_ms": 55.856,
+        "longest_over_50ms": 1
+      }
+    ]
+  },
+  "release_sha256": "acba44b6603d388f434d7b862c8ee182525e8efe2aa1c295aabbf044dbb1fcba",
+  "evidence_directories": [
+    "artifacts/acceptance/restarts-v3",
+    "artifacts/acceptance/performance-v2",
+    "artifacts/acceptance/stress-final"
+  ],
+  "human_playtest": "pending; not measured by this tool",
+  "flow": {
+    "evidence_directory": "artifacts/acceptance/flow-final",
+    "records": [
+      {
+        "event": "configuration",
+        "logical_width": 1280,
+        "logical_height": 720,
+        "framebuffer_width": 2560,
+        "framebuffer_height": 1440,
+        "internal_width": 320,
+        "internal_height": 200,
+        "vsync": true,
+        "audio_available": true,
+        "synthetic_input": true
+      },
+      {
+        "event": "flow_check",
+        "check": "ready_excludes_time",
+        "passed": true
+      },
+      {
+        "event": "flow_check",
+        "check": "escape_pauses",
+        "passed": true
+      },
+      {
+        "event": "flow_check",
+        "check": "pause_freezes_simulation_and_audio",
+        "passed": true
+      },
+      {
+        "event": "flow_check",
+        "check": "escape_resumes",
+        "passed": true
+      },
+      {
+        "event": "flow_check",
+        "check": "focus_callback_pauses_and_releases_cursor",
+        "passed": true
+      },
+      {
+        "event": "flow_check",
+        "check": "resume_recaptures_cursor",
+        "passed": true
+      },
+      {
+        "event": "flow_check",
+        "check": "death_actual_damage_and_source",
+        "passed": true
+      },
+      {
+        "event": "flow_check",
+        "check": "held_fire_cannot_skip_result",
+        "passed": true
+      },
+      {
+        "event": "flow_check",
+        "check": "fresh_click_same_seed_restart",
+        "passed": true
+      },
+      {
+        "event": "flow_check",
+        "check": "all_flow_stages_completed",
+        "passed": true
+      }
+    ]
+  },
+  "verified_date": "2026-10-07",
+  "host": "Apple M2 MacBook Air / 16 GB / macOS / Retina",
+  "source_checksums": [
+    "d5eef2dccf5db26c571ed838610ab6be4958d1e294ab2c1c6be43e6744cb6a3e  src/engine/app.cpp",
+    "1b45f18c2d7b58497c514a1840389608aba06f52e239bf73f2e9e6e245e5a89a  src/game/arena_definition.cpp",
+    "2fe0a5808ff2b7a630152427599a20a352f7f2623eacc0a67f7b9778a9a215aa  src/enemy/enemy.cpp",
+    "577872f2edbac5e9f92c2b6a4a0fd7b3351ce7114919871272ac200bb024e959  src/game/encounter_director.cpp"
+  ]
+}

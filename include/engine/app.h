@@ -1,36 +1,29 @@
 #pragma once
-
 #include <memory>
+#include <fstream>
+#include <vector>
 #include <string>
-#include "engine/camera.h"
+#include <glm/glm.hpp>
+#include "engine/app_options.h"
 #include "engine/run_state.h"
-
-// Forward declaration
+#include "game/gameplay_types.h"
 struct GLFWwindow;
-
 namespace silic2 {
-
-class MapRenderer;
-class Map;
-class PixelRenderer;
-class Player;
-class Weapon;
-class GroundParticleSystem;
-class EnemyManager;
-class Crosshair;
-class Minimap;
-class HudRenderer;
-
+class Map; class MapRenderer; class PixelRenderer; class Camera; class Player;
+class Weapon; class GroundParticleSystem; class EnemyManager; class EnemyProjectileSystem;
+class HudRenderer; class RunController; class EncounterDirector; class AudioSystem;
+class CharacterPresentation; class Shader;
+struct HudViewModel;
 class App {
 public:
-    App();
+    explicit App(uint64_t runSeed);
+    explicit App(const AppOptions& options);
     ~App();
-
     void run();
     bool loadMap(const std::string& mapFile);
-
 private:
-    GLFWwindow* window;
+    AppOptions options;
+    GLFWwindow* window = nullptr;
     std::unique_ptr<Map> currentMap;
     std::unique_ptr<MapRenderer> mapRenderer;
     std::unique_ptr<PixelRenderer> pixelRenderer;
@@ -39,39 +32,55 @@ private:
     std::unique_ptr<Weapon> weapon;
     std::unique_ptr<GroundParticleSystem> groundParticles;
     std::unique_ptr<EnemyManager> enemyManager;
-    std::unique_ptr<Crosshair>    crosshair;
-    std::unique_ptr<Minimap>      minimap;
-    std::unique_ptr<HudRenderer>  hudRenderer;
-
-    // Game state (replaces bool roomCleared / bool playerDead)
-    GameState gameState  = GameState::PLAYING;
-    RunState  runState;
-    float     stateTimer = 0.0f;
-
-    // Input edge-detection
-    bool escWasPressed = false;
-
-    // Timing
-    float deltaTime = 0.0f;
-    float lastFrame = 0.0f;
-
+    std::unique_ptr<EnemyProjectileSystem> hostileProjectiles;
+    std::unique_ptr<HudRenderer> hudRenderer;
+    std::unique_ptr<RunController> runController;
+    std::unique_ptr<EncounterDirector> director;
+    std::unique_ptr<AudioSystem> audio;
+    std::unique_ptr<CharacterPresentation> characters;
+    std::unique_ptr<Shader> projectileShader;
+    unsigned int projectileVAO=0, projectileVBO=0;
+    std::ofstream runLog, acceptanceLog;
+    std::string currentMapFile;
+    bool arena=false;
+    GameState gameState=GameState::READY;
+    float stateTimer=0, deltaTime=0;
+    bool escWasPressed=false, rWasPressed=false, leftMouseWasPressed=false, enterWasPressed=false;
+    bool contactDamageActive=false, transformationPlayed=false, wasSliding=false;
+    bool refocused=false;
+    float hitAge=1000,killAge=1000,damageAge=1000,damageDirection=0;
+    glm::vec3 previousPlayerPosition{0};
+    int acceptanceRuns=0, acceptanceFrames=0, screenshotStage=0;
+    double modeStarted=0, frameStarted=0, flowPlaybackSeconds=0;
+    std::vector<double> frameTimes;
+    bool acceptanceFailed=false;
+    int flowStep=0;
+    float flowFrozenTime=0;
+    uint64_t flowAudioFrames=0;
+    glm::vec3 flowFrozenPosition{0};
     bool initWindow();
-    bool initOpenGL();
-    void processInput();
-    void update(float deltaTime);
-    void render();
     void cleanup();
-
-    // State helpers
-    void setState(GameState next);
+    void processInput();
+    void update(float dt);
     void updatePlaying(float dt);
-    void handleRoomCleared(float dt);
-    void handlePlayerDead(float dt);
-
-    // Callbacks
-    static void framebufferSizeCallback(GLFWwindow* window, int width, int height);
-    static void mouseCallback(GLFWwindow* window, double xpos, double ypos);
-    static void scrollCallback(GLFWwindow* window, double xoffset, double yoffset);
+    void render();
+    void setState(GameState next);
+    void finishCurrentRun(RoomResult result, RunEndReason reason);
+    void restartCurrentRun();
+    void resetRuntimeState();
+    glm::vec3 getPlayerStartPosition() const;
+    HudViewModel makeHud(const glm::mat4& view,const glm::mat4& projection) const;
+    bool visible(const glm::vec3& from,const glm::vec3& to) const;
+    void applyDamage(float amount,DamageSource source,const glm::vec3& origin,bool newEvent=true);
+    void firePrimary();
+    void updateAcceptance(float dt);
+    void recordPerformance();
+    void captureScreenshot(const std::string& name);
+    void logReset();
+    void renderProjectiles(const glm::mat4& view,const glm::mat4& projection);
+    static void framebufferSizeCallback(GLFWwindow*,int,int);
+    static void mouseCallback(GLFWwindow*,double,double);
+    static void scrollCallback(GLFWwindow*,double,double);
+    static void focusCallback(GLFWwindow*,int);
 };
-
-} // namespace silic2
+}

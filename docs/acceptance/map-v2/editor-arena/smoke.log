@@ -1,0 +1,24 @@
+INPUT FRAME 2 selection 2:5 id 7 center -9,0.7,0 objects 21 dirty 0 error 
+INPUT FRAME 3 selection 2:5 id 7 center -9,0.7,0 objects 21 dirty 0 error 
+INPUT FRAME 4 selection 2:5 id 7 center -8,0.7,0 objects 21 dirty 1 error 
+INPUT FRAME 5 selection 2:5 id 7 center -8,0.7,0 objects 21 dirty 1 error 
+INPUT FRAME 6 selection 2:7 id 9 center -7,0.7,1 objects 22 dirty 1 error 
+INPUT FRAME 7 selection 2:7 id 9 center -7,0.7,1 objects 22 dirty 1 error 
+INPUT FRAME 8 selection 2:5 id 7 center -8,0.7,0 objects 21 dirty 1 error 
+INPUT FRAME 9 selection 2:5 id 7 center -8,0.7,0 objects 21 dirty 1 error 
+INPUT FRAME 10 selection 2:7 id 9 center -7,0.7,1 objects 22 dirty 1 error 
+INPUT FRAME 11 selection 2:7 id 9 center -7,0.7,1 objects 22 dirty 1 error 
+GL FRAME 11 logical 1440x900 framebuffer 2880x1800
+INPUT FRAME 12 selection 2:7 id 9 center -7,0.7,1 objects 22 dirty 1 error 
+INPUT FRAME 13 selection 2:7 id 9 center -7,0.7,1 objects 22 dirty 1 error 
+GL FRAME 14 logical 1440x900 framebuffer 2880x1800
+MODAL FRAME 16 mouse 556,591 cancel 409,283.5 down 0 pending 1 popup 1
+GL FRAME 16 logical 800x600 framebuffer 1600x1200
+MODAL FRAME 17 mouse 556,591 cancel 409,283.5 down 0 pending 1 popup 1
+MODAL FRAME 18 mouse 409,283 cancel 409,283.5 down 1 pending 1 popup 1
+MODAL FRAME 19 mouse 409,283 cancel 409,283.5 down 0 pending 0 popup 0
+MODAL FRAME 20 mouse 556,591 cancel 409,283.5 down 0 pending 0 popup 0
+SAVE VERIFIED objects 22 selection id 9 center -7,0.7,1
+GL FRAME 22 logical 800x600 framebuffer 1600x1200
+
+EXIT 0

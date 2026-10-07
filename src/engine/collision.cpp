@@ -69,7 +69,6 @@ CollisionResult CollisionSystem::raycastAABB(const Ray& ray, const AABB& box, fl
     glm::vec3 localPoint = result.point - center;
     glm::vec3 halfSize = box.getSize() * 0.5f;
     
-    float bias = 1.0001f;
     result.normal = glm::vec3(0.0f);
     
     if (std::abs(localPoint.x) > halfSize.x * 0.95f) {

@@ -1,0 +1,52 @@
+{
+  "configuration": {
+    "event": "configuration",
+    "logical_width": 1280,
+    "logical_height": 720,
+    "framebuffer_width": 2560,
+    "framebuffer_height": 1440,
+    "internal_width": 320,
+    "internal_height": 200,
+    "vsync": false,
+    "audio_available": true,
+    "synthetic_input": true
+  },
+  "runs": [
+    {
+      "run": 1,
+      "combat_seconds": 90.003792,
+      "frames": 43516,
+      "p95_ms": 6.8055,
+      "p99_ms": 8.40296,
+      "max_ms": 78.6931,
+      "longest_over_50ms": 1
+    },
+    {
+      "run": 2,
+      "combat_seconds": 90.000984,
+      "frames": 43472,
+      "p95_ms": 6.79238,
+      "p99_ms": 8.33783,
+      "max_ms": 68.9352,
+      "longest_over_50ms": 1
+    },
+    {
+      "run": 3,
+      "combat_seconds": 90.001152,
+      "frames": 44960,
+      "p95_ms": 6.76417,
+      "p99_ms": 8.374,
+      "max_ms": 95.8115,
+      "longest_over_50ms": 1
+    }
+  ],
+  "binary_sha256": "6b9e4d5095bebbabe37c28f55bb0a999fbd7259f9901a600ecace4db4602206e",
+  "exit_code": 0,
+  "command": "./silic2-release --vsync off --width 1280 --height 720 --acceptance performance --output artifacts/acceptance/map-v2/performance-final",
+  "raw_csv_sha256": {
+    "artifacts/acceptance/map-v2/performance-final/frames-performance-1.csv": "9ecd9093b5bb6ef6eb99b638aa5f255721bdf87128c12437cba2369ee121ca34",
+    "artifacts/acceptance/map-v2/performance-final/frames-performance-2.csv": "8fb8908fa427b68413a5ee7421d7c2a97bae33b5f32add9ecbcc2186576cb724",
+    "artifacts/acceptance/map-v2/performance-final/frames-performance-3.csv": "07be0cb606687b54817902c6af7b84f75e53eba4290d2266d9651d4985f1a23d"
+  },
+  "synthetic_input_note": "Synthetic aim/movement and invulnerability; real runtime, GL and audio. Not a human playtest."
+}

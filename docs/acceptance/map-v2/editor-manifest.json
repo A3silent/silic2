@@ -1,0 +1,14 @@
+{
+  "CMakeLists.txt": "3039adddd52aab0c5c9654405b90e7429f6f9daa43d83021d748a45a4b37d992",
+  "README.md": "19fe9817ce73643427fd9505c39ee68e9897ff1eceba2eaa0efb8bad5b6d71d0",
+  "README_CN.md": "3c2ac375ca4c9f4a41f34c7ef6334c8c51669f731c59243bdd0cba784579d286",
+  "include/map.h": "057a88bd70f22e4b3917d4b4bc2590f9fdacf071511b050669d83c8c11c0ebcd",
+  "include/simple_json.h": "f2d21619f252d9a6063ac10e6e7d88c14e46c21d60b4c6a6786e270882b02b23",
+  "include/editor_document.h": "9e55885d3f1527c40abae73843baefd8e6bcf975aeca807dc103a1789db5f3a0",
+  "src/map.cpp": "5bdbf3d539b47c556a6a761bda5bff778252365445d30450cf29c4b7d9fae346",
+  "src/simple_json.cpp": "42e7f9c2c0917b6c8c5d372eb4dd5497be59a331de9835c2b1b35ba388ef3c02",
+  "src/editor_document.cpp": "dad043ea636183d32d083a393a95e1ded68c4e09931bf7efaf1190f902919a4d",
+  "src/map_editor_final.cpp": "bc2907ac0c7161c3c86372146e480bba58ae8a4a56dd5a7f5159857c8da2c1c7",
+  "tests/editor_self_test.cpp": "c201105c181635cc4dcb0270aeadebf35ddf3b939574e40caac43e538cb045d4",
+  "build/map_editor": "bee4fc9baf714d12e2b4eeb89efa5d67aebbc72e1b7b94de08c1f2c096d90d89"
+}

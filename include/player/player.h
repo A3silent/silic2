@@ -55,7 +55,7 @@ public:
     // Set position
     void setPosition(const glm::vec3& pos);
 
-    // Respawn: resets position, HP, and velocity
+    // Respawn: resets all run-local movement, health, camera, and input state
     void respawn(const glm::vec3& pos);
     
     // Get player AABB
@@ -63,7 +63,8 @@ public:
     
     
     // Health
-    void  takeDamage(float amount);
+    // Returns the actual HP removed after immunity and clamping.
+    float takeDamage(float amount);
     float getHp()    const { return currentHp; }
     float getMaxHp() const { return GameConfig::getInstance().player.maxHp; }
     bool  isDead()   const { return currentHp <= 0.0f; }

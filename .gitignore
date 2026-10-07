@@ -6,13 +6,25 @@ CLAUDE.md
 nul
 *.tmp
 *.log
+__pycache__/
 
 # Build files
 *.o
 *.exe
 /silic2
+/silic2-release
 bin/
 build/
+
+# Generated runtime logs, raw frame CSVs and framebuffer captures.
+# Keep compact reviewed acceptance records under docs/ instead.
+/artifacts/
+
+# Reviewed compact acceptance evidence is part of the source handoff.
+!/docs/acceptance/**/*.log
+
+# Local editor window/layout state.
+imgui.ini
 
 # IDE files
 .vscode/

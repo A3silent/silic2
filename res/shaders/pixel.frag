@@ -6,8 +6,9 @@ in vec2 TexCoords;
 uniform sampler2D screenTexture;
 uniform vec2 resolution;
 
-// Color quantization levels (Eclipsium-style limited palette)
-const float colorLevels = 16.0; // 16 levels per channel (4-bit color)
+// Sixteen perceptually spaced levels retain the limited palette while giving
+// dark mineral surfaces and the sky more than one usable shadow step.
+const float colorLevels = 16.0;
 
 // Dithering pattern (Bayer 4x4)
 const mat4 ditherMatrix = mat4(
@@ -18,26 +19,25 @@ const mat4 ditherMatrix = mat4(
 ) / 16.0;
 
 vec3 quantizeColor(vec3 color, vec2 fragCoord) {
-    // Add dithering
     ivec2 pos = ivec2(fragCoord) % 4;
-    float dither = ditherMatrix[pos.x][pos.y];
-    
-    // Quantize with dithering
-    vec3 quantized = floor(color * colorLevels + dither) / colorLevels;
-    
-    return quantized;
+    float luminance = dot(color, vec3(0.2126, 0.7152, 0.0722));
+    // No shadow checkerboard. Mid/highlights receive only a small fraction of
+    // a quantization step, centered on zero instead of adding a brightness bias.
+    float dither = (ditherMatrix[pos.x][pos.y] - 0.46875)
+                 * 0.18 * smoothstep(0.05, 0.30, luminance);
+    vec3 perceptual = sqrt(clamp(color, 0.0, 1.0));
+    vec3 quantized = clamp(floor(perceptual * (colorLevels - 1.0) + 0.5 + dither)
+                          / (colorLevels - 1.0), 0.0, 1.0);
+    return quantized * quantized;
 }
 
-// Simulate CRT/old monitor effect
 vec3 applyCRTEffect(vec3 color, vec2 uv) {
-    // Subtle scanline effect
-    float scanline = sin(uv.y * resolution.y * 3.14159) * 0.04;
-    color -= scanline;
-    
-    // Very subtle vignette
-    float vignette = 1.0 - length(uv - 0.5) * 0.3;
-    color *= vignette;
-    
+    // Multiplicative 0..1.5% attenuation: black remains black and scanlines
+    // cannot become brighter than the scene they decorate.
+    float scanline = 0.5 + 0.5 * cos(uv.y * resolution.y * 6.2831853);
+    color *= 1.0 - 0.015 * scanline;
+    vec2 offset = uv - 0.5;
+    color *= 1.0 - 0.12 * dot(offset, offset); // At most 6% corner attenuation.
     return color;
 }
 

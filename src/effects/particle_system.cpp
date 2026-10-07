@@ -61,6 +61,15 @@ ParticleSystem::~ParticleSystem() {
     if (instanceVBO) glDeleteBuffers(1, &instanceVBO);
 }
 
+void ParticleSystem::reset() {
+    for (auto& particle : particles) {
+        particle.pLife = 0.0f;
+    }
+    nextDeadParticle = 0;
+    vertexData.clear();
+    instanceData.clear();
+}
+
 void ParticleSystem::initRenderingResources() {
     std::cout << "Initializing particle system rendering resources..." << std::endl;
     
@@ -439,6 +448,13 @@ GroundParticleSystem::GroundParticleSystem(size_t maxParticles) {
 }
 
 GroundParticleSystem::~GroundParticleSystem() = default;
+
+void GroundParticleSystem::reset() {
+    emissionTimer = 0.0f;
+    if (particleSystem) {
+        particleSystem->reset();
+    }
+}
 
 void GroundParticleSystem::initialize(const Map& map) {
     extractFloorPositions(map);

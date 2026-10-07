@@ -10,96 +10,196 @@ else
     PLATFORM := linux
 endif
 
-# Common compiler settings
-CXXFLAGS = -std=c++17 -Wall -Wextra -O2 -g
-CFLAGS = -Wall -O2 -g
-INCLUDES = -I./include \
-           -I./include/glad \
-           -I./include/GLFW \
-           -I./include/glm \
-           -I./include/stb
-
-ifeq ($(PLATFORM),windows)
-    CXX = g++
-    CC = gcc
-    LDFLAGS = -L./lib
-    LIBS = -lglfw3 -lopengl32 -lgdi32 -luser32 -lkernel32
-    APP_TARGET = silic2.exe
-    MKDIR_CMD = if not exist $(BIN_DIR) mkdir $(BIN_DIR)
-    CLEAN_CMD = del /Q $(BIN_DIR)\*.o $(APP_TARGET) 2>nul || echo Clean completed
-else ifeq ($(PLATFORM),macos)
-    CXX = clang++
-    CC = clang
-    INCLUDES += -I/opt/homebrew/include -I/usr/local/include
-    LDFLAGS = -L/opt/homebrew/lib -L/usr/local/lib
-    LIBS = -lglfw -framework OpenGL -framework Cocoa -framework IOKit -framework CoreVideo
-    APP_TARGET = silic2
-    MKDIR_CMD = mkdir -p $(BIN_DIR)
-    CLEAN_CMD = rm -f $(BIN_DIR)/*.o $(APP_TARGET)
-else
-    CXX = g++
-    CC = gcc
-    LDFLAGS = -L/usr/local/lib -L./lib
-    LIBS = -lglfw -lGL -ldl -lpthread
-    APP_TARGET = silic2
-    MKDIR_CMD = mkdir -p $(BIN_DIR)
-    CLEAN_CMD = rm -f $(BIN_DIR)/*.o $(APP_TARGET)
+# Build configuration
+BUILD ?= debug
+VALID_BUILDS := debug release
+ifeq ($(filter $(BUILD),$(VALID_BUILDS)),)
+    $(error Unsupported BUILD '$(BUILD)'; expected one of: $(VALID_BUILDS))
 endif
 
-# Keep platform-specific objects separate. This prevents checked-in Windows
-# objects from being reused by macOS or Linux builds.
-BIN_DIR = bin/$(PLATFORM)
+PLATFORM_BUILD_DIR := bin/$(PLATFORM)
+BUILD_DIR := $(PLATFORM_BUILD_DIR)/$(BUILD)
+OBJ_DIR := $(BUILD_DIR)/obj
 
-# Tell Make where to find source files by category
-vpath %.cpp src/engine src/player src/enemy src/effects src/hud
-vpath %.c   src/engine
+COMMON_CXXFLAGS := -std=c++17 -Wall -Wextra
+COMMON_CFLAGS := -Wall
+ifeq ($(BUILD),release)
+    CONFIG_FLAGS := -O2 -DNDEBUG
+    TARGET_SUFFIX := -release
+else
+    CONFIG_FLAGS := -O0 -g3
+    TARGET_SUFFIX :=
+endif
 
-# Source files grouped by category
-ENGINE_SRCS  = main.cpp app.cpp camera.cpp collision.cpp shader.cpp texture.cpp \
-               map.cpp map_renderer.cpp pixel_renderer.cpp simple_json.cpp \
-               game_config.cpp
-ENGINE_C     = glad.c
+CXXFLAGS := $(COMMON_CXXFLAGS) $(CONFIG_FLAGS)
+CFLAGS := $(COMMON_CFLAGS) $(CONFIG_FLAGS)
+DEPFLAGS := -MMD -MP
 
-PLAYER_SRCS  = player.cpp weapon.cpp
+INCLUDES := -I./include \
+            -I./include/glad \
+            -I./include/GLFW \
+            -I./include/glm \
+            -I./include/stb
 
-ENEMY_SRCS   = enemy.cpp enemy_manager.cpp
+# Set CACHE=ccache (or CACHE=sccache) to enable a compiler cache without
+# changing the selected platform compiler.
+CACHE ?=
 
-EFFECTS_SRCS = particle_system.cpp groundparticle.cpp
+ifeq ($(PLATFORM),windows)
+    CXX = $(CACHE) g++
+    CC = $(CACHE) gcc
+    LDFLAGS := -L./lib
+    LIBS := -lglfw3 -lopengl32 -lgdi32 -luser32 -lkernel32
+    APP_TARGET := silic2$(TARGET_SUFFIX).exe
+    define make-dir
+	@if not exist "$(subst /,\,$@)" mkdir "$(subst /,\,$@)"
+    endef
+    CLEAN_CMD = if exist "$(subst /,\,$(BUILD_DIR))" rmdir /S /Q "$(subst /,\,$(BUILD_DIR))" & if exist "$(APP_TARGET)" del /Q "$(APP_TARGET)"
+else ifeq ($(PLATFORM),macos)
+    CXX = $(CACHE) clang++
+    CC = $(CACHE) clang
+    INCLUDES += -I/opt/homebrew/include -I/usr/local/include
+    LDFLAGS := -L/opt/homebrew/lib -L/usr/local/lib
+    LIBS := -lglfw -framework OpenGL -framework Cocoa -framework IOKit -framework CoreVideo -framework CoreAudio -framework AudioToolbox
+    APP_TARGET := silic2$(TARGET_SUFFIX)
+    define make-dir
+	@mkdir -p "$@"
+    endef
+    CLEAN_CMD = rm -rf "$(BUILD_DIR)" "$(APP_TARGET)"
+else
+    CXX = $(CACHE) g++
+    CC = $(CACHE) gcc
+    LDFLAGS := -L/usr/local/lib -L./lib
+    LIBS := -lglfw -lGL -ldl -lpthread -lm
+    APP_TARGET := silic2$(TARGET_SUFFIX)
+    define make-dir
+	@mkdir -p "$@"
+    endef
+    CLEAN_CMD = rm -rf "$(BUILD_DIR)" "$(APP_TARGET)"
+endif
 
-HUD_SRCS     = crosshair.cpp minimap.cpp hud_renderer.cpp
+# Keep full source paths so files with the same basename can coexist in
+# different modules without object-file collisions.
+ENGINE_SRCS := src/engine/main.cpp \
+               src/engine/app.cpp \
+               src/engine/camera.cpp \
+               src/engine/collision.cpp \
+               src/engine/shader.cpp \
+               src/engine/texture.cpp \
+               src/engine/map.cpp \
+               src/engine/map_renderer.cpp \
+               src/engine/pixel_renderer.cpp \
+               src/engine/simple_json.cpp \
+               src/engine/game_config.cpp
 
-# All object files (flattened into bin/)
-ALL_CPP  = $(ENGINE_SRCS) $(PLAYER_SRCS) $(ENEMY_SRCS) $(EFFECTS_SRCS) $(HUD_SRCS)
-APP_OBJS = $(patsubst %.cpp,$(BIN_DIR)/%.o,$(ALL_CPP)) \
-           $(patsubst %.c,$(BIN_DIR)/%.o,$(ENGINE_C))
+ENGINE_C_SRCS := src/engine/glad.c
+
+PLAYER_SRCS := src/player/player.cpp \
+               src/player/weapon.cpp
+
+ENEMY_SRCS := src/enemy/enemy.cpp \
+              src/enemy/enemy_manager.cpp \
+              src/enemy/enemy_projectile_system.cpp
+
+EFFECTS_SRCS := src/effects/particle_system.cpp \
+                src/effects/groundparticle.cpp
+
+HUD_SRCS := src/hud/crosshair.cpp \
+            src/hud/minimap.cpp \
+            src/hud/hud_renderer.cpp \
+            src/hud/bitmap_font_renderer.cpp \
+            src/hud/hud_view_model.cpp
+
+GAME_SRCS := src/game/seed_service.cpp \
+             src/game/run_stats.cpp \
+             src/game/run_controller.cpp \
+             src/game/arena_definition.cpp \
+             src/game/encounter_director.cpp
+
+PRESENTATION_SRCS := src/environment/environment_scene.cpp src/environment/environment_renderer.cpp src/character/character_presentation.cpp src/audio/audio_system.cpp src/audio/miniaudio_impl.cpp
+
+CPP_SRCS := $(ENGINE_SRCS) $(PLAYER_SRCS) $(ENEMY_SRCS) $(EFFECTS_SRCS) $(HUD_SRCS) $(GAME_SRCS) $(PRESENTATION_SRCS)
+C_SRCS := $(ENGINE_C_SRCS)
+CPP_OBJS := $(patsubst src/%.cpp,$(OBJ_DIR)/%.o,$(CPP_SRCS))
+C_OBJS := $(patsubst src/%.c,$(OBJ_DIR)/%.o,$(C_SRCS))
+APP_OBJS := $(CPP_OBJS) $(C_OBJS)
+
+TEST_SRCS := tests/test_main.cpp \
+             tests/simple_json_test.cpp \
+             tests/map_test.cpp \
+             tests/map_navigation_test.cpp \
+             tests/seed_service_test.cpp \
+             tests/run_stats_test.cpp \
+             tests/run_controller_test.cpp \
+             tests/enemy_ground_test.cpp \
+             tests/encounter_director_test.cpp \
+             tests/enemy_combat_test.cpp \
+             tests/audio_system_test.cpp \
+             tests/hud_view_model_test.cpp \
+             tests/player_damage_test.cpp
+TEST_OBJS := $(patsubst tests/%.cpp,$(OBJ_DIR)/tests/%.o,$(TEST_SRCS))
+GAME_OBJS := $(patsubst src/%.cpp,$(OBJ_DIR)/%.o,$(GAME_SRCS))
+TEST_SUPPORT_SRCS := src/player/player.cpp src/engine/camera.cpp src/engine/game_config.cpp \
+                     src/hud/bitmap_font_renderer.cpp src/hud/hud_view_model.cpp \
+                     src/enemy/enemy_projectile_system.cpp \
+                     src/audio/audio_system.cpp \
+                     src/audio/miniaudio_impl.cpp \
+                     src/enemy/enemy.cpp \
+                     src/engine/map.cpp \
+                     src/engine/simple_json.cpp \
+                     src/engine/collision.cpp
+TEST_SUPPORT_OBJS := $(patsubst src/%.cpp,$(OBJ_DIR)/%.o,$(TEST_SUPPORT_SRCS))
+TEST_TARGET := $(BUILD_DIR)/silic2-tests$(if $(filter windows,$(PLATFORM)),.exe,)
+
+ALL_OBJS := $(APP_OBJS) $(TEST_OBJS)
+DEPS := $(ALL_OBJS:.o=.d)
+OBJ_DIRS := $(sort $(patsubst %/,%,$(dir $(ALL_OBJS))))
 
 # Default target
 all: $(APP_TARGET)
 
 # Link
-$(APP_TARGET): $(APP_OBJS) | $(BIN_DIR)
+$(APP_TARGET): $(APP_OBJS)
 	$(CXX) $(APP_OBJS) -o $@ $(LDFLAGS) $(LIBS)
 
-# Create bin directory
-$(BIN_DIR):
-	$(MKDIR_CMD)
+# Compile C++ and C sources. Each compiler also writes a matching .d file so
+# header changes rebuild exactly the translation units that include them.
+$(ALL_OBJS): | $(OBJ_DIRS)
 
-# Compile C++ sources (vpath resolves the actual location)
-$(BIN_DIR)/%.o: %.cpp | $(BIN_DIR)
-	$(CXX) $(CXXFLAGS) $(INCLUDES) -c $< -o $@
+$(OBJ_DIRS):
+	$(make-dir)
 
-# Compile C sources
-$(BIN_DIR)/%.o: %.c | $(BIN_DIR)
-	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
+$(OBJ_DIR)/%.o: src/%.cpp
+	$(CXX) $(CXXFLAGS) $(DEPFLAGS) $(INCLUDES) -c $< -o $@
 
-# Clean
-clean:
-	$(CLEAN_CMD)
+$(OBJ_DIR)/%.o: src/%.c
+	$(CC) $(CFLAGS) $(DEPFLAGS) $(INCLUDES) -c $< -o $@
 
-# Run targets
+$(OBJ_DIR)/tests/%.o: tests/%.cpp
+	$(CXX) $(CXXFLAGS) $(DEPFLAGS) $(INCLUDES) -I./tests -c $< -o $@
+
+-include $(DEPS)
+
+$(TEST_TARGET): $(TEST_OBJS) $(GAME_OBJS) $(TEST_SUPPORT_OBJS)
+	$(CXX) $(TEST_OBJS) $(GAME_OBJS) $(TEST_SUPPORT_OBJS) -o $@ $(LDFLAGS) $(LIBS)
+
+test: $(TEST_TARGET)
+	./$(TEST_TARGET)
+
+# Convenience configuration targets
+debug:
+	$(MAKE) -f $(firstword $(MAKEFILE_LIST)) BUILD=debug all
+
+release:
+	$(MAKE) -f $(firstword $(MAKEFILE_LIST)) BUILD=release all
+
 run: $(APP_TARGET)
 	./$(APP_TARGET)
 
+run-release:
+	$(MAKE) -f $(firstword $(MAKEFILE_LIST)) BUILD=release run
+
+# Map shortcuts
 test-room: $(APP_TARGET)
 	./$(APP_TARGET) res/maps/test_room.json
 
@@ -109,4 +209,14 @@ corridor: $(APP_TARGET)
 textured-room: $(APP_TARGET)
 	./$(APP_TARGET) res/maps/textured_room.json
 
-.PHONY: all clean run test-room corridor textured-room
+print-config:
+	@echo Platform: $(PLATFORM)
+	@echo Build: $(BUILD)
+	@echo Compiler: $(CXX)
+	@echo Object directory: $(OBJ_DIR)
+	@echo Target: $(APP_TARGET)
+
+clean:
+	$(CLEAN_CMD)
+
+.PHONY: all debug release run run-release test test-room corridor textured-room print-config clean

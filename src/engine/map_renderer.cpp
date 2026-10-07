@@ -1,5 +1,8 @@
 #include "engine/map_renderer.h"
 #include "engine/shader.h"
+#include "environment/environment_renderer.h"
+#include <algorithm>
+#include <stdexcept>
 #include <glm/gtc/matrix_transform.hpp>
 #include <iostream>
 
@@ -26,12 +29,28 @@ bool MapRenderer::loadMap(const Map& map) {
     currentMap = &map;
     
     const auto& brushes = map.getBrushes();
+    const bool arena = map.getEnvironmentPreset() == EnvironmentPreset::StarryCrystal;
+    if (arena) {
+        environment = std::make_unique<EnvironmentRenderer>(deriveEnvironmentScene(map));
+        arenaShader = std::make_unique<Shader>("res/shaders/map.vert", "res/shaders/environment_map.frag");
+        GLint linked = GL_FALSE;
+        glGetProgramiv(arenaShader->ID, GL_LINK_STATUS, &linked);
+        if (!linked) throw std::runtime_error("Arena material shader failed to link");
+    }
     std::cout << "Loading " << brushes.size() << " brushes for rendering..." << std::endl;
     
     for (const auto& brush : brushes) {
         auto renderable = std::make_unique<RenderableBrush>();
         renderable->color = brush.color;
         renderable->material = brush.material;
+        renderable->surfaceType = brush.surfaceType;
+        if (!brush.vertices.empty()) {
+            renderable->minimum = renderable->maximum = brush.vertices.front();
+            for (const auto& vertex : brush.vertices) {
+                renderable->minimum = glm::min(renderable->minimum,vertex);
+                renderable->maximum = glm::max(renderable->maximum,vertex);
+            }
+        }
         
         // Load texture
         if (!brush.texture.empty()) {
@@ -49,6 +68,9 @@ bool MapRenderer::loadMap(const Map& map) {
 }
 
 void MapRenderer::clearMap() {
+    environment.reset();
+    arenaShader.reset();
+    combinedLights.clear();
     renderableBrushes.clear();
     lightData.clear();
     dynamicLights.clear();
@@ -61,10 +83,7 @@ void MapRenderer::render(const glm::mat4& view, const glm::mat4& projection) {
         return;
     }
     
-    if (renderableBrushes.empty()) {
-        std::cout << "No renderable brushes to draw" << std::endl;
-        return;
-    }
+    if (renderableBrushes.empty() && !environment) return;
     
     // std::cout << "Rendering " << renderableBrushes.size() << " brushes" << std::endl;
     
@@ -75,41 +94,63 @@ void MapRenderer::render(const glm::mat4& view, const glm::mat4& projection) {
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     }
     
-    mapShader->use();
-    mapShader->setMat4("view", view);
-    mapShader->setMat4("projection", projection);
+    if (environment) environment->renderSky(view, projection);
+    Shader* shader = environment ? arenaShader.get() : mapShader.get();
+    shader->use();
+    shader->setMat4("view", view);
+    shader->setMat4("projection", projection);
     
     // Set world settings
     const auto& worldSettings = currentMap->getWorldSettings();
-    mapShader->setVec3("ambientLight", worldSettings.ambientLight);
-    mapShader->setBool("lightingEnabled", lightingEnabled);
+    shader->setVec3("ambientLight", worldSettings.ambientLight);
+    shader->setBool("lightingEnabled", lightingEnabled);
     
+    if (environment) {
+        environment->setMapUniforms(*shader);
+    }
+
     // Combine static and dynamic lights — cache for other renderers (e.g. enemies)
     combinedLights = lightData;
+    if (environment) {
+        const float phase = environment->transformation();
+        for (auto& light : combinedLights)
+            light.color *= glm::mix(glm::vec3(1.f), glm::vec3(1.2f,.7f,1.15f), phase);
+        const auto& rifts = environment->scene().rifts;
+        const auto& warnings = environment->warnings();
+        for (size_t i = 0; i < rifts.size(); ++i) {
+            if (rifts[i].active && warnings[i] >= 0.f) {
+                const glm::vec3 position(rifts[i].localToWorld * glm::vec4(0,1,0,1));
+                const float scale = std::max({rifts[i].scale.x,rifts[i].scale.y,rifts[i].scale.z});
+                combinedLights.push_back({position,glm::vec3(1.f,.35f,.06f),1.2f,4.5f*scale});
+            }
+        }
+    }
     combinedLights.insert(combinedLights.end(), dynamicLights.begin(), dynamicLights.end());
 
     // Set lighting data
     if (lightingEnabled && !combinedLights.empty()) {
-        mapShader->setInt("numLights", std::min(static_cast<int>(combinedLights.size()), 128));
+        shader->setInt("numLights", std::min(static_cast<int>(combinedLights.size()), 128));
 
         for (size_t i = 0; i < std::min(combinedLights.size(), size_t(128)); ++i) {
             std::string base = "lights[" + std::to_string(i) + "]";
-            mapShader->setVec3(base + ".position", combinedLights[i].position);
-            mapShader->setVec3(base + ".color", combinedLights[i].color);
-            mapShader->setFloat(base + ".intensity", combinedLights[i].intensity);
-            mapShader->setFloat(base + ".range", combinedLights[i].range);
+            shader->setVec3(base + ".position", combinedLights[i].position);
+            shader->setVec3(base + ".color", combinedLights[i].color);
+            shader->setFloat(base + ".intensity", combinedLights[i].intensity);
+            shader->setFloat(base + ".range", combinedLights[i].range);
         }
     } else {
-        mapShader->setInt("numLights", 0);
+        shader->setInt("numLights", 0);
     }
     
     // Render all brushes
     glm::mat4 model = glm::mat4(1.0f);
     for (size_t i = 0; i < renderableBrushes.size(); ++i) {
         // std::cout << "Rendering brush " << i << " with " << renderableBrushes[i]->indexCount << " indices" << std::endl;
-        renderBrush(*renderableBrushes[i], model);
+        renderBrush(*renderableBrushes[i], model, *shader);
     }
     
+    if (environment) environment->renderDetails(view, projection);
+
     // Reset polygon mode
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 }
@@ -167,6 +208,27 @@ void MapRenderer::setupBrushGeometry(const Brush& brush, RenderableBrush& render
         }
     }
     
+    std::vector<uint32_t> indices = brush.faces;
+    if (environment) {
+        vertexData.clear();
+        indices.clear();
+        for (size_t f = 0; f + 2 < brush.faces.size(); f += 3) {
+            const auto a = brush.vertices[brush.faces[f]];
+            const auto b = brush.vertices[brush.faces[f+1]];
+            const auto c = brush.vertices[brush.faces[f+2]];
+            const glm::vec3 cross = glm::cross(b-a, c-a);
+            if (glm::dot(cross,cross) < 1e-10f) continue;
+            const glm::vec3 normal = glm::normalize(cross);
+            for (size_t corner = 0; corner < 3; ++corner) {
+                const auto vertexIndex = brush.faces[f+corner];
+                const auto p = brush.vertices[vertexIndex];
+                const auto uv = vertexIndex < brush.texCoords.size() ? brush.texCoords[vertexIndex] : glm::vec2(p.x,p.z);
+                indices.push_back(static_cast<uint32_t>(indices.size()));
+                vertexData.insert(vertexData.end(), {p.x,p.y,p.z,normal.x,normal.y,normal.z,uv.x,uv.y});
+            }
+        }
+    }
+
     // Generate OpenGL objects
     glGenVertexArrays(1, &renderable.VAO);
     glGenBuffers(1, &renderable.VBO);
@@ -180,7 +242,7 @@ void MapRenderer::setupBrushGeometry(const Brush& brush, RenderableBrush& render
     
     // Upload index data
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, renderable.EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, brush.faces.size() * sizeof(uint32_t), brush.faces.data(), GL_STATIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(uint32_t), indices.data(), GL_STATIC_DRAW);
     
     // Set up vertex attributes
     // Position (location 0)
@@ -197,7 +259,7 @@ void MapRenderer::setupBrushGeometry(const Brush& brush, RenderableBrush& render
     
     glBindVertexArray(0);
     
-    renderable.indexCount = brush.faces.size();
+    renderable.indexCount = indices.size();
     
     std::cout << "Brush " << brush.id << " setup: " << brush.vertices.size() 
               << " vertices, " << brush.faces.size() << " indices" << std::endl;
@@ -221,7 +283,7 @@ void MapRenderer::updateLighting() {
     std::cout << "Updated lighting: " << lightData.size() << " lights" << std::endl;
 }
 
-void MapRenderer::renderBrush(const RenderableBrush& brush, const glm::mat4& model) {
+void MapRenderer::renderBrush(const RenderableBrush& brush, const glm::mat4& model, Shader& shader) {
     if (brush.VAO == 0) {
         std::cout << "Brush has invalid VAO (0)" << std::endl;
         return;
@@ -232,16 +294,22 @@ void MapRenderer::renderBrush(const RenderableBrush& brush, const glm::mat4& mod
         return;
     }
     
-    mapShader->setMat4("model", model);
-    mapShader->setVec3("objectColor", brush.color);
+    shader.setMat4("model", model);
+    shader.setVec3("objectColor", brush.color);
     
+    if (environment) {
+        shader.setInt("materialKind", brush.surfaceType == SurfaceType::FLOOR ? 1 :
+                      brush.material == "arena_living_crystal" ? 2 : 0);
+        shader.setVec3("brushMinimum",brush.minimum);
+        shader.setVec3("brushSize",glm::max(brush.maximum-brush.minimum,glm::vec3(.001f)));
+    }
     // Bind texture
     if (brush.texture) {
-        mapShader->setBool("useTexture", true);
-        mapShader->setInt("texture1", 0);
+        shader.setBool("useTexture", true);
+        shader.setInt("texture1", 0);
         brush.texture->bind(0);
     } else {
-        mapShader->setBool("useTexture", false);
+        shader.setBool("useTexture", false);
     }
     
     glBindVertexArray(brush.VAO);
@@ -266,6 +334,26 @@ void MapRenderer::addDynamicLight(const glm::vec3& position, const glm::vec3& co
 
 void MapRenderer::clearDynamicLights() {
     dynamicLights.clear();
+}
+
+void MapRenderer::setEnvironmentTime(float seconds) {
+    if (environment) environment->setTime(seconds);
+}
+void MapRenderer::setRiftWarnings(const std::array<float, 4>& progress) {
+    if (environment) environment->setRiftWarnings(progress);
+}
+void MapRenderer::setEnvironmentParticleCount(size_t count) {
+    if (environment) environment->setParticleCount(count);
+}
+float MapRenderer::getEnvironmentTime() const {
+    return environment ? environment->time() : 0.f;
+}
+size_t MapRenderer::getEnvironmentParticleCount() const {
+    return environment ? environment->particleCount() : 0;
+}
+
+void MapRenderer::resetEnvironment() {
+    if (environment) environment->reset();
 }
 
 } // namespace silic2

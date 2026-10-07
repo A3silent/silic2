@@ -1,0 +1,92 @@
+MapRenderer: Initializing...
+Initializing map shaders...
+Loading map vertex and fragment shaders...
+Successfully loaded shaders: res/shaders/map.vert, res/shaders/map.frag
+Map shaders loaded successfully
+MapRenderer created successfully with shaders
+Successfully loaded shaders: res/shaders/environment_sky.vert, res/shaders/environment_sky.frag
+Successfully loaded shaders: res/shaders/environment_crystal.vert, res/shaders/environment_crystal.frag
+Successfully loaded shaders: res/shaders/environment_particle.vert, res/shaders/environment_particle.frag
+Successfully loaded shaders: res/shaders/map.vert, res/shaders/environment_map.frag
+Loading 8 brushes for rendering...
+Brush 6 setup: 27 vertices, 126 indices
+Brush 1 setup: 4 vertices, 6 indices
+Brush 2 setup: 8 vertices, 36 indices
+Brush 3 setup: 8 vertices, 36 indices
+Brush 4 setup: 8 vertices, 36 indices
+Brush 5 setup: 8 vertices, 36 indices
+Brush 7 setup: 8 vertices, 36 indices
+Brush 8 setup: 8 vertices, 36 indices
+Updated lighting: 5 lights
+Map loaded successfully. 8 brushes ready for rendering.
+UNSUPPORTED (log once): POSSIBLE ISSUE: unit 0 GLD_TEXTURE_INDEX_2D is unloadable and bound to sampler type (Float) - using zero texture because texture unloadable
+ENV_ONLY_2000_PARTICLES p95_ms=0.515625 p99_ms=0.567333 glError=0
+Successfully loaded shaders: res/shaders/environment_sky.vert, res/shaders/environment_sky.frag
+Successfully loaded shaders: res/shaders/environment_crystal.vert, res/shaders/environment_crystal.frag
+Successfully loaded shaders: res/shaders/environment_particle.vert, res/shaders/environment_particle.frag
+Successfully loaded shaders: res/shaders/map.vert, res/shaders/environment_map.frag
+Loading 8 brushes for rendering...
+Brush 6 setup: 27 vertices, 126 indices
+Brush 1 setup: 4 vertices, 6 indices
+Brush 2 setup: 8 vertices, 36 indices
+Brush 3 setup: 8 vertices, 36 indices
+Brush 4 setup: 8 vertices, 36 indices
+Brush 5 setup: 8 vertices, 36 indices
+Brush 7 setup: 8 vertices, 36 indices
+Brush 8 setup: 8 vertices, 36 indices
+Updated lighting: 5 lights
+Map loaded successfully. 8 brushes ready for rendering.
+Successfully loaded shaders: res/shaders/environment_sky.vert, res/shaders/environment_sky.frag
+Successfully loaded shaders: res/shaders/environment_crystal.vert, res/shaders/environment_crystal.frag
+Successfully loaded shaders: res/shaders/environment_particle.vert, res/shaders/environment_particle.frag
+Successfully loaded shaders: res/shaders/map.vert, res/shaders/environment_map.frag
+Loading 0 brushes for rendering...
+Updated lighting: 0 lights
+Map loaded successfully. 0 brushes ready for rendering.
+Successfully loaded shaders: res/shaders/environment_sky.vert, res/shaders/environment_sky.frag
+Successfully loaded shaders: res/shaders/environment_crystal.vert, res/shaders/environment_crystal.frag
+Successfully loaded shaders: res/shaders/environment_particle.vert, res/shaders/environment_particle.frag
+Successfully loaded shaders: res/shaders/map.vert, res/shaders/environment_map.frag
+Loading 8 brushes for rendering...
+Brush 6 setup: 27 vertices, 126 indices
+Brush 1 setup: 4 vertices, 6 indices
+Brush 2 setup: 8 vertices, 36 indices
+Brush 3 setup: 8 vertices, 36 indices
+Brush 4 setup: 8 vertices, 36 indices
+Brush 5 setup: 8 vertices, 36 indices
+Brush 7 setup: 8 vertices, 36 indices
+Brush 8 setup: 8 vertices, 36 indices
+Updated lighting: 5 lights
+Map loaded successfully. 8 brushes ready for rendering.
+PASS: actual GL material-independent preset, moved/scaled mesh+rift+warning light, sky-only reload
+Successfully loaded shaders: res/shaders/environment_sky.vert, res/shaders/environment_sky.frag
+Successfully loaded shaders: res/shaders/environment_crystal.vert, res/shaders/environment_crystal.frag
+Successfully loaded shaders: res/shaders/environment_particle.vert, res/shaders/environment_particle.frag
+PASS: frozen time, reset pixels, 45/47/49 transformation, world-anchored sky
+Successfully loaded shaders: res/shaders/pixel.vert, res/shaders/pixel.frag
+POSTPROCESS_FRAMEBUFFER 1280x720 internal=320x200 FOV=45
+Loading 6 brushes for rendering...
+Brush 1 setup: 4 vertices, 6 indices
+Brush 2 setup: 4 vertices, 6 indices
+Brush 3 setup: 4 vertices, 6 indices
+Brush 4 setup: 4 vertices, 6 indices
+Brush 5 setup: 4 vertices, 6 indices
+Brush 6 setup: 4 vertices, 6 indices
+Updated lighting: 3 lights
+Map loaded successfully. 6 brushes ready for rendering.
+Successfully loaded shaders: res/shaders/environment_sky.vert, res/shaders/environment_sky.frag
+Successfully loaded shaders: res/shaders/environment_crystal.vert, res/shaders/environment_crystal.frag
+Successfully loaded shaders: res/shaders/environment_particle.vert, res/shaders/environment_particle.frag
+Successfully loaded shaders: res/shaders/map.vert, res/shaders/environment_map.frag
+Loading 8 brushes for rendering...
+Brush 6 setup: 27 vertices, 126 indices
+Brush 1 setup: 4 vertices, 6 indices
+Brush 2 setup: 8 vertices, 36 indices
+Brush 3 setup: 8 vertices, 36 indices
+Brush 4 setup: 8 vertices, 36 indices
+Brush 5 setup: 8 vertices, 36 indices
+Brush 7 setup: 8 vertices, 36 indices
+Brush 8 setup: 8 vertices, 36 indices
+Updated lighting: 5 lights
+Map loaded successfully. 8 brushes ready for rendering.
+RELOAD_RESET glError=0

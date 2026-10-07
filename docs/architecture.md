@@ -1,13 +1,79 @@
 # silic2 — Technical Architecture
 
+## Shared Map Module and Editor
+
+The game and `tools/map_editor` build the same data-only `Map` and
+`SimpleJson` sources. The editor's `SILIC2_ROOT` CMake setting points to this
+repository; it no longer compiles a separate format implementation.
+
+`Map` owns parsing, migration, validation, primitive compilation and serialization.
+File/JSON loads and typed edits validate a candidate before replacing the current
+document. Authored `GeometryObject` boxes/planes and retained legacy meshes
+produce one compiled brush collection. Renderers and the existing collision
+paths consume those brushes. `ArenaLayout` derives its floor bounds, obstacles
+and typed spawn slots from the same document; `ArenaDefinition::fromMap` builds
+the navigation graph, which is supplied to enemies instead of a fixed arena.
+
+Explicit game mode selects the director; explicit environment preset selects
+scene presentation. `EnvironmentScene` derives floor/rift transforms and timing
+without GL, while `EnvironmentRenderer` owns GPU presentation. Anchored lights
+resolve through `Map`; authored and resolved lights have separate read views.
+The App validates and prepares the candidate renderer/navigation before replacing
+its live map. Materials no longer select gameplay.
+
+The editor's `EditorDocument` owns selection, validated edit commands, bounded
+undo/redo history and the saved revision. The UI renders a separate logical-size
+viewport into the corresponding Retina framebuffer region. The preview is an
+authoring view; final game materials, effects and physics still run in the game.
+
+See [format and compatibility](map-format.md) and
+[cross-program acceptance](map-editor-upgrade.md). This change preserves the
+sample's shooting, movement and collision algorithms.
+
+## Two-minute Sample Integration (2026-10-07)
+
+The accepted sample scope is `plan/two-minute-sample.md`; actual validation lives
+in `docs/sample-acceptance.md`. The default entry is now the starry crystal arena,
+seed 42. An explicit positional map path still loads legacy static encounters.
+
+- `ArenaDefinition` provides arena geometry constraints and deterministic waypoint
+  navigation. `EncounterDirector` advances an event timeline with safe spawn
+  retries, 1.2s rift warnings, caps, 90s cancellation and cleanup completion.
+- `Enemy` owns Chaser/Sentry behavior. `EnemyAction` is consumed after actor
+  iteration; `EnemyProjectileSystem` owns hostile swept wall/player collisions.
+- `App` integrates modules and controls READY/PLAYING/PAUSED/WON/DEAD, focus/input
+  edges and same-seed resets. Actual HP loss and fatal source feed `RunStats`.
+- `HudViewModel` is a value snapshot of state, stats, damage cues and visibility;
+  the HUD never owns gameplay transitions. Original glyph geometry is batched and
+  rendered after pixel post-processing at the real framebuffer size.
+- `EnvironmentRenderer` and `CharacterPresentation` own procedural visual assets.
+  World time/state is supplied explicitly, so pause and reset cannot silently
+  advance independent visual clocks. The transformation does not mutate geometry.
+- `AudioSystem` preloads original PCM and mixes a fixed 24 voices (8 reserved for
+  critical cues) through miniaudio 0.11.25. Missing audio has a visible fallback.
+- Reset stops audio and transient runtime, resets seed/stats and player/weapon,
+  then director/enemies and presentation, and finally unlocks input. GL owners
+  are destroyed while the context is current; sound callbacks stop before PCM is freed.
+
+`--acceptance` modes run actual GLFW/OpenGL/audio loops with explicitly marked
+synthetic input. They produce JSONL and frame CSV evidence and do not substitute
+for human playtests. See the README for launch commands and ownership in
+`docs/agent-team.md` for changes to shared modules.
+
 ---
 
 ## Project Layout
 
 ```
 silic2/
-├── src/            # All .cpp source files
-├── include/        # All .h headers (+ third-party: glad, GLFW, glm, stb, KHR)
+├── src/
+│   ├── engine/     # Application loop, map, rendering, collision
+│   ├── game/       # Run state, statistics, deterministic random streams
+│   ├── player/     # Player and weapon runtime
+│   ├── enemy/      # Enemy behavior and lifecycle
+│   ├── effects/    # Particle systems
+│   └── hud/        # Native-resolution HUD
+├── include/        # Mirrored public headers plus bundled third-party headers
 ├── res/
 │   ├── shaders/    # GLSL shader pairs (.vert / .frag)
 │   ├── maps/       # JSON level files
@@ -15,6 +81,7 @@ silic2/
 ├── lib/            # Pre-compiled libraries (glfw3, opengl32)
 ├── bin/            # Build output (object files)
 ├── docs/           # Design and technical documentation
+├── tests/          # Headless game-layer tests and baselines
 ├── Makefile.map    # Build system
 └── silic2.exe      # Output binary
 ```
@@ -29,9 +96,9 @@ All code lives in the `silic2` namespace.
 
 | File | Purpose |
 |------|---------|
-| `src/main.cpp` | Entry point; accepts optional map path argument, falls back to `res/maps/test_room.json` |
-| `src/app.cpp` / `include/app.h` | Central controller; owns all subsystems via `unique_ptr`, runs the game loop |
-| `src/game_config.cpp` / `include/game_config.h` | Singleton config (window / render / player / camera / effects); JSON save/load |
+| `src/engine/main.cpp` | Entry point; parses an optional map path and `--seed <uint64>` |
+| `src/engine/app.cpp` / `include/engine/app.h` | Central controller; owns subsystems and connects gameplay events to run state |
+| `src/engine/game_config.cpp` / `include/engine/game_config.h` | Singleton config (window / render / player / camera / effects); JSON save/load |
 
 ### Rendering
 
@@ -46,19 +113,42 @@ All code lives in the `silic2` namespace.
 
 | File | Purpose |
 |------|---------|
-| `src/player.cpp` / `include/player.h` | Physics, AABB collision, all movement states, camera effects |
-| `src/camera.cpp` / `include/camera.h` | FPS mouse-look; Euler angles; view/projection matrices |
-| `src/collision.cpp` / `include/collision.h` | AABB vs AABB, swept AABB, ray-AABB, penetration resolution |
-| `src/weapon.cpp` / `include/weapon.h` | Bullet physics, dual-pass render, dynamic lighting system |
-| `src/particle_system.cpp` / `include/particle_system.h` | General particle system with LUT-optimized fade (32 levels) |
-| `src/groundparticle.cpp` / `include/groundparticle.h` | Ground particle factory; FIRE and DUST modes |
+| `src/game/seed_service.cpp` | Stable 64-bit run seed and independent named random streams |
+| `src/game/run_stats.cpp` | Run/room timing, combat, damage, and movement measurements |
+| `src/game/run_controller.cpp` | Run lifecycle and same-seed restart behavior |
+| `src/player/player.cpp` | Physics, AABB collision, movement states, camera effects |
+| `src/player/weapon.cpp` | Bullet physics, hit results, dual-pass render, dynamic lighting |
+| `src/enemy/enemy_manager.cpp` | Enemy spawning, hit resolution, contact pressure, and cleanup |
+| `src/effects/particle_system.cpp` | General and ground particle runtime |
 
 ### World / Content
 
 | File | Purpose |
 |------|---------|
-| `src/map.cpp` / `include/map.h` | Level container: brushes, entities, lights; JSON serialization |
-| `src/simple_json.cpp` / `include/simple_json.h` | Custom JSON parser (null/bool/number/string/array/object) |
+| `src/engine/map.cpp` / `include/engine/map.h` | Shared map definition, validation, migration, derived layout and serialization |
+| `src/engine/simple_json.cpp` / `include/engine/simple_json.h` | Strict JSON parser and serializer shared with the editor |
+
+---
+
+## Run Lifecycle and Determinism
+
+```
+map load -> RunController::startRun -> RunStats::beginRoom
+PLAYING  -> record movement / shots / hits / kills / actual HP loss
+death    -> endRoom(PlayerDied) -> endRun(PlayerDied)
+clear    -> endRoom(Cleared)    -> endRun(Completed)
+result   -> wait 1 second -> R or click -> reset runtime -> restart same seed
+```
+
+`SeedService` derives independent `encounter`, `rewards`, `room_graph`, and
+`cosmetic` streams from the run seed using fixed FNV-1a and SplitMix64 mixing.
+Simulation decisions must not use `rand()`, `std::random_device`,
+`std::hash<string>`, or implementation-defined standard distributions.
+Presentation-only randomness remains isolated and must never change encounter
+or reward results.
+
+`RunStats` and `RunController` do not depend on GLFW or OpenGL. Run their tests
+with `make -f Makefile.map test`.
 
 ---
 

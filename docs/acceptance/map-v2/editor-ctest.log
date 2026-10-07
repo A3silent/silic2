@@ -1,0 +1,51 @@
+Start testing: Oct 07 23:05 HKT
+----------------------------------------------------------
+1/3 Testing: editor_document_roundtrip
+1/3 Test: editor_document_roundtrip
+Command: "/Users/ritzsun/Desktop/game/opengl/silic2_map_editor/build/map_editor" "--self-test" "/Users/ritzsun/Desktop/game/opengl/silic2/res/maps/test_room.json" "/Users/ritzsun/Desktop/game/opengl/silic2_map_editor/build/test-output"
+Directory: /Users/ritzsun/Desktop/game/opengl/silic2_map_editor/build
+"editor_document_roundtrip" start time: Oct 07 23:05 HKT
+Output:
+----------------------------------------------------------
+EDITOR SELF-TEST PASS: legacy transform/resize/clone, texture metadata, unique IDs, selection, history/savepoints, failed load/save, v2 objects, shared reload
+<end of output>
+Test time =   1.44 sec
+----------------------------------------------------------
+Test Passed.
+"editor_document_roundtrip" end time: Oct 07 23:05 HKT
+"editor_document_roundtrip" time elapsed: 00:00:01
+----------------------------------------------------------
+
+2/3 Testing: editor_textured_legacy
+2/3 Test: editor_textured_legacy
+Command: "/Users/ritzsun/Desktop/game/opengl/silic2_map_editor/build/map_editor" "--self-test" "/Users/ritzsun/Desktop/game/opengl/silic2/res/maps/textured_room.json" "/Users/ritzsun/Desktop/game/opengl/silic2_map_editor/build/test-output-textured"
+Directory: /Users/ritzsun/Desktop/game/opengl/silic2_map_editor/build
+"editor_textured_legacy" start time: Oct 07 23:05 HKT
+Output:
+----------------------------------------------------------
+EDITOR SELF-TEST PASS: legacy transform/resize/clone, texture metadata, unique IDs, selection, history/savepoints, failed load/save, v2 objects, shared reload
+<end of output>
+Test time =   0.02 sec
+----------------------------------------------------------
+Test Passed.
+"editor_textured_legacy" end time: Oct 07 23:05 HKT
+"editor_textured_legacy" time elapsed: 00:00:00
+----------------------------------------------------------
+
+3/3 Testing: editor_arena_v2
+3/3 Test: editor_arena_v2
+Command: "/Users/ritzsun/Desktop/game/opengl/silic2_map_editor/build/map_editor" "--self-test" "/Users/ritzsun/Desktop/game/opengl/silic2/res/maps/starry_crystal_arena.json" "/Users/ritzsun/Desktop/game/opengl/silic2_map_editor/build/test-output-arena"
+Directory: /Users/ritzsun/Desktop/game/opengl/silic2_map_editor/build
+"editor_arena_v2" start time: Oct 07 23:05 HKT
+Output:
+----------------------------------------------------------
+EDITOR ARENA SELF-TEST PASS: v2 cover move/resize/clone, unique IDs, undo/redo, save/reload, required marker constraint, template Save As
+<end of output>
+Test time =   0.02 sec
+----------------------------------------------------------
+Test Passed.
+"editor_arena_v2" end time: Oct 07 23:05 HKT
+"editor_arena_v2" time elapsed: 00:00:00
+----------------------------------------------------------
+
+End testing: Oct 07 23:05 HKT

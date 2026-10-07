@@ -222,26 +222,51 @@ void Player::processInput(GLFWwindow* window, Camera* camera, float deltaTime) {
     }
 }
 
-void Player::takeDamage(float amount) {
-    currentHp -= amount;
-    if (currentHp < 0.0f) currentHp = 0.0f;
+float Player::takeDamage(float amount) {
+    if (amount <= 0.0f || isGodMode() || isDead()) {
+        return 0.0f;
+    }
+
+    const float previousHp = currentHp;
+    currentHp = std::max(0.0f, currentHp - amount);
+    return previousHp - currentHp;
 }
 
 void Player::setPosition(const glm::vec3& pos) {
     position = pos;
-    // Restore full HP when repositioned (respawn/map load)
-    currentHp = GameConfig::getInstance().player.maxHp;
 }
 
 void Player::respawn(const glm::vec3& pos) {
-    position  = pos;
-    velocity  = glm::vec3(0.0f);
-    momentum  = glm::vec3(0.0f);
-    currentHp = GameConfig::getInstance().player.maxHp;
-    state     = PlayerState::IDLE;
-    sliding   = false;
-    crouching = false;
+    position = pos;
+    velocity = glm::vec3(0.0f);
+    state = PlayerState::IDLE;
+    onGround = false;
     sprinting = false;
+
+    jumpPressed = false;
+    wasJumpPressed = false;
+    godModePressed = false;
+    wasGodModePressed = false;
+    crouchPressed = false;
+    wasCrouchPressed = false;
+    shiftPressed = false;
+    wasShiftPressed = false;
+
+    const auto& config = GameConfig::getInstance().player;
+    currentFov = config.normalFov;
+    targetFov = config.normalFov;
+    bobTime = 0.0f;
+    headBobOffset = glm::vec3(0.0f);
+    cameraShakeOffset = glm::vec3(0.0f);
+    currentCameraHeight = 0.0f;
+    targetCameraHeight = 0.0f;
+
+    currentHp = config.maxHp;
+    momentum = glm::vec3(0.0f);
+    sliding = false;
+    slideTime = 0.0f;
+    slideDirection = glm::vec3(0.0f);
+    crouching = false;
     sprintToggled = false;
 }
 

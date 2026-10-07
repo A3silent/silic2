@@ -34,6 +34,7 @@ public:
 
     // Update particles
     void update(float deltaTime);
+    void reset();
     
     // Render particles
     void render(const glm::mat4& view, const glm::mat4& projection);
@@ -109,6 +110,7 @@ public:
     // Update and render
     void update(float deltaTime);
     void render(const glm::mat4& view, const glm::mat4& projection);
+    void reset();
     
     // Configuration
     void setEmissionRate(float particlesPerSecond) { emissionRate = particlesPerSecond; }

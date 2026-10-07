@@ -1,0 +1,47 @@
+{
+  "exit_code": 0,
+  "binary_sha256": "6b9e4d5095bebbabe37c28f55bb0a999fbd7259f9901a600ecace4db4602206e",
+  "command": "./silic2-release --vsync off --width 1280 --height 720 --acceptance performance --output artifacts/acceptance/map-v2/performance-final",
+  "csv_recomputed": true,
+  "runs": [
+    {
+      "event": "performance",
+      "run": 1,
+      "combat_seconds": 90.003792,
+      "frames": 43516,
+      "p95_ms": 6.8055,
+      "p99_ms": 8.4029583,
+      "max_ms": 78.693083,
+      "longest_over_50ms": 1,
+      "passed": true,
+      "rss_bytes": 118030336,
+      "audio_frames": 4327680
+    },
+    {
+      "event": "performance",
+      "run": 2,
+      "combat_seconds": 90.000984,
+      "frames": 43472,
+      "p95_ms": 6.792375,
+      "p99_ms": 8.3378333,
+      "max_ms": 68.935167,
+      "longest_over_50ms": 1,
+      "passed": true,
+      "rss_bytes": 131694592,
+      "audio_frames": 4320480
+    },
+    {
+      "event": "performance",
+      "run": 3,
+      "combat_seconds": 90.001152,
+      "frames": 44960,
+      "p95_ms": 6.7641667,
+      "p99_ms": 8.374,
+      "max_ms": 95.811542,
+      "longest_over_50ms": 1,
+      "passed": true,
+      "rss_bytes": 134774784,
+      "audio_frames": 4332000
+    }
+  ]
+}

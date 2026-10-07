@@ -1,0 +1,11 @@
+{"event":"configuration","logical_width":1280,"logical_height":720,"framebuffer_width":2560,"framebuffer_height":1440,"internal_width":320,"internal_height":200,"vsync":true,"audio_available":true,"synthetic_input":true}
+{"event":"flow_check","check":"ready_excludes_time","passed":true}
+{"event":"flow_check","check":"escape_pauses","passed":true}
+{"event":"flow_check","check":"pause_freezes_simulation_and_audio","passed":true}
+{"event":"flow_check","check":"escape_resumes","passed":true}
+{"event":"flow_check","check":"focus_callback_pauses_and_releases_cursor","passed":true}
+{"event":"flow_check","check":"resume_recaptures_cursor","passed":true}
+{"event":"flow_check","check":"death_actual_damage_and_source","passed":true}
+{"event":"flow_check","check":"held_fire_cannot_skip_result","passed":true}
+{"event":"flow_check","check":"fresh_click_same_seed_restart","passed":true}
+{"event":"flow_check","check":"all_flow_stages_completed","passed":true}

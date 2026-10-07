@@ -1,0 +1,21 @@
+{
+  "silic2": "2d344c0a4291e339a66f6a8fe2de254ce0ca5cd68bbf20e55ed660a854c93bab",
+  "silic2-release": "6b9e4d5095bebbabe37c28f55bb0a999fbd7259f9901a600ecace4db4602206e",
+  "Makefile.map": "65c428a0fea63cc501128613a5b591c818c166057f2d7a5494893ee57086412a",
+  "include/engine/map.h": "b7e560fd04d6dd5ed86bfa7cd49d0a86a711cbe82c0f2fb6e7662caf03849fc5",
+  "src/engine/map.cpp": "c266d0a9fea6ee48b92536f8e90e609fb6758459b937e35e349d85041f80ed40",
+  "include/engine/simple_json.h": "342814cd20d97a84e25d554036cdb22c319f31d5e7c8a7f2ca53733b48607b2c",
+  "src/engine/simple_json.cpp": "b8ed08999866adbad47afae4d64030e9be86114edc6745ac74eb6428b36694aa",
+  "src/engine/app.cpp": "cf9e7489ef50a6748f671458ba75afc3335590fe5ae82b6e2e641ac2e92f15d5",
+  "include/engine/app.h": "3d0a51ba4e6bdaabffaca8b1485f6c5a6c34d93619e26eca8a917ef2caa03937",
+  "include/game/arena_definition.h": "3966134ad54cb9fbf377870aed34939759863b35a94c44ece8f1a06b21cf49ee",
+  "src/game/arena_definition.cpp": "669ac7ac42c2958c4ee1feee97dcd04c765ecd5811d72631671c501ac08f6bea",
+  "src/enemy/enemy.cpp": "ed1224039eefbb79c16f04b7296bb756acd1b14fb1210aec1b3c55ded06895df",
+  "src/enemy/enemy_manager.cpp": "8aa1547658d804ace07f3fb7ea95978ef3c9cc481d4e68de7e7748eae3be459e",
+  "src/environment/environment_scene.cpp": "f9735dc6c8096d7177aa25d658abf4c26f4fe549238adcde456bdf3aff9fbacc",
+  "src/environment/environment_renderer.cpp": "a34b91c7b634f5db6e869efab3c9ba9d2beec3ae55b595a6afeae3a9cf2f8c4c",
+  "src/engine/map_renderer.cpp": "0293d490850455394ac2e182a1a66e66d802fd855578aef306698a8d44cfa5df",
+  "src/hud/hud_view_model.cpp": "917b6878bf322bce64e6991bebc8571af364d9727a97a746bdab5fdc3479f582",
+  "src/hud/bitmap_font_renderer.cpp": "730490cb8e627cf4ebb13a8988a8017d855ff1780fe623d6f15d88092ead1b7f",
+  "res/maps/starry_crystal_arena.json": "32625c080e32b13e354c9cf3dbb9f11a2807e468c76e5532c110060b3beb48a1"
+}

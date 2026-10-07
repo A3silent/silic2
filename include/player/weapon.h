@@ -6,10 +6,17 @@
 #include "engine/shader.h"
 #include "engine/camera.h"
 #include "engine/map.h"
+#include "game/gameplay_types.h"
 
 namespace silic2 {
 
 class EnemyManager; // forward declaration
+
+struct WeaponUpdateResult {
+    int hits = 0;
+    int kills = 0;
+    std::vector<EnemyType> killedEnemyTypes;
+};
 
 struct Bullet {
     glm::vec3 position;
@@ -24,8 +31,8 @@ struct Bullet {
     float length;  // Bullet length
 
     Bullet(const glm::vec3& pos, const glm::vec3& dir, float spd = 50.0f)
-        : position(pos), prevPosition(pos), direction(glm::normalize(dir)), speed(spd),
-          lifetime(0.0f), maxLifetime(3.0f),
+        : position(pos), prevPosition(pos), direction(glm::normalize(dir)),
+          lifetime(0.0f), maxLifetime(3.0f), speed(spd),
           color(0.5f, 0.8f, 1.0f), intensity(2.0f), length(0.3f) {  // Sky blue color
         velocity = direction * speed;
     }
@@ -86,17 +93,20 @@ public:
     ~Weapon();
     
     void init();
-    void update(float deltaTime, const Map* map, EnemyManager* enemies = nullptr);
+    WeaponUpdateResult update(float deltaTime, const Map* map,
+                              EnemyManager* enemies = nullptr);
     void render(const glm::mat4& view, const glm::mat4& projection);
     
     // Fire bullet from screen bottom-right towards center
-    void fire(const Camera& camera);
+    bool fire(const Camera& camera);
+    void reset();
     
     // Get active bullets' light source data
     std::vector<std::pair<glm::vec3, glm::vec3>> getActiveLights() const;
     
     // Get active bullet count
     size_t getActiveBulletCount() const { return bullets.size(); }
+    size_t getActiveImpactLightCount() const { return impactLights.size(); }
     
     // Control bullet lighting effects toggle
     void setBulletLightingEnabled(bool enabled) { bulletLightingEnabled = enabled; }

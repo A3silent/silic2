@@ -1,49 +1,101 @@
 #include "enemy/enemy.h"
 #include "engine/map.h"
+#include "enemy/enemy_geometry.h"
+#include "game/arena_definition.h"
 #include "engine/collision.h"
 #include <algorithm>
 #include <cmath>
 
 namespace silic2 {
 
-Enemy::Enemy(const glm::vec3& spawnPosition, int hp)
-    : position(spawnPosition), currentHp(hp), maxHp(hp), state(EnemyState::IDLE)
+Enemy::Enemy(const glm::vec3& spawnPosition, int hp, EnemyType enemyType)
+    : position(spawnPosition), currentHp(hp), maxHp(hp), type(enemyType),
+      state(EnemyState::IDLE)
 {
 }
 
 AABB Enemy::getAABB() const {
-    return AABB(
-        glm::vec3(position.x - HALF_W, position.y,            position.z - HALF_W),
-        glm::vec3(position.x + HALF_W, position.y + BOX_HEIGHT, position.z + HALF_W)
-    );
+    const float half=type==EnemyType::Sentry ? 0.6f : HALF_W;
+    const float height=type==EnemyType::Sentry ? 1.0f : BOX_HEIGHT;
+    return AABB(position-glm::vec3(half,0,half),position+glm::vec3(half,height,half));
 }
 
 bool Enemy::isTouchingPlayer(const glm::vec3& playerPos) const {
-    if (isDead()) return false;
+    if (isDead() || type==EnemyType::Sentry) return false;
     float dx = position.x - playerPos.x;
     float dz = position.z - playerPos.z;
     return std::sqrt(dx * dx + dz * dz) < TOUCH_RANGE;
 }
 
 void Enemy::update(float deltaTime, const glm::vec3& playerPos, const Map* map) {
-    if (isDead()) return;
-
+    pendingActions.clear();
+    if (isDead() || deltaTime<=0) return;
+    movementSpeed=0;
+    const auto previousPosition=position;
+    secondsSinceDamage+=deltaTime;
     applyGravityAndGround(deltaTime, map);
+    if(type==EnemyType::Sentry) { updateSentry(deltaTime,playerPos,map); return; }
 
     float dx = playerPos.x - position.x;
     float dz = playerPos.z - position.z;
     float dist = std::sqrt(dx * dx + dz * dz);
 
-    if (dist < AGGRO_RANGE) {
+    if (arenaEnabled || dist < AGGRO_RANGE) {
         state = EnemyState::CHASING;
         moveTowardPlayer(deltaTime, playerPos, map);
     } else {
         state = EnemyState::IDLE;
     }
+    movementSpeed=glm::length(glm::vec2(position.x-previousPosition.x,position.z-previousPosition.z))/deltaTime;
+}
+
+void Enemy::updateSentry(float dt,const glm::vec3& playerPos,const Map* map) {
+    const glm::vec3 target=playerPos+glm::vec3(0,0.9f,0);
+    const glm::vec3 muzzle=position+glm::vec3(0,0.65f,0);
+    auto directionToPlayer=[&]() {
+        const auto offset=target-muzzle;
+        return glm::length(offset)>1e-6f ? glm::normalize(offset) : heading;
+    };
+    // Consume phase boundaries exactly even on irregular simulation steps.
+    float remaining=dt;
+    for(int boundary=0;boundary<32 && remaining>0; ++boundary) {
+        if(state==EnemyState::IDLE) {
+            heading=directionToPlayer();
+            if(!enemyGeometry::clear(muzzle,target,map,0.12f)) break;
+            state=EnemyState::CHARGING; chargeTime=0; lockedDirection=heading;
+            pendingActions.push_back({EnemyAction::Kind::Charge,id,muzzle,heading});
+        }
+        if(state==EnemyState::CHARGING) {
+            if(chargeTime<0.65f) {
+                heading=directionToPlayer(); lockedDirection=heading;
+                const float step=std::min(remaining,0.65f-chargeTime);
+                chargeTime+=step; remaining-=step;
+                if(chargeTime<0.65f) break;
+            }
+            const float step=std::min(remaining,1.0f-chargeTime);
+            chargeTime+=step; remaining-=step;
+            if(chargeTime<1.0f) break;
+            // Recheck the locked ray through the current target distance. A moving
+            // player does not retarget a locked shot; cover can cancel the shot.
+            const float range=std::max(1.0f,glm::length(target-muzzle));
+            if(enemyGeometry::clear(muzzle,muzzle+lockedDirection*range,map,0.12f))
+                pendingActions.push_back({EnemyAction::Kind::Fire,id,muzzle,lockedDirection});
+            else pendingActions.push_back({EnemyAction::Kind::CancelCharge,id,muzzle,lockedDirection});
+            state=EnemyState::RECOVERING; recoverTime=2.2f; chargeTime=0;
+        }
+        if(state==EnemyState::RECOVERING) {
+            heading=directionToPlayer();
+            const float step=std::min(remaining,recoverTime);
+            recoverTime-=step; remaining-=step;
+            if(recoverTime>0) break;
+            state=EnemyState::IDLE;
+        }
+    }
 }
 
 void Enemy::takeDamage(int amount) {
-    if (isDead()) return;
+    if (isDead() || amount<=0) return;
+    secondsSinceDamage=0;
     currentHp -= amount;
     if (currentHp <= 0) {
         currentHp = 0;
@@ -52,53 +104,68 @@ void Enemy::takeDamage(int amount) {
 }
 
 void Enemy::applyGravityAndGround(float deltaTime, const Map* map) {
+    const float halfWidth=getAABB().getSize().x*0.5f;
     onGround = checkGroundBelow(map);
 
-    if (!onGround) {
-        velocityY += GRAVITY * deltaTime;
-        velocityY = std::max(velocityY, MAX_FALL);
-    } else {
+    if (onGround) {
         velocityY = 0.0f;
+        return;
     }
 
-    float yMove = velocityY * deltaTime;
-    position.y += yMove;
+    velocityY = std::max(velocityY + GRAVITY * deltaTime, MAX_FALL);
+    const float previousFeetY = position.y;
+    const float nextFeetY = position.y + velocityY * deltaTime;
 
-    // Re-check ground after moving; snap if we landed
-    if (checkGroundBelow(map) && velocityY <= 0.0f) {
-        onGround = true;
-        velocityY = 0.0f;
+    // Sweep the feet through the full vertical step. A thin point probe can
+    // skip zero-thickness floors when frame time varies.
+    bool foundLanding = false;
+    float landingY = 0.0f;
+    if (map && velocityY <= 0.0f) {
+        for (const auto& brush : map->getBrushes()) {
+            if (brush.vertices.empty()) continue;
 
-        // Snap feet to the top of the highest brush below
-        if (map) {
-            float highestTop = 0.0f;
-            AABB groundProbe(
-                glm::vec3(position.x - HALF_W, position.y - GROUND_EPS, position.z - HALF_W),
-                glm::vec3(position.x + HALF_W, position.y,               position.z + HALF_W)
-            );
-            for (const auto& brush : map->getBrushes()) {
-                if (brush.vertices.empty()) continue;
-                glm::vec3 bMin = brush.vertices[0], bMax = brush.vertices[0];
-                for (const auto& v : brush.vertices) {
-                    bMin = glm::min(bMin, v);
-                    bMax = glm::max(bMax, v);
-                }
-                AABB brushBox(bMin, bMax);
-                if (CollisionSystem::checkAABB(groundProbe, brushBox) && bMax.y <= position.y + 0.1f) {
-                    highestTop = std::max(highestTop, bMax.y);
-                }
+            glm::vec3 brushMin = brush.vertices[0];
+            glm::vec3 brushMax = brush.vertices[0];
+            for (const auto& vertex : brush.vertices) {
+                brushMin = glm::min(brushMin, vertex);
+                brushMax = glm::max(brushMax, vertex);
             }
-            position.y = highestTop + GROUND_EPS;
+
+            const bool overlapsX =
+                position.x + halfWidth >= brushMin.x &&
+                position.x - halfWidth <= brushMax.x;
+            const bool overlapsZ =
+                position.z + halfWidth >= brushMin.z &&
+                position.z - halfWidth <= brushMax.z;
+            const float surfaceY = brushMax.y;
+            const bool crossedSurface =
+                surfaceY <= previousFeetY + GROUND_EPS &&
+                surfaceY >= nextFeetY - GROUND_EPS;
+
+            if (overlapsX && overlapsZ && crossedSurface &&
+                (!foundLanding || surfaceY > landingY)) {
+                foundLanding = true;
+                landingY = surfaceY;
+            }
         }
+    }
+
+    if (foundLanding) {
+        position.y = landingY + GROUND_EPS;
+        velocityY = 0.0f;
+        onGround = true;
+    } else {
+        position.y = nextFeetY;
     }
 }
 
 bool Enemy::checkGroundBelow(const Map* map) const {
     if (!map) return false;
 
+    const float halfWidth=getAABB().getSize().x*0.5f;
     AABB groundProbe(
-        glm::vec3(position.x - HALF_W, position.y - GROUND_EPS, position.z - HALF_W),
-        glm::vec3(position.x + HALF_W, position.y,               position.z + HALF_W)
+        glm::vec3(position.x - halfWidth, position.y - GROUND_EPS, position.z - halfWidth),
+        glm::vec3(position.x + halfWidth, position.y,               position.z + halfWidth)
     );
 
     for (const auto& brush : map->getBrushes()) {
@@ -117,12 +184,17 @@ bool Enemy::checkGroundBelow(const Map* map) const {
 }
 
 void Enemy::moveTowardPlayer(float deltaTime, const glm::vec3& playerPos, const Map* map) {
-    glm::vec3 toPlayer(playerPos.x - position.x, 0.0f, playerPos.z - position.z);
-    float dist = glm::length(toPlayer);
-    if (dist < 0.01f) return;
-
-    glm::vec3 dir = toPlayer / dist;
-    glm::vec3 desired = dir * MOVE_SPEED * deltaTime;
+    glm::vec3 target=playerPos;
+    if(arenaEnabled && arenaDefinition) {
+        target=arenaDefinition->nextWaypoint(position,playerPos,HALF_W+0.04f);
+    }
+    glm::vec3 toPlayer(target.x-position.x,0,target.z-position.z);
+    float dist=glm::length(toPlayer);
+    if(dist<0.01f) return;
+    heading=toPlayer/dist;
+    glm::vec3 velocity=heading*MOVE_SPEED+separation;
+    if(glm::length(velocity)>MOVE_SPEED) velocity=glm::normalize(velocity)*MOVE_SPEED;
+    glm::vec3 desired=velocity*std::min(deltaTime,dist/MOVE_SPEED);
 
     glm::vec3 actual = resolveHorizontalCollision(desired, map);
     position.x += actual.x;
@@ -135,30 +207,23 @@ glm::vec3 Enemy::resolveHorizontalCollision(const glm::vec3& desiredMove, const 
     glm::vec3 result = desiredMove;
     AABB current = getAABB();
 
-    // Axis-separated resolution: try X, then Z independently
-    for (int axis = 0; axis < 2; ++axis) {
-        glm::vec3 axisMove(0.0f);
-        if (axis == 0) axisMove.x = result.x;
-        else           axisMove.z = result.z;
-
-        AABB moved(current.min + axisMove, current.max + axisMove);
-
-        for (const auto& brush : map->getBrushes()) {
-            if (brush.vertices.empty()) continue;
-            glm::vec3 bMin = brush.vertices[0], bMax = brush.vertices[0];
-            for (const auto& v : brush.vertices) {
-                bMin = glm::min(bMin, v);
-                bMax = glm::max(bMax, v);
-            }
-            // Skip zero-thickness horizontal brushes (floors/ceilings) — not walls
-            if ((bMax.y - bMin.y) < 0.01f) continue;
-            AABB brushBox(bMin, bMax);
-            if (CollisionSystem::checkAABB(moved, brushBox)) {
-                if (axis == 0) result.x = 0.0f;
-                else           result.z = 0.0f;
-                break;
-            }
+    // Sweep each horizontal axis to avoid tunneling at irregular frame steps.
+    for (int axis : {0,2}) {
+        glm::vec3 axisMove(0); axisMove[axis]=result[axis];
+        const auto center=current.getCenter();
+        const auto half=current.getSize()*0.5f;
+        float allowed=1;
+        for(const auto& brush:map->getBrushes()) {
+            if(brush.vertices.empty()) continue;
+            auto box=enemyGeometry::bounds(brush);
+            if(box.max.y<=current.min.y+0.01f || box.min.y>=current.max.y) continue;
+            box.min-=half; box.max+=half;
+            float t;
+            if(enemyGeometry::segment(center,center+axisMove,box,t)) allowed=std::min(allowed,std::max(0.0f,t-0.001f));
         }
+        result[axis]*=allowed;
+        axisMove[axis]=result[axis];
+        current.min+=axisMove; current.max+=axisMove;
     }
 
     return result;

@@ -1,0 +1,5 @@
+{"event":"configuration","logical_width":1280,"logical_height":720,"framebuffer_width":2560,"framebuffer_height":1440,"internal_width":320,"internal_height":200,"vsync":false,"audio_available":true,"synthetic_input":true}
+{"event":"performance","run":1,"combat_seconds":90.003792,"frames":43516,"p95_ms":6.8055,"p99_ms":8.4029583,"max_ms":78.693083,"longest_over_50ms":1,"passed":true,"rss_bytes":118030336,"audio_frames":4327680}
+{"event":"performance","run":2,"combat_seconds":90.000984,"frames":43472,"p95_ms":6.792375,"p99_ms":8.3378333,"max_ms":68.935167,"longest_over_50ms":1,"passed":true,"rss_bytes":131694592,"audio_frames":4320480}
+{"event":"synthetic_resume","reason":"acceptance automation resumes after focus pause"}
+{"event":"performance","run":3,"combat_seconds":90.001152,"frames":44960,"p95_ms":6.7641667,"p99_ms":8.374,"max_ms":95.811542,"longest_over_50ms":1,"passed":true,"rss_bytes":134774784,"audio_frames":4332000}

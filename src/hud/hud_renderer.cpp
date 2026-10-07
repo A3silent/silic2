@@ -1,115 +1,56 @@
 #include "hud/hud_renderer.h"
 #include "engine/shader.h"
-#include <glad/glad.h>
-#include <glm/gtc/matrix_transform.hpp>
-#include <cmath>
-#include <iostream>
+#include <cstddef>
 
 namespace silic2 {
-
 HudRenderer::HudRenderer() = default;
-
 HudRenderer::~HudRenderer() {
-    if (vao) glDeleteVertexArrays(1, &vao);
-    if (vbo) glDeleteBuffers(1, &vbo);
+    if(vao) glDeleteVertexArrays(1,&vao);
+    if(vbo) glDeleteBuffers(1,&vbo);
 }
-
 bool HudRenderer::init() {
-    shader = std::make_unique<Shader>("res/shaders/healthbar.vert", "res/shaders/healthbar.frag");
-
-    glGenVertexArrays(1, &vao);
-    glGenBuffers(1, &vbo);
-    glBindVertexArray(vao);
-    glBindBuffer(GL_ARRAY_BUFFER, vbo);
-    // 6 vertices × 2 floats — updated each draw call
-    glBufferData(GL_ARRAY_BUFFER, 6 * 2 * sizeof(float), nullptr, GL_DYNAMIC_DRAW);
+    if(shader) return true;
+    shader=std::make_unique<Shader>("res/shaders/hud_batch.vert","res/shaders/hud_batch.frag");
+    GLint linked=GL_FALSE;
+    glGetProgramiv(shader->ID,GL_LINK_STATUS,&linked);
+    if(linked!=GL_TRUE) { shader.reset();return false; }
+    GLint previousVAO=0,previousBuffer=0;
+    glGetIntegerv(GL_VERTEX_ARRAY_BINDING,&previousVAO);
+    glGetIntegerv(GL_ARRAY_BUFFER_BINDING,&previousBuffer);
+    glGenVertexArrays(1,&vao);glGenBuffers(1,&vbo);
+    glBindVertexArray(vao);glBindBuffer(GL_ARRAY_BUFFER,vbo);
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
-    glBindVertexArray(0);
-
+    glVertexAttribPointer(0,2,GL_FLOAT,GL_FALSE,sizeof(HudVertex),reinterpret_cast<void*>(offsetof(HudVertex,position)));
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(1,4,GL_FLOAT,GL_FALSE,sizeof(HudVertex),reinterpret_cast<void*>(offsetof(HudVertex,color)));
+    glBindVertexArray(previousVAO);glBindBuffer(GL_ARRAY_BUFFER,previousBuffer);
+    batch.vertices.reserve(48000);
     return true;
 }
-
-void HudRenderer::drawRect(float x, float y, float w, float h,
-                           const glm::vec4& col, int screenW, int screenH) {
-    float vertices[6][2] = {
-        {x,     y    }, {x + w, y    }, {x + w, y + h},
-        {x,     y    }, {x + w, y + h}, {x,     y + h}
-    };
-    glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices);
-    shader->setVec2("screenSize", static_cast<float>(screenW), static_cast<float>(screenH));
-    shader->setVec4("color", col.r, col.g, col.b, col.a);
-    glDrawArrays(GL_TRIANGLES, 0, 6);
+void HudRenderer::render(const HudViewModel& model,int logicalWidth,int logicalHeight,int framebufferWidth,int framebufferHeight) {
+    if(!shader || logicalWidth<=0 || logicalHeight<=0 || framebufferWidth<=0 || framebufferHeight<=0) return;
+    buildHudGeometry(batch,model,logicalWidth,logicalHeight);
+    if(batch.vertices.empty()) return;
+    GLint viewport[4],program,previousVAO,previousBuffer,srcRGB,dstRGB,srcAlpha,dstAlpha,equationRGB,equationAlpha;
+    glGetIntegerv(GL_VIEWPORT,viewport);glGetIntegerv(GL_CURRENT_PROGRAM,&program);
+    glGetIntegerv(GL_VERTEX_ARRAY_BINDING,&previousVAO);glGetIntegerv(GL_ARRAY_BUFFER_BINDING,&previousBuffer);
+    glGetIntegerv(GL_BLEND_SRC_RGB,&srcRGB);glGetIntegerv(GL_BLEND_DST_RGB,&dstRGB);
+    glGetIntegerv(GL_BLEND_SRC_ALPHA,&srcAlpha);glGetIntegerv(GL_BLEND_DST_ALPHA,&dstAlpha);
+    glGetIntegerv(GL_BLEND_EQUATION_RGB,&equationRGB);glGetIntegerv(GL_BLEND_EQUATION_ALPHA,&equationAlpha);
+    const GLboolean depth=glIsEnabled(GL_DEPTH_TEST),blend=glIsEnabled(GL_BLEND),cull=glIsEnabled(GL_CULL_FACE),scissor=glIsEnabled(GL_SCISSOR_TEST);
+    glViewport(0,0,framebufferWidth,framebufferHeight);
+    glDisable(GL_DEPTH_TEST);glDisable(GL_CULL_FACE);glDisable(GL_SCISSOR_TEST);glEnable(GL_BLEND);
+    glBlendEquation(GL_FUNC_ADD);glBlendFuncSeparate(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA,GL_ONE,GL_ONE_MINUS_SRC_ALPHA);
+    shader->use();shader->setVec2("logicalSize",static_cast<float>(logicalWidth),static_cast<float>(logicalHeight));
+    glBindVertexArray(vao);glBindBuffer(GL_ARRAY_BUFFER,vbo);
+    glBufferData(GL_ARRAY_BUFFER,batch.vertices.size()*sizeof(HudVertex),batch.vertices.data(),GL_STREAM_DRAW);
+    glDrawArrays(GL_TRIANGLES,0,static_cast<GLsizei>(batch.vertices.size()));
+    glBindVertexArray(previousVAO);glBindBuffer(GL_ARRAY_BUFFER,previousBuffer);glUseProgram(program);
+    glViewport(viewport[0],viewport[1],viewport[2],viewport[3]);
+    glBlendFuncSeparate(srcRGB,dstRGB,srcAlpha,dstAlpha);glBlendEquationSeparate(equationRGB,equationAlpha);
+    if(depth) glEnable(GL_DEPTH_TEST); else glDisable(GL_DEPTH_TEST);
+    if(blend) glEnable(GL_BLEND); else glDisable(GL_BLEND);
+    if(cull) glEnable(GL_CULL_FACE); else glDisable(GL_CULL_FACE);
+    if(scissor) glEnable(GL_SCISSOR_TEST); else glDisable(GL_SCISSOR_TEST);
 }
-
-glm::vec4 HudRenderer::hpColor(float ratio) {
-    if (ratio > 0.6f) return glm::vec4(0.1f, 0.9f, 0.1f, 1.0f);  // green
-    if (ratio > 0.3f) return glm::vec4(0.9f, 0.85f, 0.1f, 1.0f); // yellow
-    return glm::vec4(0.9f, 0.15f, 0.1f, 1.0f);                    // red
-}
-
-void HudRenderer::render(int screenW, int screenH,
-                         float playerHp, float playerMaxHp,
-                         const std::vector<Enemy>& enemies,
-                         const glm::mat4& view,
-                         const glm::mat4& projection) {
-    glDisable(GL_DEPTH_TEST);
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-    shader->use();
-    glBindVertexArray(vao);
-    glBindBuffer(GL_ARRAY_BUFFER, vbo);
-
-    // --- Player health bar (bottom-left) ---
-    const float BAR_W  = 160.f;
-    const float BAR_H  = 12.f;
-    const float MARGIN = 16.f;
-
-    float ratio  = (playerMaxHp > 0.f) ? (playerHp / playerMaxHp) : 0.f;
-    float fillW  = BAR_W * ratio;
-    float x      = MARGIN;
-    float y      = static_cast<float>(screenH) - MARGIN - BAR_H;
-
-    // Background
-    drawRect(x, y, BAR_W, BAR_H, glm::vec4(0.1f, 0.1f, 0.1f, 0.85f), screenW, screenH);
-    // Fill
-    if (fillW > 0.f)
-        drawRect(x, y, fillW, BAR_H, hpColor(ratio), screenW, screenH);
-
-    // --- Enemy health bars (screen-projected) ---
-    const float EW = 40.f;
-    const float EH = 5.f;
-
-    for (const Enemy& e : enemies) {
-        if (e.isDead()) continue;
-
-        glm::vec4 clip = projection * view *
-                         glm::vec4(e.getPosition() + glm::vec3(0.f, Enemy::BOX_HEIGHT + 0.3f, 0.f), 1.0f);
-
-        if (clip.w <= 0.0f) continue;  // behind camera
-
-        float ndcX = clip.x / clip.w;
-        float ndcY = clip.y / clip.w;
-        if (std::abs(ndcX) > 1.2f || std::abs(ndcY) > 1.2f) continue;  // off-screen
-
-        float sx = (ndcX + 1.0f) * 0.5f * static_cast<float>(screenW);
-        float sy = (1.0f - ndcY) * 0.5f * static_cast<float>(screenH);
-
-        float ex        = sx - EW * 0.5f;
-        float enemyRatio = static_cast<float>(e.getHp()) / static_cast<float>(e.getMaxHp());
-
-        // Background
-        drawRect(ex, sy, EW, EH, glm::vec4(0.1f, 0.1f, 0.1f, 0.85f), screenW, screenH);
-        // Fill (always red for enemies)
-        float enemyFill = EW * enemyRatio;
-        if (enemyFill > 0.f)
-            drawRect(ex, sy, enemyFill, EH, glm::vec4(0.9f, 0.15f, 0.1f, 1.0f), screenW, screenH);
-    }
-
-    glBindVertexArray(0);
-    glEnable(GL_DEPTH_TEST);
-    glDisable(GL_BLEND);
-}
-
 } // namespace silic2

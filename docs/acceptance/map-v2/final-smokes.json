@@ -1,0 +1,51 @@
+[
+  {
+    "name": "final-arena-flow",
+    "command": [
+      "/Users/ritzsun/Desktop/game/opengl/silic2/silic2-release",
+      "/Users/ritzsun/Desktop/game/opengl/silic2/res/maps/starry_crystal_arena.json",
+      "--acceptance",
+      "flow",
+      "--output",
+      "/Users/ritzsun/Desktop/game/opengl/silic2/artifacts/acceptance/map-v2/final-arena-flow"
+    ],
+    "exit_code": 0,
+    "binary_sha256": "6b9e4d5095bebbabe37c28f55bb0a999fbd7259f9901a600ecace4db4602206e",
+    "map_sha256": "32625c080e32b13e354c9cf3dbb9f11a2807e468c76e5532c110060b3beb48a1",
+    "wall_seconds": 6.986423015594482,
+    "flow_checks": 10,
+    "flow_pass": true
+  },
+  {
+    "name": "final-editor-legacy",
+    "command": [
+      "/Users/ritzsun/Desktop/game/opengl/silic2/silic2-release",
+      "/tmp/silic2-editor-final-legacy/edited.json",
+      "--acceptance",
+      "screenshots",
+      "--output",
+      "/Users/ritzsun/Desktop/game/opengl/silic2/artifacts/acceptance/map-v2/final-editor-legacy"
+    ],
+    "exit_code": 0,
+    "binary_sha256": "6b9e4d5095bebbabe37c28f55bb0a999fbd7259f9901a600ecace4db4602206e",
+    "map_sha256": "e1d42f0181d7cef5390291358f437d75fc1d93dc9198374193546397b56e0892",
+    "wall_seconds": 5.412840127944946
+  },
+  {
+    "name": "final-editor-arena",
+    "command": [
+      "/Users/ritzsun/Desktop/game/opengl/silic2/silic2-release",
+      "/tmp/silic2-editor-final-arena/edited.json",
+      "--acceptance",
+      "flow",
+      "--output",
+      "/Users/ritzsun/Desktop/game/opengl/silic2/artifacts/acceptance/map-v2/final-editor-arena"
+    ],
+    "exit_code": 0,
+    "binary_sha256": "6b9e4d5095bebbabe37c28f55bb0a999fbd7259f9901a600ecace4db4602206e",
+    "map_sha256": "f599c09d46cfb4ec2a0e9a1cecdedc86241c4c50bfd27ea1044e4dd7e5daf8f7",
+    "wall_seconds": 5.448226690292358,
+    "flow_checks": 10,
+    "flow_pass": true
+  }
+]

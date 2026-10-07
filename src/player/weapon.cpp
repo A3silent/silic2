@@ -8,7 +8,9 @@
 
 namespace silic2 {
 
-Weapon::Weapon() : fireCooldown(0.0f), fireRate(0.06f), bulletVAO(0), bulletVBO(0), glowVAO(0), glowVBO(0), bulletLightingEnabled(false) {
+Weapon::Weapon()
+    : bulletVAO(0), bulletVBO(0), glowVAO(0), glowVBO(0),
+      fireCooldown(0.0f), fireRate(0.06f), bulletLightingEnabled(false) {
 }
 
 Weapon::~Weapon() {
@@ -140,7 +142,9 @@ void Weapon::setupGlowMesh() {
     glBindVertexArray(0);
 }
 
-void Weapon::update(float deltaTime, const Map* map, EnemyManager* enemies) {
+WeaponUpdateResult Weapon::update(float deltaTime, const Map* map, EnemyManager* enemies) {
+    WeaponUpdateResult result;
+
     // Update fire cooldown
     if (fireCooldown > 0.0f) {
         fireCooldown -= deltaTime;
@@ -159,7 +163,16 @@ void Weapon::update(float deltaTime, const Map* map, EnemyManager* enemies) {
         // Check collision with enemies using swept segment (prevents tunneling)
         bool hitEnemy = false;
         if (!hitWall && enemies && it->lifetime > 0.02f) {
-            hitEnemy = enemies->checkBulletHit(it->prevPosition, it->position, 1);
+            const auto hitResult =
+                enemies->checkBulletHit(it->prevPosition, it->position, 1);
+            hitEnemy = hitResult.hit;
+            if (hitResult.hit) {
+                ++result.hits;
+            }
+            if (hitResult.killed) {
+                ++result.kills;
+                result.killedEnemyTypes.push_back(hitResult.enemyType);
+            }
         }
 
         if (hitWall || hitEnemy) {
@@ -179,6 +192,7 @@ void Weapon::update(float deltaTime, const Map* map, EnemyManager* enemies) {
     
     // Clean up dead lights
     cleanupDeadLights();
+    return result;
 }
 
 void Weapon::cleanupDeadBullets() {
@@ -236,13 +250,12 @@ bool Weapon::checkBulletCollision(const Bullet& bullet, const Map* map) {
 
 void Weapon::createImpactLight(const glm::vec3& position, const glm::vec3& color, float intensity) {
     impactLights.emplace_back(position, color, intensity);
-    std::cout << "Created impact light at: " << position.x << ", " << position.y << ", " << position.z 
-              << " | Total impact lights: " << impactLights.size() << std::endl;
+
 }
 
-void Weapon::fire(const Camera& camera) {
+bool Weapon::fire(const Camera& camera) {
     if (fireCooldown > 0.0f) {
-        return; // Still cooling down
+        return false;
     }
     
     // Get camera position and direction
@@ -267,6 +280,13 @@ void Weapon::fire(const Camera& camera) {
     
     // Reset cooldown time
     fireCooldown = fireRate;
+    return true;
+}
+
+void Weapon::reset() {
+    bullets.clear();
+    impactLights.clear();
+    fireCooldown = 0.0f;
 }
 
 void Weapon::render(const glm::mat4& view, const glm::mat4& projection) {

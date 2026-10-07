@@ -1,6 +1,7 @@
 #include "engine/camera.h"
 #include "engine/game_config.h"
 #include <GLFW/glfw3.h>
+#include <cmath>
 
 namespace silic2 {
 
@@ -11,6 +12,20 @@ Camera::Camera(glm::vec3 position)
     yaw = config.yaw;
     pitch = config.pitch;
     front = glm::vec3(0.0f, -0.5f, -0.5f);
+    updateCameraVectors();
+}
+
+void Camera::setDirection(const glm::vec3& direction) {
+    if (glm::length(direction) < 0.0001f) return;
+    const auto d = glm::normalize(direction);
+    yaw = glm::degrees(std::atan2(d.z, d.x));
+    pitch = glm::degrees(std::asin(glm::clamp(d.y, -1.0f, 1.0f)));
+    updateCameraVectors();
+}
+void Camera::resetOrientation() {
+    yaw = GameConfig::getInstance().camera.yaw;
+    pitch = GameConfig::getInstance().camera.pitch;
+    firstMouse = true;
     updateCameraVectors();
 }
 

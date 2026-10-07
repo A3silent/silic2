@@ -1,0 +1,27 @@
+Silic2 Phase 0 baseline
+========================
+
+Command:
+  ./silic2 res/maps/test_room.json --seed 42
+
+Environment:
+  macOS, Debug build, test_room.json
+
+Expected deterministic fields:
+  seed=42
+  initial enemies=1
+  enemy type=chaser
+  enemy hp=3
+  restart keeps seed=42
+  restart increments run_index
+
+Expected lifecycle:
+  Room clear records reason=completed and rooms_cleared=1.
+  Contact death records reason=player_died and last_damage_source=enemy_contact.
+  A successful shot increments shots_fired once.
+  A bullet increments shots_hit at most once.
+  Restart clears shots, hits, kills, damage, bullets, impact lights, and particles.
+  Run and room time do not advance while paused.
+
+Timing, FPS, player input, accuracy, and distance are intentionally not fixed
+baseline values.

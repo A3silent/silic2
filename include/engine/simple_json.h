@@ -4,11 +4,11 @@
 #include <map>
 #include <vector>
 #include <variant>
-#include <memory>
+#include <cstddef>
 
 namespace silic2 {
 
-// Simple JSON parser for our specific use case
+// Lightweight strict JSON value shared by the game and editor.
 class SimpleJson {
 public:
     enum Type {
@@ -35,10 +35,14 @@ public:
     SimpleJson(const std::string& s) : value_(s) {}
     SimpleJson(const char* s) : value_(std::string(s)) {}
 
-    // Parse from string
+    // Parse a complete UTF-8 JSON document. Throws std::runtime_error with a
+    // zero-based byte offset on malformed input; maximum container depth is 128.
     static SimpleJson parse(const std::string& json_str);
     
-    // Serialize to string
+    static SimpleJson object();
+    static SimpleJson array();
+
+    // Serialize to string (throws for nonfinite numbers or invalid UTF-8).
     std::string toString() const;
 
     // Type checking
@@ -55,6 +59,8 @@ public:
     double getNumber() const;
     const std::string& getString() const;
     
+    // Mutable indexing requires an existing array element; invalid writes throw.
+    // Const lookups retain the historical null fallback.
     // Array access
     size_t size() const;
     SimpleJson& operator[](size_t index);
@@ -65,6 +71,7 @@ public:
     SimpleJson& operator[](const std::string& key);
     const SimpleJson& operator[](const std::string& key) const;
     bool hasKey(const std::string& key) const;
+    bool erase(const std::string& key);
     std::vector<std::string> getKeys() const;
 
     // Convenience methods
@@ -75,14 +82,7 @@ public:
 private:
     Value value_;
     
-    static SimpleJson parseValue(const std::string& str, size_t& pos);
-    static SimpleJson parseObject(const std::string& str, size_t& pos);
-    static SimpleJson parseArray(const std::string& str, size_t& pos);
-    static std::string parseString(const std::string& str, size_t& pos);
-    static double parseNumber(const std::string& str, size_t& pos);
-    static void skipWhitespace(const std::string& str, size_t& pos);
-    
-    std::string valueToString() const;
+    std::string valueToString(size_t depth = 0) const;
     std::string escapeString(const std::string& str) const;
 };
 

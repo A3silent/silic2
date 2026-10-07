@@ -35,6 +35,8 @@ public:
     // Setters
     void setPosition(const glm::vec3& pos) { position = pos; }
     void setFov(float newFov);
+    void setDirection(const glm::vec3& direction);
+    void resetOrientation();
     // Note: Movement speed and sensitivity are now handled by GameConfig
 
     // Mouse state management

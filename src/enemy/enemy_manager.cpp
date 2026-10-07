@@ -1,6 +1,7 @@
 #include "enemy/enemy_manager.h"
 #include "engine/shader.h"
 #include "engine/collision.h"
+#include "enemy/enemy_geometry.h"
 #include <glm/gtc/matrix_transform.hpp>
 #include <iostream>
 #include <algorithm>
@@ -68,22 +69,68 @@ void EnemyManager::setupBoxMesh() {
 }
 
 void EnemyManager::spawnFromMap(const Map& map) {
-    enemies.clear();
+    clear();
+    setArenaDefinition(nullptr);
     for (const auto& entity : map.getEntities()) {
         if (entity.type == EntityType::ENEMY_SPAWN) {
             enemies.emplace_back(entity.position);
+            enemies.back().setId(nextId++);
             std::cout << "Spawned enemy at ("
                       << entity.position.x << ", "
                       << entity.position.y << ", "
                       << entity.position.z << ")\n";
         }
     }
+    spawnedEnemyCount = enemies.size();
     std::cout << "EnemyManager: " << enemies.size() << " enemy/enemies spawned.\n";
 }
 
+bool EnemyManager::spawn(EnemyType type,const glm::vec3& position) {
+    if(type!=EnemyType::Chaser && type!=EnemyType::Sentry) return false;
+    if(count(type)>=(type==EnemyType::Sentry ? 3u : 18u)) return false;
+    enemies.emplace_back(position,type==EnemyType::Sentry ? 12 : 6,type);
+    enemies.back().setId(nextId++);
+    enemies.back().setArenaDefinition(arenaDefinition);
+    enemies.back().setArenaEnabled(arenaEnabled);
+    ++spawnedEnemyCount; return true;
+}
+void EnemyManager::setArenaEnabled(bool enabled) {
+    arenaEnabled=enabled;
+    for(auto& enemy:enemies) enemy.setArenaEnabled(enabled);
+}
+void EnemyManager::setArenaDefinition(std::shared_ptr<const ArenaDefinition> definition) {
+    arenaDefinition=std::move(definition);
+    arenaEnabled=bool(arenaDefinition);
+    for(auto& enemy:enemies) enemy.setArenaDefinition(arenaDefinition);
+}
+size_t EnemyManager::count(EnemyType type) const {
+    return std::count_if(enemies.begin(),enemies.end(),[&](const auto& e){return !e.isDead() && e.getType()==type;});
+}
 void EnemyManager::update(float deltaTime, const glm::vec3& playerPos, const Map* map) {
+    pendingActions.clear();
+    // Compute separation against the same snapshot for every actor.
+    for(auto& enemy:enemies) {
+        glm::vec3 separation(0);
+        if(arenaEnabled && !enemy.isDead() && enemy.getType()==EnemyType::Chaser) {
+            for(const auto& other:enemies) {
+                if(other.getId()==enemy.getId() || other.isDead()) continue;
+                auto offset=enemy.getPosition()-other.getPosition(); offset.y=0;
+                float distance=glm::length(offset);
+                if(distance>=1.0f) continue;
+                if(distance<0.001f) {
+                    // Paired opposite directions resolve exact spawn overlap.
+                    const float angle=static_cast<float>(std::min(enemy.getId(),other.getId())%16)*0.392699f;
+                    offset=glm::vec3(std::cos(angle),0,std::sin(angle))*(enemy.getId()<other.getId() ? 1.0f : -1.0f);
+                } else offset/=distance;
+                separation+=offset*(1.0f-distance)*1.2f;
+            }
+            if(glm::length(separation)>1.2f) separation=glm::normalize(separation)*1.2f;
+        }
+        enemy.setSeparation(separation);
+    }
     for (auto& enemy : enemies) {
         enemy.update(deltaTime, playerPos, map);
+        pendingActions.insert(pendingActions.end(),enemy.actions().begin(),enemy.actions().end());
     }
     removeDeadEnemies();
 }
@@ -115,7 +162,7 @@ void EnemyManager::render(const glm::mat4& view, const glm::mat4& projection,
     for (const auto& enemy : enemies) {
         glm::mat4 model = glm::mat4(1.0f);
         model = glm::translate(model, enemy.getPosition());
-        model = glm::scale(model, glm::vec3(Enemy::BOX_WIDTH, Enemy::BOX_HEIGHT, Enemy::BOX_WIDTH));
+        model = glm::scale(model, enemy.getAABB().getSize());
 
         enemyShader->setMat4("model", model);
         glDrawArrays(GL_TRIANGLES, 0, 36);
@@ -124,40 +171,17 @@ void EnemyManager::render(const glm::mat4& view, const glm::mat4& projection,
     glBindVertexArray(0);
 }
 
-// Segment-AABB intersection (slab method). Tests segment from 'start' to 'end' (t in [0,1]).
-static bool segmentIntersectsAABB(const glm::vec3& start, const glm::vec3& end,
-                                   const glm::vec3& bMin, const glm::vec3& bMax) {
-    glm::vec3 d = end - start;
-    float tMin = 0.0f, tMax = 1.0f;
-    for (int i = 0; i < 3; ++i) {
-        if (std::abs(d[i]) < 1e-8f) {
-            if (start[i] < bMin[i] || start[i] > bMax[i]) return false;
-        } else {
-            float t1 = (bMin[i] - start[i]) / d[i];
-            float t2 = (bMax[i] - start[i]) / d[i];
-            if (t1 > t2) std::swap(t1, t2);
-            tMin = std::max(tMin, t1);
-            tMax = std::min(tMax, t2);
-            if (tMin > tMax) return false;
-        }
+EnemyManager::BulletHitResult EnemyManager::checkBulletHit(
+    const glm::vec3& prevPos, const glm::vec3& pos, int damage) {
+    Enemy* nearest=nullptr; float fraction=2;
+    for(auto& enemy:enemies) {
+        if(enemy.isDead()) continue;
+        float t;
+        if(enemyGeometry::segment(prevPos,pos,enemy.getAABB(),t) && t<fraction) { nearest=&enemy; fraction=t; }
     }
-    return true;
-}
-
-bool EnemyManager::checkBulletHit(const glm::vec3& prevPos, const glm::vec3& pos, int damage) {
-    for (auto& enemy : enemies) {
-        if (enemy.isDead()) continue;
-
-        AABB box = enemy.getAABB();
-        if (segmentIntersectsAABB(prevPos, pos, box.min, box.max)) {
-            enemy.takeDamage(damage);
-            if (enemy.isDead()) {
-                std::cout << "Enemy killed!\n";
-            }
-            return true;
-        }
-    }
-    return false;
+    if(!nearest) return {};
+    nearest->takeDamage(damage);
+    return {true,nearest->isDead(),nearest->getType()};
 }
 
 float EnemyManager::getContactDps(const glm::vec3& playerPos) const {
@@ -195,6 +219,9 @@ std::vector<glm::vec3> EnemyManager::getEnemyPositions() const {
 
 void EnemyManager::clear() {
     enemies.clear();
+    spawnedEnemyCount = 0;
+    nextId=1;
+    pendingActions.clear();
 }
 
 void EnemyManager::removeDeadEnemies() {
