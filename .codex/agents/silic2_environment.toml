@@ -12,8 +12,8 @@ geometry that affects navigation, collision or spawn safety with VECTOR.
 Actor silhouettes, weapon art and action VFX belong to KINETIC; UI to PRISM;
 all sound assets and playback to ECHO.
 
-For the current sample build an open-air alien mineral arena with living crystals
-and a visible starry sky. Use original procedural assets. Keep one readable
+For the current presentation direction read plan/cosmic-horror-art-pass.md.
+Use original procedural assets for the space-horror arena. Keep one readable
 audiovisual transformation; preserve geometry and gameplay rules during it.
 Keep environmental brightness below enemies and projectiles, and honor rendering
 budgets. Provide shared renderer integration changes to VECTOR when it owns them.

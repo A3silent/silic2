@@ -1,0 +1,137 @@
+diff --git a/include/player/player.h b/include/player/player.h
+index b8ad0c4..9915199 100644
+--- a/include/player/player.h
++++ b/include/player/player.h
+@@ -12,6 +12,9 @@ namespace silic2 {
+ class Camera;
+ class Map;
+ 
++// Key states shared by GLFW sampling and labelled synthetic acceptance.
++struct PlayerInput { bool forward=false, backward=false, left=false, right=false, jump=false, sprint=false, crouch=false, godMode=false; };
++
+ // Player states
+ enum class PlayerState {
+     IDLE,
+@@ -34,6 +37,7 @@ public:
+     
+     // Process input
+     void processInput(GLFWwindow* window, Camera* camera, float deltaTime);
++    void processInput(const PlayerInput& input, Camera* camera, float deltaTime);
+     void processMouseMovement(Camera* camera, float xoffset, float yoffset);
+     
+     // Get player position
+@@ -143,7 +147,7 @@ private:
+     glm::vec3 moveWithCollision(const glm::vec3& movement, const Map* map);
+     
+     // Get movement input
+-    glm::vec3 getMovementInput(GLFWwindow* window, Camera* camera, float deltaTime);
++    glm::vec3 getMovementInput(const PlayerInput& input, Camera* camera, float deltaTime);
+     
+     // Update FOV based on sprinting state
+     void updateFov(float deltaTime);
+diff --git a/src/player/player.cpp b/src/player/player.cpp
+index ded6cab..6fb9e43 100644
+--- a/src/player/player.cpp
++++ b/src/player/player.cpp
+@@ -70,9 +70,22 @@ void Player::update(float deltaTime, const Map* map) {
+ }
+ 
+ void Player::processInput(GLFWwindow* window, Camera* camera, float deltaTime) {
++    PlayerInput input;
++    input.forward=glfwGetKey(window,GLFW_KEY_W)==GLFW_PRESS;
++    input.backward=glfwGetKey(window,GLFW_KEY_S)==GLFW_PRESS;
++    input.left=glfwGetKey(window,GLFW_KEY_A)==GLFW_PRESS;
++    input.right=glfwGetKey(window,GLFW_KEY_D)==GLFW_PRESS;
++    input.jump=glfwGetKey(window,GLFW_KEY_SPACE)==GLFW_PRESS;
++    input.sprint=glfwGetKey(window,GLFW_KEY_LEFT_SHIFT)==GLFW_PRESS;
++    input.crouch=glfwGetKey(window,GLFW_KEY_LEFT_CONTROL)==GLFW_PRESS;
++    input.godMode=glfwGetKey(window,GLFW_KEY_G)==GLFW_PRESS;
++    processInput(input,camera,deltaTime);
++}
++
++void Player::processInput(const PlayerInput& input, Camera* camera, float deltaTime) {
+     // God mode toggle
+     wasGodModePressed = godModePressed;
+-    godModePressed = glfwGetKey(window, GLFW_KEY_G) == GLFW_PRESS;
++    godModePressed = input.godMode;
+     
+     // Toggle god mode when G is first pressed
+     if (godModePressed && !wasGodModePressed) {
+@@ -81,7 +94,7 @@ void Player::processInput(GLFWwindow* window, Camera* camera, float deltaTime) {
+     }
+     
+     // Get movement input
+-    glm::vec3 movement = getMovementInput(window, camera, deltaTime);
++    glm::vec3 movement = getMovementInput(input, camera, deltaTime);
+     
+     if (isGodMode()) {
+         // In god mode, apply movement directly to position for free flight
+@@ -122,7 +135,7 @@ void Player::processInput(GLFWwindow* window, Camera* camera, float deltaTime) {
+         
+         // Ctrl input for crouching/sliding
+         wasCrouchPressed = crouchPressed;
+-        crouchPressed = glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS;
++        crouchPressed = input.crouch;
+         
+         // Handle Ctrl press
+         if (crouchPressed && !wasCrouchPressed && onGround) {
+@@ -184,7 +197,7 @@ void Player::processInput(GLFWwindow* window, Camera* camera, float deltaTime) {
+         
+         // Sprint toggle with Shift
+         wasShiftPressed = shiftPressed;
+-        shiftPressed = glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS;
++        shiftPressed = input.sprint;
+         
+         // Toggle sprint when Shift is first pressed (only if not crouching or sliding)
+         if (shiftPressed && !wasShiftPressed && !crouching && !sliding) {
+@@ -192,12 +205,12 @@ void Player::processInput(GLFWwindow* window, Camera* camera, float deltaTime) {
+         }
+         
+         // Update sprinting state - only sprint if toggled and moving forward
+-        bool wPressed = glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS;
++        bool wPressed = input.forward;
+         sprinting = sprintToggled && wPressed && !crouching && !sliding;
+         
+         // Jump input
+         wasJumpPressed = jumpPressed;
+-        jumpPressed = glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS;
++        jumpPressed = input.jump;
+         
+         // Jump interrupts slide or normal jump
+         if (jumpPressed && !wasJumpPressed && onGround) {
+@@ -556,7 +569,7 @@ glm::vec3 Player::moveWithCollision(const glm::vec3& movement, const Map* map) {
+     return finalMovement;
+ }
+ 
+-glm::vec3 Player::getMovementInput(GLFWwindow* window, Camera* camera, float deltaTime) {
++glm::vec3 Player::getMovementInput(const PlayerInput& input, Camera* camera, float deltaTime) {
+     (void)deltaTime; // Suppress unused parameter warning
+     glm::vec3 movement(0.0f);
+     
+@@ -586,20 +599,20 @@ glm::vec3 Player::getMovementInput(GLFWwindow* window, Camera* camera, float del
+     }
+     
+     // WASD movement
+-    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
++    if (input.forward)
+         movement += forward;
+-    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
++    if (input.backward)
+         movement -= forward;
+-    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
++    if (input.left)
+         movement -= right;
+-    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
++    if (input.right)
+         movement += right;
+     
+     // God mode: add vertical movement with Space/Shift
+     if (isGodMode()) {
+-        if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
++        if (input.jump)
+             movement += up;
+-        if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
++        if (input.sprint)
+             movement -= up;
+     }
+     

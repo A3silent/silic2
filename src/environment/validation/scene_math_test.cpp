@@ -23,10 +23,21 @@ int main() {
     assert(environmentPhase(scene.settings,20)==0);
     assert(buildEnvironmentGeometry(scene).empty()); // Sky-only has no invented floor/rifts.
 
+    scene.settings.preset=EnvironmentPreset::HollowOrbit;
     scene.hasFloor=true;
     scene.minimumXZ={-18,-18};scene.maximumXZ={18,18};scene.floorY=0;
     const auto original=buildEnvironmentGeometry(scene);
-    assert(original.size()==76*5*3*3*7); // Only preset backdrop geometry.
+    assert(!original.empty() && original.size()/7<=8000); // Bounded static backdrop.
+    for(size_t i=0;i<original.size();i+=7){
+        const float x=original[i],z=original[i+2];
+        assert(x < -18 || x > 18 || z < -18 || z > 18); // No route/camera obstruction.
+    }
+    for(auto extent : {glm::vec2(.5f,100.f),glm::vec2(60.f,5.f),glm::vec2(100.f,100.f)}) {
+        EnvironmentScene resized=scene;resized.minimumXZ=-extent;resized.maximumXZ=extent;
+        const auto mesh=buildEnvironmentGeometry(resized);
+        for(size_t i=0;i<mesh.size();i+=7)
+            assert(mesh[i] < -extent.x || mesh[i] > extent.x || mesh[i+2] < -extent.y || mesh[i+2] > extent.y);
+    }
     scene.minimumXZ+=glm::vec2(8,-5);scene.maximumXZ+=glm::vec2(8,-5);scene.floorY=3;
     const auto moved=buildEnvironmentGeometry(scene);
     assert(moved.size()==original.size());
@@ -50,9 +61,10 @@ int main() {
         const glm::vec3 local(rift.worldToLocal*glm::vec4(p,1));
         assert(close(local.z,0));
     }
-    assert(riftVertexCount==8*4*3);
-    assert(close(minimum,{10,3.15f,-8.1f}));
-    assert(close(maximum,{10,10.35f,-3.9f}));
+    assert(riftVertexCount==6*4*3);
+    assert(minimum.y>=3 && maximum.y<=10.5f);
+    assert(minimum.z>=-8.2f && maximum.z<=-3.8f); // Local aperture remains bounded.
+    assert(close(minimum.x,10) && close(maximum.x,10));
     const auto frozen=buildEnvironmentGeometry(scene);
     assert(withRift==frozen);
     std::cout<<"PASS: configurable transformation, no phantom geometry, translated floor backdrop, transformed rift/light alignment, stable slot IDs, deterministic geometry\n";

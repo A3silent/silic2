@@ -18,6 +18,7 @@ public:
     EnvironmentRenderer& operator=(const EnvironmentRenderer&) = delete;
     void reset();
     void setTime(float seconds);
+    void setObservationState(float progress, bool complete);
     void setRiftWarnings(const std::array<float, 4>& progress);
     void setParticleCount(std::size_t count);
     float transformation() const;
@@ -35,6 +36,9 @@ private:
     GLsizei crystalVertices_ = 0;
     std::size_t particleCount_ = 256;
     float seconds_ = 0;
+    float observationProgress_ = 0.f;
+    bool observationComplete_ = false;
+    void setObservatoryUniforms(Shader& shader) const;
     std::array<float, 4> warnings_{{-1, -1, -1, -1}};
     void buildCrystals();
 };

@@ -24,6 +24,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <vector>
+#include <map>
 #include <algorithm>
 #include <cmath>
 #include <cstring>
@@ -324,18 +325,19 @@ public:
         glBindVertexArray(0);
     }
 
-    void updateMapGeometry(const Map& map) {
+    void updateMapGeometry(const Map& map,bool collision=false,uint32_t previewId=~uint32_t(0),glm::mat4 preview=glm::mat4(1)) {
         vertices.clear();
         indices.clear();
 
-        for (const auto& brush : map.getBrushes()) {
+        for (const auto& brush : collision?map.getCollisionBrushes():map.getBrushes()) {
             for(size_t f=0;f+2<brush.faces.size();f+=3) {
                 const auto a=brush.faces[f],b=brush.faces[f+1],c=brush.faces[f+2];
                 if(a>=brush.vertices.size() || b>=brush.vertices.size() || c>=brush.vertices.size()) continue;
-                auto normal=glm::cross(brush.vertices[b]-brush.vertices[a],brush.vertices[c]-brush.vertices[a]);
+                auto transformed=[&](uint32_t index){return brush.id==previewId?glm::vec3(preview*glm::vec4(brush.vertices[index],1)):brush.vertices[index];};
+                auto normal=glm::cross(transformed(b)-transformed(a),transformed(c)-transformed(a));
                 normal=glm::length(normal)>1e-6f?glm::normalize(normal):glm::vec3(0,1,0);
                 for(auto index:{a,b,c}) {
-                    auto p=brush.vertices[index];
+                    auto p=transformed(index);
                     vertices.insert(vertices.end(),{p.x,p.y,p.z,brush.color.x,brush.color.y,brush.color.z,normal.x,normal.y,normal.z});
                     indices.push_back(static_cast<unsigned int>(indices.size()));
                 }
@@ -539,24 +541,35 @@ public:
     EditorDocument document;
     Camera camera;
     bool showGrid=true,showMarkers=true,wireframe=false,snapEnabled=true;
-    float gridStep=1;
+    float gridStep=1,angleStep=15;
+    int geometryView=0;
     ImVec2 cancelButtonCenter{0,0};
     bool modalButtonsReachable=true;
-    std::string status="Open a map, or start from the Arena template.";
+    std::map<std::string,ImVec2> controls;
+    std::map<std::string,std::pair<ImVec2,ImVec2>> controlBounds;
+    void note(const char* name){auto a=ImGui::GetItemRectMin(),b=ImGui::GetItemRectMax();controls[name]={(a.x+b.x)*.5f,(a.y+b.y)*.5f};controlBounds[name]={a,b};}
+    std::string status="Open a map, or start from the Crystal combat template.";
     enum class Action { None,New,Open,Arena,Quit };
 private:
     MapRenderer renderer;
     GLFWwindow* window;
     uint64_t renderedRevision=~uint64_t(0),editToken=1;
+    int renderedView=-1;
+    Selection draftSelection;
+    uint64_t draftRevision=~uint64_t(0);
+    glm::vec3 draftPosition{0},draftSize{1},draftRotation{0},originalPosition{0},originalSize{1},originalRotation{0};
+    bool draftActive=false,renderedDraft=false,draftPositionEdited=false,draftSizeEdited=false,draftRotationEdited=false;
+    double lastCommitMilliseconds=0;
+
     bool navigating=false,viewportHovered=false;
     double lastMouseX=0,lastMouseY=0;
     ImVec2 viewportPos{260,56},viewportSize{640,600};
     Action pending=Action::None;
     std::string pendingPath;
-    bool confirmUnsaved=false,browse=false,saveDialog=false,overwrite=false;
+    bool confirmUnsaved=false,browse=false,saveDialog=false,overwrite=false,importDialog=false,importCollision=true;
     bool saveThenContinue=false;
     std::string browseDirectory=SILIC2_ROOT "/res/maps",overwritePath;
-    char directoryInput[1024]{},fileInput[1024]{};
+    char directoryInput[1024]{},fileInput[1024]{},collisionInput[1024]{},modelAssetInput[1024]{},modelCollisionInput[1024]{};
     std::string filter;
     char filterInput[128]{};
     static constexpr ImGuiWindowFlags fixed=ImGuiWindowFlags_NoMove|ImGuiWindowFlags_NoResize|ImGuiWindowFlags_NoCollapse|ImGuiWindowFlags_NoSavedSettings;
@@ -566,7 +579,7 @@ public:
     bool hasPending() const { return pending!=Action::None; }
     bool unsavedPrompt() const { return confirmUnsaved; }
     void request(Action action,const std::string& path="") {
-        pending=action;pendingPath=path;
+        commitDraft();pending=action;pendingPath=path;
         if(document.dirty()){confirmUnsaved=true;return;}
         performPending();
     }
@@ -576,17 +589,27 @@ public:
         auto action=pending;auto path=pendingPath;pending=Action::None;pendingPath.clear();
         if(action==Action::Quit){glfwSetWindowShouldClose(window,GL_TRUE);return;}
         if(action==Action::New){document.createNew();status="New map. Save As to choose its location.";focusAll();}
-        if(action==Action::Arena){if(document.createArena(SILIC2_ROOT "/res/maps/starry_crystal_arena.json")){status="Arena template ready. Save As creates your own map.";focusAll();}}
+        if(action==Action::Arena){if(document.createArena(SILIC2_ROOT "/res/maps/starry_crystal_arena.json")){status="Crystal combat template ready. Save As creates your own map.";focusAll();}}
         if(action==Action::Open){if(document.load(path)){status="Opened "+document.path();focusAll();}}
     }
     void openBrowser(bool saving) {
-        browse=true;saveDialog=saving;overwrite=false;
+        browse=true;saveDialog=saving;overwrite=false;importDialog=false;
         if(!document.path().empty())browseDirectory=fs::path(document.path()).parent_path().string();
         copy(directoryInput,browseDirectory);
         copy(fileInput,saving?(document.path().empty()?"untitled.json":fs::path(document.path()).filename().string()):"");
     }
+    void openImportBrowser() {
+        openBrowser(false);importDialog=true;browseDirectory=SILIC2_ROOT "/res/models";copy(directoryInput,browseDirectory);collisionInput[0]=0;
+    }
+    bool importAt(const std::string& path) {
+        auto p=EditorDocument::snap(camera.position+camera.front*5.0f,snapEnabled?gridStep:0);
+        std::string collision=importCollision?path:collisionInput;
+        if(!collision.empty() && fs::path(collision).is_relative())collision=(fs::path(browseDirectory)/collision).string();
+        if(!document.addModel(path,collision,p))return false;
+        browse=false;status="Imported "+path+". Set Position / Rotation / Scale in Inspector.";focusSelection();return true;
+    }
     bool saveAt(const std::string& path) {
-        if(!document.save(path))return false;
+        commitDraft();if(!document.save(path))return false;
         status="Saved "+document.path();browse=false;overwrite=false;
         if(saveThenContinue){saveThenContinue=false;performPending();}
         return true;
@@ -603,7 +626,7 @@ public:
         // the next click does not silently select its occluder instead.
         for(int attempt=0;attempt<10;++attempt){
             camera.position=target-camera.front*distance;
-            if(document.pick(camera.position,camera.front,showMarkers)==document.selection())break;
+            if(document.pick(camera.position,camera.front,showMarkers,geometryView==2,geometryView==1)==document.selection())break;
             distance*=.65f;
         }
         camera.lookAt(target);
@@ -615,14 +638,20 @@ public:
         camera.reset();camera.position=(b.min+b.max)*.5f-camera.front*std::max(8.0f,glm::length(b.max-b.min)*.9f);
     }
     void nudge(glm::vec3 delta) {
-        if(!document.selected())return;auto b=document.selectedBounds();document.transform((b.min+b.max)*.5f+delta,b.max-b.min,0);
+        if(!document.selected())return;document.transform(document.selectedPosition()+delta,document.selectedSize(),0);
     }
     void pickAt(ImVec2 screen) {
         if(viewportSize.x<=0 || viewportSize.y<=0)return;
+        if(geometryView==2){
+            const auto& nodes=document.map().getSpatialSettings().nodes;
+            float nearest=100;size_t selected=nodes.size();
+            for(size_t i=0;i<nodes.size();++i){if(glm::dot(nodes[i].position-camera.position,camera.front)<=.1f)continue;auto p=project(nodes[i].position);float d=(p.x-screen.x)*(p.x-screen.x)+(p.y-screen.y)*(p.y-screen.y);if(d<nearest){nearest=d;selected=i;}}
+            if(selected<nodes.size()){select({ObjectKind::NavNode,selected});return;}
+        }
         const glm::vec4 nearPoint((screen.x-viewportPos.x)/viewportSize.x*2-1,1-(screen.y-viewportPos.y)/viewportSize.y*2,-1,1);
         const auto inverse=glm::inverse(camera.getProjectionMatrix(viewportSize.x/viewportSize.y)*camera.getViewMatrix());
         auto world=inverse*nearPoint;world/=world.w;
-        document.select(document.pick(camera.position,glm::normalize(glm::vec3(world)-camera.position),showMarkers));
+        select(document.pick(camera.position,glm::normalize(glm::vec3(world)-camera.position),showMarkers,geometryView==2,geometryView==1));
     }
     ImVec2 project(glm::vec3 position) const {
         glm::vec4 clip=camera.getProjectionMatrix(viewportSize.x/viewportSize.y)*camera.getViewMatrix()*glm::vec4(position,1);
@@ -634,7 +663,7 @@ public:
         const bool focused=glfwGetWindowAttrib(window,GLFW_FOCUSED)!=0;
         const bool right=glfwGetMouseButton(window,GLFW_MOUSE_BUTTON_RIGHT)==GLFW_PRESS;
         if(navigating && (!right || !focused || browse || confirmUnsaved))stopNavigation();
-        if(!navigating && viewportHovered && right && focused && !io.WantTextInput && !browse && !confirmUnsaved){
+        if(!navigating && viewportHovered && right && focused && !io.WantTextInput && !browse && !confirmUnsaved && !ImGui::IsPopupOpen("Model resources")){
             navigating=true;glfwGetCursorPos(window,&lastMouseX,&lastMouseY);glfwSetInputMode(window,GLFW_CURSOR,GLFW_CURSOR_DISABLED);
         }
         if(navigating) {
@@ -647,7 +676,7 @@ public:
         if(viewportHovered && !browse && !confirmUnsaved && !io.WantTextInput && io.MouseWheel!=0)
             camera.position+=camera.front*io.MouseWheel*std::max(1.0f,camera.moveSpeed*.4f);
         const bool command=io.KeyCtrl || io.KeySuper;
-        if(browse || confirmUnsaved)return;
+        if(browse || confirmUnsaved || ImGui::IsPopupOpen("Model resources"))return;
         // Save is a document command even with a text field focused. Text editing
         // retains all ordinary keys and its own undo/redo/select-all shortcuts.
         if(command && ImGui::IsKeyPressed(ImGuiKey_S,false)){save(io.KeyShift);return;}
@@ -658,6 +687,7 @@ public:
             if(ImGui::IsKeyPressed(ImGuiKey_D,false))document.duplicate(snapEnabled?gridStep:1);
             if(ImGui::IsKeyPressed(ImGuiKey_N,false))request(Action::New);
             if(ImGui::IsKeyPressed(ImGuiKey_O,false))openBrowser(false);
+            if(ImGui::IsKeyPressed(ImGuiKey_I,false))openImportBrowser();
         } else {
             if(ImGui::IsKeyPressed(ImGuiKey_F,false))focusSelection();
             if(ImGui::IsKeyPressed(ImGuiKey_Delete,false) || ImGui::IsKeyPressed(ImGuiKey_Backspace,false))document.erase();
@@ -685,36 +715,108 @@ public:
         bool changed=ImGui::DragFloat3(label,glm::value_ptr(value),.05f);if(ImGui::IsItemActivated())++editToken;
         if(changed)document.editSelected(label,[&](SimpleJson& target){target[key]=SimpleJson::array();for(int a=0;a<3;++a)target[key].push_back(SimpleJson(double(value[a])));},editToken);
     }
+    void refreshDraft() {
+        if(draftRevision==document.revision() && draftSelection==document.selection())return;
+        draftSelection=document.selection();draftRevision=document.revision();draftActive=false;draftPositionEdited=draftSizeEdited=draftRotationEdited=false;
+        draftPosition=originalPosition=document.selectedPosition();draftSize=originalSize=document.selectedSize();
+        auto j=document.selectedJson();draftRotation=originalRotation=j["rotation"].isArray()?jsonVector(j["rotation"]):glm::vec3(0);
+    }
+    void commitDraft() {
+        if(!draftActive)return;
+        draftActive=false;if(!(draftSelection==document.selection()))return;
+        const auto start=std::chrono::steady_clock::now();
+        const auto kind=draftSelection.kind;
+        if(snapEnabled){if(draftPositionEdited)draftPosition=EditorDocument::snap(draftPosition,gridStep);if(draftSizeEdited)draftSize=EditorDocument::snap(draftSize,kind==ObjectKind::Model?.1f:gridStep);if(draftRotationEdited)draftRotation=EditorDocument::snap(draftRotation,angleStep);}
+        if(kind==ObjectKind::Object || kind==ObjectKind::Model){
+            document.editSelected("Transform geometry",[&](SimpleJson& target){
+                auto vector=[](glm::vec3 value){auto j=SimpleJson::array();for(int a=0;a<3;++a)j.push_back(SimpleJson(double(value[a])));return j;};
+                target["position"]=vector(draftPosition);if(kind==ObjectKind::Model || target.hasKey("rotation") || draftRotation!=originalRotation)target["rotation"]=vector(draftRotation);
+                auto size=glm::max(draftSize,glm::vec3(.01f));if(kind==ObjectKind::Object && target.getString("shape")=="plane")size.y=0;
+                target[kind==ObjectKind::Model?"scale":"size"]=vector(size);
+            });
+        }else document.transform(draftPosition,draftSize);
+        lastCommitMilliseconds=std::chrono::duration<double,std::milli>(std::chrono::steady_clock::now()-start).count();
+        draftRevision=~uint64_t(0);refreshDraft();
+    }
+    glm::mat4 draftMatrix() const {
+        auto matrix=[](glm::vec3 position,glm::vec3 rotation,glm::vec3 size){
+            auto m=glm::translate(glm::mat4(1),position);m=glm::rotate(m,glm::radians(rotation.z),{0,0,1});m=glm::rotate(m,glm::radians(rotation.y),{0,1,0});m=glm::rotate(m,glm::radians(rotation.x),{1,0,0});
+            for(int a=0;a<3;++a)size[a]=std::abs(size[a])<.0001f?1:size[a];return glm::scale(m,size);
+        };
+        return matrix(draftPosition,draftRotation,draftSize)*glm::inverse(matrix(originalPosition,originalRotation,originalSize));
+    }
+    Bounds draftBounds() const {
+        auto bounds=document.selectedBounds();if(!draftActive)return bounds;auto matrix=draftMatrix();
+        Bounds result;bool first=true;
+        const auto id=document.selectedJson().getNumber("id",-1);
+        for(const auto& brush:document.map().getBrushes())if(brush.id==id)for(auto vertex:brush.vertices){auto p=glm::vec3(matrix*glm::vec4(vertex,1));if(first){result={p,p};first=false;}else {result.min=glm::min(result.min,p);result.max=glm::max(result.max,p);}}
+        if(!first)return result;
+        const auto delta=draftPosition-originalPosition;return {bounds.min+delta,bounds.max+delta};
+    }
+    void select(Selection selection){commitDraft();document.select(selection);refreshDraft();}
     void properties() {
         if(!document.selected()){ImGui::TextWrapped("Select an object in the viewport or the list.");return;}
         const auto selection=document.selection();auto j=document.selectedJson();
-        auto bounds=document.selectedBounds();glm::vec3 center=(bounds.min+bounds.max)*.5f,size=bounds.max-bounds.min;
+        refreshDraft();auto& center=draftPosition;auto& size=draftSize;
         ImGui::TextColored({.3f,.95f,.8f,1},"SELECTED OBJECT");
         if(j.hasKey("id"))ImGui::Text("ID %.0f",j.getNumber("id"));
-        if(selection.kind!=ObjectKind::Brush && selection.kind!=ObjectKind::Light)editString("Name","name",j);
-        bool changed=ImGui::DragFloat3("Position",glm::value_ptr(center),.05f,0,0,"%.2f");if(ImGui::IsItemActivated())++editToken;
-        if(changed)document.transform(center,size,0,editToken);
-        if(ImGui::IsItemDeactivatedAfterEdit() && snapEnabled)document.transform(center,size,gridStep,editToken);
-        if(selection.kind!=ObjectKind::Light){
-            changed=ImGui::DragFloat3("Size",glm::value_ptr(size),.05f,0,10000,"%.2f");if(ImGui::IsItemActivated())++editToken;
-            if(changed)document.transform(center,size,0,editToken);
-            if(ImGui::IsItemDeactivatedAfterEdit() && snapEnabled)document.transform(center,size,gridStep,editToken);
-            if(selection.kind==ObjectKind::Object && j.getString("shape")=="plane")ImGui::TextWrapped("Horizontal plane: Y size stays zero.");
+        if(selection.kind!=ObjectKind::Brush && selection.kind!=ObjectKind::Light && selection.kind!=ObjectKind::NavNode)editString("Name","name",j);
+        ImGui::TextUnformatted("Position");ImGui::SetNextItemWidth(-1);
+        bool changed=ImGui::DragFloat3("##Position",glm::value_ptr(center),.05f,0,0,"%.2f");if(ImGui::IsItemActivated())++editToken;
+        note("position");controls["position-drag"]={ImGui::GetItemRectMin().x+20,controls["position"].y};if(changed)draftActive=draftPositionEdited=true;
+        if(ImGui::IsItemDeactivatedAfterEdit())commitDraft();
+        if(selection.kind!=ObjectKind::Light && selection.kind!=ObjectKind::NavNode){
+            ImGui::TextUnformatted(selection.kind==ObjectKind::Model?"Scale":"Size");ImGui::SetNextItemWidth(-1);
+            changed=ImGui::DragFloat3("##SizeOrScale",glm::value_ptr(size),.05f,0,10000,"%.2f");if(ImGui::IsItemActivated())++editToken;
+            note("size");if(changed)draftActive=draftSizeEdited=true;
+            if(ImGui::IsItemDeactivatedAfterEdit())commitDraft();
+            if(selection.kind==ObjectKind::Object && j.getString("shape")=="plane")ImGui::TextWrapped("Plane local Y size stays zero; rotation tilts its surface.");
             if(selection.kind==ObjectKind::Brush)ImGui::TextWrapped("Legacy mesh: flat axes remain flat. Use Add Box for solid geometry.");
         }
+        if(selection.kind==ObjectKind::Object || selection.kind==ObjectKind::Model){
+            auto& rotation=draftRotation;
+            ImGui::TextUnformatted("Rotation (XYZ degrees)");ImGui::SetNextItemWidth(-1);
+            changed=ImGui::DragFloat3("##GeometryRotation",glm::value_ptr(rotation),1,0,0,"%.1f");note("rotation-field");controls["rotation-drag"]={ImGui::GetItemRectMin().x+20,controls["rotation-field"].y};
+            if(changed)draftActive=draftRotationEdited=true;
+            if(ImGui::IsItemDeactivatedAfterEdit())commitDraft();
+            if(ImGui::Button("Rotate Y + step")){rotation.y+=angleStep;draftActive=draftRotationEdited=true;commitDraft();}note("rotate");
+            if(selection.kind==ObjectKind::Model){if(ImGui::GetContentRegionAvail().x>260)ImGui::SameLine();if(ImGui::Button("Scale x1.1"))document.transform(center,size*1.1f);note("scale");}
+            ImGui::TextWrapped("Degrees XYZ; local scale, then X / Y / Z rotation.");
+        }
+        if(draftActive)ImGui::TextWrapped("PREVIEW - release to validate and commit");
         if(ImGui::Button("Snap to grid"))document.transform(center,size,gridStep);
         ImGui::SameLine();if(ImGui::Button("Focus [F]"))focusSelection();
         if(ImGui::Button("Duplicate"))document.duplicate(snapEnabled?gridStep:1);
         ImGui::SameLine();if(ImGui::Button("Delete"))document.erase();
         ImGui::Separator();
-        if(selection.kind==ObjectKind::Object || selection.kind==ObjectKind::Brush){
-            editString("Material","material",j);editString("Texture path","texture",j);
+        if(selection.kind==ObjectKind::Object || selection.kind==ObjectKind::Brush || selection.kind==ObjectKind::Model){
+            editString("Material","material",j);
+            if(selection.kind==ObjectKind::Model){
+                ImGui::TextWrapped("Visual: %s",j.getString("asset").c_str());
+                ImGui::TextWrapped("Collision: %s",j.getString("collisionAsset").empty()?"NONE (visual only)":j.getString("collisionAsset").c_str());
+                if(ImGui::Button("Edit resource paths...")){copy(modelAssetInput,j.getString("asset"));copy(modelCollisionInput,j.getString("collisionAsset"));ImGui::OpenPopup("Model resources");}
+                if(ImGui::BeginPopupModal("Model resources",nullptr,ImGuiWindowFlags_AlwaysAutoResize)){
+                    ImGui::SetNextItemWidth(440);ImGui::InputText("Visual OBJ",modelAssetInput,sizeof(modelAssetInput));
+                    ImGui::SetNextItemWidth(440);ImGui::InputText("Collision OBJ",modelCollisionInput,sizeof(modelCollisionInput));
+                    ImGui::TextWrapped("Empty collision path means visual only. Relative paths use the map's asset directory.");
+                    ImGui::TextWrapped("Asset directory: %s",document.map().getAssetBaseDirectory().c_str());
+                    if(!document.error().empty())ImGui::TextWrapped("%s",document.error().c_str());
+                    if(ImGui::Button("Apply resources")){if(document.editSelected("Model resources",[&](SimpleJson& target){target["asset"]=SimpleJson(modelAssetInput);target["collisionAsset"]=SimpleJson(modelCollisionInput);}))ImGui::CloseCurrentPopup();}
+                    ImGui::SameLine();if(ImGui::Button("Cancel resources"))ImGui::CloseCurrentPopup();ImGui::EndPopup();
+                }
+            }else editString("Texture path","texture",j);
             glm::vec3 color(.8f);if(j["color"].isArray())for(int a=0;a<3;++a)color[a]=j["color"][a].getNumber();
             changed=ImGui::ColorEdit3("Color",glm::value_ptr(color));if(ImGui::IsItemActivated())++editToken;
             if(changed)document.editSelected("Change color",[&](SimpleJson& target){target["color"]=SimpleJson::parse("[]");for(int a=0;a<3;++a)target["color"].push_back(SimpleJson(double(color[a])));},editToken);
+            if(selection.kind==ObjectKind::Object){bool collision=j.getBool("collision",true);if(ImGui::Checkbox("Solid collision",&collision))document.editSelected("Collision enabled",[&](SimpleJson& target){target["collision"]=SimpleJson(collision);});}
             const char* types[]={"floor","wall","ceiling"};int current=1;for(int i=0;i<3;++i)if(j.getString("type")==types[i])current=i;
-            if(ImGui::Combo("Surface",&current,types,3))document.editSelected("Change surface",[&](SimpleJson& target){target["type"]=SimpleJson(types[current]);});
+            if(selection.kind!=ObjectKind::Model && ImGui::Combo("Surface",&current,types,3))document.editSelected("Change surface",[&](SimpleJson& target){target["type"]=SimpleJson(types[current]);});
             if(selection.kind==ObjectKind::Object)ImGui::Text("Shape: %s",j.getString("shape").c_str());
+        } else if(selection.kind==ObjectKind::NavNode) {
+            ImGui::TextWrapped("Navigation node. Y is the supported surface height. Bridge and underpass nodes have separate IDs.");
+            static int target=1;static bool twoWay=true;
+            ImGui::InputInt("Target ID",&target);ImGui::Checkbox("Bidirectional",&twoWay);
+            if(ImGui::Button("Connect to target"))document.connectNavNodes(int(j.getNumber("id")),target,twoWay);
         } else if(selection.kind==ObjectKind::Entity) {
             ImGui::Text("Type: %s",j.getString("type").c_str());
             glm::vec3 rotation(0);if(j["rotation"].isArray())for(int a=0;a<3;++a)rotation[a]=j["rotation"][a].getNumber();
@@ -726,7 +828,8 @@ public:
             int quantity=int(j.getNumber("intProperty",0));if(ImGui::InputInt("Quantity",&quantity))document.editSelected("Entity quantity",[&](SimpleJson& target){target["intProperty"]=SimpleJson(double(quantity));});
             editVector("Vector / color","vec3Property",j);
             if(j.hasKey("slot"))ImGui::Text("Arena slot: %.0f (fixed)",j.getNumber("slot"));
-            ImGui::TextWrapped("Arena requires one player, four rifts and three sentry markers. Invalid edits keep the previous map.");
+            if(document.map().getGameMode()==GameMode::ArenaSurvival)ImGui::TextWrapped("Arena requires one player, four rifts and three sentry markers. Invalid edits keep the previous map.");
+            else if(document.map().getGameMode()==GameMode::Exploration)ImGui::TextWrapped("Exploration requires one player. Zones and observation settings are authored in the map JSON and preserved on save.");
         } else {
             const char* lightTypes[]={"point","directional","spot"};int lightType=0;for(int a=0;a<3;++a)if(j.getString("type")==lightTypes[a])lightType=a;
             if(ImGui::Combo("Light type",&lightType,lightTypes,3))document.editSelected("Light type",[&](SimpleJson& target){target["type"]=SimpleJson(lightTypes[lightType]);});
@@ -751,22 +854,50 @@ public:
                 else label+=" ["+std::to_string(i)+"]";
                 if(std::strlen(filterInput) && label.find(filterInput)==std::string::npos)continue;
                 ImGui::PushID(int(kind)*100000+int(i));
-                if(ImGui::Selectable(label.c_str(),document.selection()==Selection{kind,i}))document.select({kind,i});
+                if(ImGui::Selectable(label.c_str(),document.selection()==Selection{kind,i}))select({kind,i});
                 if(ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(0))focusSelection();
                 ImGui::PopID();
             }
         };
         list("Geometry",ObjectKind::Object,root["geometry"]["objects"]);
+        list("Static models",ObjectKind::Model,root["geometry"]["models"]);
+        list("Navigation nodes",ObjectKind::NavNode,root["spatial"]["navigation"]["nodes"]);
         list("Legacy meshes",ObjectKind::Brush,root["geometry"]["brushes"]);
         list("Entities",ObjectKind::Entity,root["entities"]);
         list("Lights",ObjectKind::Light,root["lights"]);
+    }
+    static glm::vec3 jsonVector(const SimpleJson& j) { return {j[0].getNumber(),j[1].getNumber(),j[2].getNumber()}; }
+    void navigationPanel() {
+        const auto root=document.map().toJson();const auto nav=root["spatial"]["navigation"];
+        const auto& diagnostics=document.map().getSpatialDiagnostics();
+        if(diagnostics.empty())ImGui::TextUnformatted("No shared spatial diagnostics.");
+        else {ImGui::PushStyleColor(ImGuiCol_Text,{1,.65f,.3f,1});for(const auto& message:diagnostics)ImGui::TextWrapped("%s",message.c_str());ImGui::PopStyleColor();}
+        ImGui::Text("%zu nodes / %zu links",nav["nodes"].size(),nav["links"].size());
+        ImGui::TextWrapped("Add a node, set its surface position, then select its target ID to connect. Delete a node to remove its links.");
+        for(size_t i=0;i<nav["links"].size();++i){
+            const auto& link=nav["links"][i];ImGui::PushID(int(i));
+            ImGui::Text("%.0f %s %.0f",link.getNumber("from"),link.getBool("bidirectional",true)?"<->":"->",link.getNumber("to"));ImGui::SameLine();
+            if(ImGui::SmallButton("Remove"))document.applyJson("Remove navigation link",[&](SimpleJson& json){auto& links=json["spatial"]["navigation"]["links"];auto kept=SimpleJson::array();for(size_t n=0;n<links.size();++n)if(n!=i)kept.push_back(links[n]);links=kept;});
+            ImGui::PopID();
+        }
+    }
+    void drawNavigation(ImDrawList* draw) {
+        const auto nav=document.map().toJson()["spatial"]["navigation"];const auto nodes=nav["nodes"];
+        auto visible=[&](glm::vec3 p){return glm::dot(p-camera.position,camera.front)>.1f;};
+        auto find=[&](double id){for(size_t i=0;i<nodes.size();++i)if(nodes[i].getNumber("id")==id)return jsonVector(nodes[i]["position"]);return glm::vec3(0);};
+        draw->PushClipRect(viewportPos,{viewportPos.x+viewportSize.x,viewportPos.y+viewportSize.y},true);
+        for(size_t i=0;i<nav["links"].size();++i){auto link=nav["links"][i];auto a=find(link.getNumber("from")),b=find(link.getNumber("to"));if(!visible(a)||!visible(b))continue;auto p=project(a),q=project(b);draw->AddLine(p,q,IM_COL32(105,205,125,230),2);}
+        for(size_t i=0;i<nodes.size();++i){auto position=jsonVector(nodes[i]["position"]);if(!visible(position))continue;auto p=project(position);bool selected=document.selection()==Selection{ObjectKind::NavNode,i};draw->AddCircleFilled(p,selected?7:5,selected?IM_COL32(255,211,91,255):IM_COL32(100,230,150,255));const auto label=std::to_string(int(nodes[i].getNumber("id")));draw->AddText({p.x+8,p.y-8},IM_COL32(225,240,230,255),label.c_str());}
+        draw->PopClipRect();
     }
     void worldSettings() {
         auto root=document.map().toJson();auto ws=document.map().getWorldSettings();
         ImGui::Text("Schema: %.0f",root.getNumber("schemaVersion",1));
         ImGui::TextWrapped("Mode: %s",root.getString("gameMode","legacy").c_str());
-        const char* presets[]={"none","starry_crystal"};int preset=root.getString("environmentPreset")=="starry_crystal"?1:0;
-        if(ImGui::Combo("Environment",&preset,presets,2))document.applyJson("Environment preset",[&](SimpleJson& json){json["environmentPreset"]=SimpleJson(presets[preset]);});
+        const char* presets[]={"none","starry_crystal","hollow_orbit"};
+        const auto currentPreset=root.getString("environmentPreset");
+        int preset=currentPreset=="hollow_orbit"?2:currentPreset=="starry_crystal"?1:0;
+        if(ImGui::Combo("Environment",&preset,presets,3))document.applyJson("Environment preset",[&](SimpleJson& json){json["environmentPreset"]=SimpleJson(presets[preset]);});
         const auto env=document.map().getEnvironment();
         float start=env.transformationStart,duration=env.transformationDuration;int particles=int(env.particleCount);
         bool ec=ImGui::DragFloat("Shift time",&start,.1f,0,3600);if(ImGui::IsItemActivated())++editToken;
@@ -806,40 +937,42 @@ public:
         ImGui::SetNextWindowPos({screen.x*.5f,screen.y*.5f},ImGuiCond_Always,{.5f,.5f});
         ImGui::SetNextWindowSize({std::min(660.0f,screen.x-32),std::min(480.0f,screen.y-32)},ImGuiCond_Appearing);
         if(ImGui::BeginPopupModal("Choose map file",nullptr,ImGuiWindowFlags_NoSavedSettings)){
-            ImGui::TextUnformatted(saveDialog?"SAVE MAP AS":"OPEN MAP");
-            if(ImGui::Button("Game maps")){browseDirectory=SILIC2_ROOT "/res/maps";copy(directoryInput,browseDirectory);}
+            ImGui::TextUnformatted(importDialog?"IMPORT STATIC OBJ":saveDialog?"SAVE MAP AS":"OPEN MAP");
+            if(ImGui::Button(importDialog?"Game models":"Game maps")){browseDirectory=importDialog?SILIC2_ROOT "/res/models":SILIC2_ROOT "/res/maps";copy(directoryInput,browseDirectory);}
             ImGui::SameLine();if(ImGui::Button("Parent")){browseDirectory=fs::path(browseDirectory).parent_path().string();copy(directoryInput,browseDirectory);}
             ImGui::SameLine();if(ImGui::Button("Home")){const char* home=std::getenv("HOME");if(home){browseDirectory=home;copy(directoryInput,browseDirectory);}}
             ImGui::SetNextItemWidth(-60);bool go=ImGui::InputText("##directory",directoryInput,sizeof(directoryInput),ImGuiInputTextFlags_EnterReturnsTrue);
             ImGui::SameLine();if(ImGui::Button("Go") || go)browseDirectory=directoryInput;
-            ImGui::BeginChild("filelist",{0,-135},true);
+            ImGui::BeginChild("filelist",{0,importDialog?-190.0f:-135.0f},true);
             std::error_code error;std::vector<fs::directory_entry> entries;
             for(fs::directory_iterator it(browseDirectory,error),end;!error && it!=end;it.increment(error))entries.push_back(*it);
             std::sort(entries.begin(),entries.end(),[](const auto& a,const auto& b){std::error_code e1,e2;bool ad=a.is_directory(e1),bd=b.is_directory(e2);return ad!=bd?ad>bd:a.path().filename()<b.path().filename();});
             if(error)ImGui::TextWrapped("Cannot read folder: %s",error.message().c_str());
             for(const auto& entry:entries){
-                std::error_code ec;bool folder=entry.is_directory(ec);if(!folder && entry.path().extension()!=".json")continue;
+                std::error_code ec;bool folder=entry.is_directory(ec);if(!folder && entry.path().extension()!=(importDialog?".obj":".json"))continue;
                 std::string label=(folder?"[DIR] ":"")+entry.path().filename().string();
                 if(ImGui::Selectable(label.c_str(),!folder && entry.path().filename().string()==fileInput,ImGuiSelectableFlags_AllowDoubleClick)){
                     if(folder){browseDirectory=entry.path().string();copy(directoryInput,browseDirectory);break;}
                     copy(fileInput,entry.path().filename().string());
-                    if(!saveDialog && ImGui::IsMouseDoubleClicked(0)){browse=false;ImGui::CloseCurrentPopup();request(Action::Open,entry.path().string());break;}
+                    if(!saveDialog && !importDialog && ImGui::IsMouseDoubleClicked(0)){browse=false;ImGui::CloseCurrentPopup();request(Action::Open,entry.path().string());break;}
                 }
             }
             ImGui::EndChild();
-            ImGui::InputText("File name / path",fileInput,sizeof(fileInput));
+            ImGui::InputText("File name / path",fileInput,sizeof(fileInput));note("file-path");
+            if(importDialog){ImGui::Checkbox("Use visual mesh for collision",&importCollision);if(!importCollision)ImGui::InputText("Collision OBJ (empty = none)",collisionInput,sizeof(collisionInput));}
             ImGui::TextWrapped("%s",document.error().c_str());
-            if(ImGui::Button(saveDialog?"Save":"Open")){
+            if(ImGui::Button(importDialog?"Import":saveDialog?"Save":"Open")){
                 fs::path selected=fileInput;if(selected.is_relative())selected=fs::path(browseDirectory)/selected;
                 if(saveDialog && selected.extension().empty())selected+=".json";
                 if(std::strlen(fileInput)){
-                    if(saveDialog){
+                    if(importDialog){if(importAt(selected.string()))ImGui::CloseCurrentPopup();}
+                    else if(saveDialog){
                         std::error_code ec;if(fs::exists(selected,ec) && selected.lexically_normal()!=fs::path(document.path()).lexically_normal()){overwrite=true;overwritePath=selected.string();}
                         else if(saveAt(selected.string()))ImGui::CloseCurrentPopup();
                     }else{browse=false;ImGui::CloseCurrentPopup();request(Action::Open,selected.string());}
                 }
             }
-            ImGui::SameLine();if(ImGui::Button("Cancel")){browse=false;overwrite=false;cancelPending();ImGui::CloseCurrentPopup();}
+            note("file-submit");ImGui::SameLine();if(ImGui::Button("Cancel")){browse=false;overwrite=false;cancelPending();ImGui::CloseCurrentPopup();}
             if(overwrite)ImGui::OpenPopup("Replace existing file?");
             if(ImGui::BeginPopupModal("Replace existing file?",nullptr,ImGuiWindowFlags_AlwaysAutoResize)){
                 ImGui::TextWrapped("Replace %s?",overwritePath.c_str());
@@ -854,15 +987,16 @@ public:
     void ui() {
         const auto screen=ImGui::GetIO().DisplaySize;
         const float left=std::clamp(screen.x*.20f,180.0f,260.0f),right=std::clamp(screen.x*.25f,220.0f,320.0f);
-        constexpr float top=58,bottom=90;
+        constexpr float top=58,bottom=112;
         viewportPos={left,top};viewportSize={std::max(1.0f,screen.x-left-right),std::max(1.0f,screen.y-top-bottom)};
         ImGui::SetNextWindowPos({0,0});ImGui::SetNextWindowSize({screen.x,top});
         ImGui::Begin("Toolbar",nullptr,fixed|ImGuiWindowFlags_NoTitleBar|ImGuiWindowFlags_MenuBar);
         if(ImGui::BeginMenuBar()){
             if(ImGui::BeginMenu("File")){
                 if(ImGui::MenuItem("New map","Cmd/Ctrl+N"))request(Action::New);
-                if(ImGui::MenuItem("New from Arena template"))request(Action::Arena);
+                if(ImGui::MenuItem("New from Crystal combat template"))request(Action::Arena);
                 if(ImGui::MenuItem("Open...","Cmd/Ctrl+O"))openBrowser(false);
+                if(ImGui::MenuItem("Import static OBJ..."))openImportBrowser();
                 if(ImGui::MenuItem("Save","Cmd/Ctrl+S"))save();
                 if(ImGui::MenuItem("Save As...","Cmd/Ctrl+Shift+S"))save(true);
                 ImGui::Separator();if(ImGui::MenuItem("Quit"))request(Action::Quit);ImGui::EndMenu();
@@ -877,21 +1011,23 @@ public:
             ImGui::EndMenuBar();
         }
         if(ImGui::Button("Open"))openBrowser(false);ImGui::SameLine();if(ImGui::Button("Save"))save();
-        ImGui::SameLine();if(ImGui::Button("Arena template"))request(Action::Arena);
+        ImGui::SameLine();if(ImGui::Button("Crystal template"))request(Action::Arena);
         ImGui::SameLine();ImGui::BeginDisabled(!document.canUndo());if(ImGui::Button("Undo"))document.undo();ImGui::EndDisabled();
         ImGui::SameLine();ImGui::BeginDisabled(!document.canRedo());if(ImGui::Button("Redo"))document.redo();ImGui::EndDisabled();
         ImGui::SameLine();ImGui::Checkbox("Snap",&snapEnabled);ImGui::SameLine();ImGui::SetNextItemWidth(64);ImGui::DragFloat("##gridstep",&gridStep,.1f,.1f,10,"%.1f");
         ImGui::End();
         ImGui::SetNextWindowPos({0,top});ImGui::SetNextWindowSize({left,screen.y-top-bottom});
-        ImGui::Begin("Objects",nullptr,fixed);objectList();ImGui::Separator();
-        if(ImGui::Button("+ Add object"))ImGui::OpenPopup("Add object");
+        ImGui::Begin("Objects",nullptr,fixed);ImGui::BeginChild("Object list",{0,-45});objectList();ImGui::EndChild();ImGui::Separator();
+        if(ImGui::Button("+ Add object"))ImGui::OpenPopup("Add object");note("add-object");
         if(ImGui::BeginPopup("Add object")){
             const auto position=EditorDocument::snap(camera.position+camera.front*5.0f,snapEnabled?gridStep:0);
             if(ImGui::MenuItem("Solid box"))document.addBox(position,{2,2,2});
             if(ImGui::MenuItem("Horizontal plane")){
-                document.addBox(position,{4,.1f,4});
-                document.editSelected("Make plane",[](SimpleJson& object){object["shape"]=SimpleJson("plane");object["size"][1]=SimpleJson(0.0);object["type"]=SimpleJson("floor");});
+                document.addPrimitive("plane",position,{4,0,4});
             }
+            if(ImGui::MenuItem("Ramp (+Z low / -Z high)"))document.addPrimitive("ramp",position,{6,3,12});note("add-ramp");
+            if(ImGui::MenuItem("Static model (OBJ)..."))openImportBrowser();
+            if(ImGui::MenuItem("Navigation node"))document.addNavNode(position);
             ImGui::Separator();
             const char* labels[]={"Player start","Light entity","Enemy spawn","Item pickup","Trigger"};
             for(int i=0;i<5;++i)if(ImGui::MenuItem(labels[i]))document.addEntity(static_cast<EntityType>(i),position);
@@ -907,7 +1043,10 @@ public:
         ImGui::Begin("Inspector",nullptr,fixed);ImGui::PushItemWidth(-85);
         properties();ImGui::Separator();
         if(ImGui::CollapsingHeader("Map settings"))worldSettings();
-        if(ImGui::CollapsingHeader("View settings")){
+        if(ImGui::CollapsingHeader("Navigation links / diagnostics"))navigationPanel();
+        if(ImGui::CollapsingHeader("View settings",ImGuiTreeNodeFlags_DefaultOpen)){
+            ImGui::DragFloat("Angle snap",&angleStep,1,1,90,"%.0f deg");
+            const char* views[]={"Visual geometry","Collision geometry","Navigation"};ImGui::Combo("Layer",&geometryView,views,3);
             ImGui::Checkbox("Grid",&showGrid);ImGui::Checkbox("Markers",&showMarkers);ImGui::Checkbox("Wireframe",&wireframe);
             ImGui::DragFloat("Camera speed",&camera.moveSpeed,.1f,.1f,100);if(ImGui::Button("Frame whole map"))focusAll();
         }
@@ -919,10 +1058,13 @@ public:
         viewportHovered=ImGui::IsItemHovered();
         if(viewportHovered && ImGui::IsMouseClicked(0) && !navigating)pickAt(ImGui::GetMousePos());
         auto draw=ImGui::GetWindowDrawList();draw->AddText({viewportPos.x+12,viewportPos.y+12},IM_COL32(185,209,220,255),navigating?"FLYING - RELEASE RIGHT MOUSE TO EDIT":"CLICK TO SELECT  /  HOLD RIGHT MOUSE TO FLY");
+        if(geometryView==2)drawNavigation(draw);
         ImGui::End();ImGui::PopStyleVar();
         ImGui::SetNextWindowPos({0,screen.y-bottom});ImGui::SetNextWindowSize({screen.x,bottom});
         ImGui::Begin("Status",nullptr,fixed|ImGuiWindowFlags_NoDecoration);
         ImGui::TextWrapped("RMB + WASD: fly | Q/E: down/up | wheel: dolly | F: focus | arrows/PgUp/PgDn: move | Shift: faster");
+        if(lastCommitMilliseconds>0)ImGui::Text("Last validated edit: %.1f ms",lastCommitMilliseconds);
+        if(!document.map().getSpatialDiagnostics().empty())ImGui::Text("%zu spatial issues: see Navigation links / diagnostics",document.map().getSpatialDiagnostics().size());
         if(!document.error().empty())ImGui::TextWrapped("Edit rejected: %s",document.error().c_str());else ImGui::TextWrapped("%s",status.c_str());
         ImGui::End();dialogs();
         std::string title="Silic2 Map Editor - "+(document.path().empty()?"Untitled":fs::path(document.path()).filename().string())+(document.dirty()?" *":"");glfwSetWindowTitle(window,title.c_str());
@@ -936,12 +1078,15 @@ public:
         glViewport(x,y,width,height);glEnable(GL_SCISSOR_TEST);glScissor(x,y,width,height);
         auto color=document.map().getWorldSettings().backgroundColor;glClearColor(color.r,color.g,color.b,1);glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
         glEnable(GL_DEPTH_TEST);glDisable(GL_CULL_FACE);
-        if(document.revision()!=renderedRevision){renderer.updateMapGeometry(document.map());renderedRevision=document.revision();}
+        if(document.revision()!=renderedRevision || renderedView!=geometryView || draftActive || renderedDraft){
+            const auto id=draftActive?uint32_t(document.selectedJson().getNumber("id",double(~uint32_t(0)))):~uint32_t(0);
+            renderer.updateMapGeometry(document.map(),geometryView==1,id,draftActive?draftMatrix():glm::mat4(1));renderedRevision=document.revision();renderedView=geometryView;renderedDraft=draftActive;
+        }
         const float aspect=viewportSize.x/viewportSize.y;
-        renderer.render(camera,aspect,wireframe);
+        renderer.render(camera,aspect,wireframe || geometryView==2);
         if(showGrid)renderer.renderGrid(camera,aspect);
         if(showMarkers)renderer.renderEntities(document.map(),camera,aspect);
-        if(document.selected())renderer.renderSelection(document.selectedBounds(),camera,aspect);
+        if(document.selected())renderer.renderSelection(draftBounds(),camera,aspect);
         glDisable(GL_SCISSOR_TEST);glViewport(0,0,fw,fh);
     }
     void screenshot(const std::string& path) {
@@ -950,11 +1095,17 @@ public:
     }
 };
 
+ #include "../tests/editor_hybrid_smoke.h"
+
 static void glfw_error_callback(int error,const char* description){std::cerr<<"GLFW "<<error<<": "<<description<<'\n';}
 
 int main(int argc,char** argv) {
+    if(argc>3 && std::string(argv[1])=="--measure-edits")return measureEditorEdits(argv[2],argv[3]);
+    if(argc>1 && std::string(argv[1])=="--hybrid-self-test")return runHybridSelfTests(argc>2?argv[2]:"/tmp/silic2-editor-hybrid-test");
     if(argc>1 && std::string(argv[1])=="--self-test")return runEditorSelfTests(argc>2?argv[2]:SILIC2_ROOT "/res/maps/test_room.json",argc>3?argv[3]:"/tmp/silic2-editor-self-test");
-    bool smoke=argc>1 && std::string(argv[1])=="--smoke";
+    bool layout=argc>1 && std::string(argv[1])=="--layout-smoke";
+    bool hybrid=argc>1 && std::string(argv[1])=="--hybrid-smoke";
+    bool smoke=layout || hybrid || (argc>1 && std::string(argv[1])=="--smoke");
     const std::string fixture=smoke?(argc>2?argv[2]:SILIC2_ROOT "/res/maps/test_room.json"):(argc>1?argv[1]:"");
     const std::string output=smoke?(argc>3?argv[3]:"/tmp/silic2-editor-smoke"):"";
     glfwSetErrorCallback(glfw_error_callback);if(!glfwInit())return 1;
@@ -972,16 +1123,21 @@ int main(int argc,char** argv) {
     try {
         MapEditor editor(window);
         if(!fixture.empty()){editor.request(MapEditor::Action::Open,fixture);if(!editor.document.error().empty())throw std::runtime_error(editor.document.error());}
+        HybridSmoke hybridCheck{argc>4?fs::absolute(argv[4]).string():SILIC2_ROOT "/res/models/crystal_combat/ring_deck_30.obj",fs::absolute(output.empty()?"/tmp/editor-hybrid-ui":output).string()};
+        LayoutSmoke layoutCheck;
         int frame=0;double previous=glfwGetTime();Selection smokeSelection;glm::vec3 smokeInitialCenter(0);size_t smokeInitialCount=0;double smokeSelectedId=-1;
         auto objectCount=[&](){return editor.document.map().getBrushes().size()+editor.document.map().getEntities().size()+editor.document.map().getLights().size();};
         auto center=[&](){auto bounds=editor.document.selectedBounds();return (bounds.min+bounds.max)*.5f;};
         if(smoke)fs::create_directories(output);
+        std::ofstream frameCsv;if(hybrid || layout){frameCsv.open(output+"/ui-frames.csv");frameCsv<<"frame,wall_ms\n";}
         while(!glfwWindowShouldClose(window)){
-            glfwPollEvents();
+            auto frameStarted=std::chrono::steady_clock::now();glfwPollEvents();
             if(glfwWindowShouldClose(window)){glfwSetWindowShouldClose(window,GL_FALSE);editor.request(MapEditor::Action::Quit);if(glfwWindowShouldClose(window))break;}
             const double now=glfwGetTime();float dt=std::min(.05f,float(now-previous));previous=now;
             ImGui_ImplOpenGL3_NewFrame();ImGui_ImplGlfw_NewFrame();
-            if(smoke){
+            if(layout)layoutCheck.input(frame,io,editor,window);
+            if(hybrid)hybridCheck.input(frame,io,editor);
+            if(smoke && !hybrid && !layout){
                 // Events go through the same ImGui input/shortcut path as real use.
                 if(frame==2){
                     const auto& meshes=editor.document.map().getLegacyBrushes();
@@ -1008,7 +1164,9 @@ int main(int argc,char** argv) {
                 if(frame==19){auto p=editor.cancelButtonCenter;io.AddMousePosEvent(p.x,p.y);io.AddMouseButtonEvent(0,false);}
             }
             ImGui::NewFrame();editor.ui();editor.processInput(dt);
-            if(smoke){
+            if(layout){layoutCheck.verify(frame,editor);if(frame==17)glfwSetWindowSize(window,800,600);}
+            if(hybrid){hybridCheck.verify(frame,editor);if(frame==89)glfwSetWindowSize(window,800,600);if(frame==94)glfwSetWindowSize(window,1440,900);}
+            if(smoke && !hybrid && !layout){
                 if(frame>=2 && frame<=13)std::cout<<"INPUT FRAME "<<frame<<" selection "<<int(editor.document.selection().kind)<<":"<<editor.document.selection().index<<" id "<<editor.document.selectedJson().getNumber("id",-1)<<" center "<<center().x<<","<<center().y<<","<<center().z<<" objects "<<objectCount()<<" dirty "<<editor.document.dirty()<<" error "<<editor.document.error()<<'\n';
                 if(frame==3 && (!(editor.document.selection()==smokeSelection) || editor.document.selectedJson().getNumber("id",-1)!=smokeSelectedId))throw std::runtime_error("synthetic click selected unexpected object");
                 if(frame==5 && (!editor.document.dirty() || glm::length(center()-smokeInitialCenter-glm::vec3(1,0,0))>.01f))throw std::runtime_error("synthetic arrow move not processed");
@@ -1022,8 +1180,8 @@ int main(int argc,char** argv) {
                 if(frame==15)glfwSetWindowSize(window,800,600);
             }
             editor.render();ImGui::Render();ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-            if(smoke && (frame==11 || frame==14 || frame==16 || frame==22)){glFinish();editor.screenshot(output+"/frame-"+std::to_string(frame)+".ppm");int lw,lh,fw,fh;glfwGetWindowSize(window,&lw,&lh);glfwGetFramebufferSize(window,&fw,&fh);std::cout<<"GL FRAME "<<frame<<" logical "<<lw<<'x'<<lh<<" framebuffer "<<fw<<'x'<<fh<<'\n';if(glGetError()!=GL_NO_ERROR)throw std::runtime_error("GL smoke error");}
-            glfwSwapBuffers(window);if(smoke && ++frame>24)break;
+            if(smoke && (layout?LayoutSmoke::capture(frame):hybrid?HybridSmoke::capture(frame):(frame==11 || frame==14 || frame==16 || frame==22))){glFinish();editor.screenshot(output+"/frame-"+std::to_string(frame)+".ppm");int lw,lh,fw,fh;glfwGetWindowSize(window,&lw,&lh);glfwGetFramebufferSize(window,&fw,&fh);std::cout<<"GL FRAME "<<frame<<" logical "<<lw<<'x'<<lh<<" framebuffer "<<fw<<'x'<<fh<<'\n';if(glGetError()!=GL_NO_ERROR)throw std::runtime_error("GL smoke error");}
+            glfwSwapBuffers(window);if(hybrid || layout)frameCsv<<frame<<','<<std::chrono::duration<double,std::milli>(std::chrono::steady_clock::now()-frameStarted).count()<<'\n';if(smoke && ++frame>(layout?39:hybrid?146:24))break;
         }
         editor.stopNavigation();
     }catch(const std::exception& e){std::cerr<<e.what()<<'\n';result=4;}

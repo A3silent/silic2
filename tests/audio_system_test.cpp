@@ -73,6 +73,27 @@ void runAudioTests() {
         require(audio.play(AudioCue::PlayerShot,{},0,false),"restart clears pause");
         audio.renderOffline(block.data(),4800);
     }
+    // Horror bed/transform must preserve measurable lateral threat contrast.
+    // This checks mix routing/headroom, not a human audibility threshold.
+    std::vector<float> warmup(72000*2), warningBlock(48000*2);
+    for (const auto cue : {AudioCue::RiftWarning, AudioCue::SentryCharge}) {
+        for (const float side : {-1.0f, 1.0f}) {
+            audio.reset();
+            audio.play(AudioCue::Ambience,{},0,false);
+            audio.play(AudioCue::Transform,{},0,false);
+            audio.renderOffline(warmup.data(),72000);
+            audio.play(cue,{15*side,0,0},1,true);
+            audio.renderOffline(warningBlock.data(),48000);
+            const int nearChannel=side>0?1:0;
+            const double contrast=energy(warningBlock,nearChannel)/energy(warningBlock,1-nearChannel);
+            require(contrast>4,"15m warning keeps >6dB lateral contrast under transform and ambience");
+        }
+    }
+    audio.reset(); audio.play(AudioCue::Ambience,{},0,false);
+    std::vector<float> loopA(384000*2), loopB(384000*2);
+    audio.renderOffline(loopA.data(),384000); audio.renderOffline(loopB.data(),384000);
+    require(loopA==loopB,"ambient loop preserves exact repeated PCM across eight-second boundary");
+    require(audio.diagnostics().activeVoices==1,"ambient loop remains active");
     audio.shutdown(); audio.shutdown();
     require(audio.diagnostics().loadedFrames==0 && !audio.available(),"shutdown frees PCM and is idempotent");
     std::cout << "Audio offline tests passed (headphone/runtime acceptance pending).\n";

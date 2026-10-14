@@ -1,0 +1,89 @@
+[
+  {
+    "name": "default-flow",
+    "command": [
+      "/Users/ritzsun/Desktop/game/opengl/silic2/silic2-release",
+      "/Users/ritzsun/Desktop/game/opengl/silic2/res/maps/starry_crystal_arena.json",
+      "--acceptance",
+      "flow",
+      "--output",
+      "/Users/ritzsun/Desktop/game/opengl/silic2/artifacts/acceptance/horror/default-flow"
+    ],
+    "exit_code": 0,
+    "binary_sha256": "13b456d30394ccf9c3321a52487e8624bdd36e1ad353c1236fbba3f51dfd4f07",
+    "map_sha256": "d629abcf4e749d1360c56bd3c4e3587e7afc6872a2e74fcd990873742ab146ca",
+    "wall_seconds": 9.752482891082764,
+    "audio_available": true,
+    "gl_errors_fail_process": true,
+    "flow_checks": [
+      {
+        "event": "flow_check",
+        "check": "ready_excludes_time",
+        "passed": true
+      },
+      {
+        "event": "flow_check",
+        "check": "escape_pauses",
+        "passed": true
+      },
+      {
+        "event": "flow_check",
+        "check": "pause_freezes_simulation_and_audio",
+        "passed": true
+      },
+      {
+        "event": "flow_check",
+        "check": "escape_resumes",
+        "passed": true
+      },
+      {
+        "event": "flow_check",
+        "check": "focus_callback_pauses_and_releases_cursor",
+        "passed": true
+      },
+      {
+        "event": "flow_check",
+        "check": "resume_recaptures_cursor",
+        "passed": true
+      },
+      {
+        "event": "flow_check",
+        "check": "death_actual_damage_and_source",
+        "passed": true
+      },
+      {
+        "event": "flow_check",
+        "check": "held_fire_cannot_skip_result",
+        "passed": true
+      },
+      {
+        "event": "flow_check",
+        "check": "fresh_click_same_seed_restart",
+        "passed": true
+      },
+      {
+        "event": "flow_check",
+        "check": "all_flow_stages_completed",
+        "passed": true
+      }
+    ],
+    "flow_pass": true
+  },
+  {
+    "name": "legacy",
+    "command": [
+      "/Users/ritzsun/Desktop/game/opengl/silic2/silic2-release",
+      "/Users/ritzsun/Desktop/game/opengl/silic2/res/maps/test_room.json",
+      "--acceptance",
+      "screenshots",
+      "--output",
+      "/Users/ritzsun/Desktop/game/opengl/silic2/artifacts/acceptance/horror/legacy"
+    ],
+    "exit_code": 0,
+    "binary_sha256": "13b456d30394ccf9c3321a52487e8624bdd36e1ad353c1236fbba3f51dfd4f07",
+    "map_sha256": "ec0ba630d335bc1fa05a195404e867b57d3eb265476128c8b53343eabd39fe7d",
+    "wall_seconds": 5.68622612953186,
+    "audio_available": true,
+    "gl_errors_fail_process": true
+  }
+]

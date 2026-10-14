@@ -7,6 +7,7 @@
 
 namespace silic2 {
 std::string hudPhaseLabel(const HudViewModel& m) {
+    if (m.exploration) return m.zoneName;
     if (!m.arenaSurvival) return m.livingEnemies>0 ? "CLEAR" : "EXPLORE";
     if (m.cleanup) return "CLEANUP";
     if (m.hasTransformation && m.combatSeconds>=m.transformationStart) {
@@ -15,11 +16,13 @@ std::string hudPhaseLabel(const HudViewModel& m) {
     return "SURVIVE";
 }
 std::string hudObjectiveLabel(const HudViewModel& m) {
+    if(m.exploration) return m.objective;
     if (!m.arenaSurvival && m.livingEnemies==0) return "EXPLORE THE MAP";
     if (!m.arenaSurvival || m.cleanup) return std::to_string(m.livingEnemies)+" HOSTILES LEFT";
     return "HOLD UNTIL 01:30";
 }
 std::string hudReadyObjective(const HudViewModel& m) {
+    if(m.exploration) return "EXPLORE. CLEAR THE COURT. ALIGN THE STAR.";
     return m.arenaSurvival ? "SURVIVE 90 SECONDS. CLEAR THE ARENA." : "CLEAR EXISTING HOSTILES. EXPLORE.";
 }
 

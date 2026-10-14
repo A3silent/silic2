@@ -1,1 +1,2715 @@
-{"arena":{"floorBrushId":1},"contentVersion":"starry-crystal-arena-v2","entities":[{"floatProperty1":0,"floatProperty2":0,"intProperty":0,"name":"SouthStart","position":[0,0,13],"rotation":[0,-90,0],"scale":[1,1,1],"stringProperty":"","type":"player_start","vec3Property":[0,0,0]},{"floatProperty1":0,"floatProperty2":0,"intProperty":0,"name":"rift_north","position":[0,0,-15],"rotation":[0,0,0],"scale":[1,1,1],"slot":0,"stringProperty":"","type":"rift","vec3Property":[0,0,0]},{"floatProperty1":0,"floatProperty2":0,"intProperty":0,"name":"rift_east","position":[15,0,0],"rotation":[0,90,0],"scale":[1,1,1],"slot":1,"stringProperty":"","type":"rift","vec3Property":[0,0,0]},{"floatProperty1":0,"floatProperty2":0,"intProperty":0,"name":"rift_south","position":[0,0,15],"rotation":[0,0,0],"scale":[1,1,1],"slot":2,"stringProperty":"","type":"rift","vec3Property":[0,0,0]},{"floatProperty1":0,"floatProperty2":0,"intProperty":0,"name":"rift_west","position":[-15,0,0],"rotation":[0,90,0],"scale":[1,1,1],"slot":3,"stringProperty":"","type":"rift","vec3Property":[0,0,0]},{"floatProperty1":0,"floatProperty2":0,"intProperty":0,"name":"sentry_0","position":[-11,0,-10],"rotation":[0,0,0],"scale":[1,1,1],"slot":0,"stringProperty":"","type":"sentry_spawn","vec3Property":[0,0,0]},{"floatProperty1":0,"floatProperty2":0,"intProperty":0,"name":"sentry_1","position":[11,0,-10],"rotation":[0,0,0],"scale":[1,1,1],"slot":1,"stringProperty":"","type":"sentry_spawn","vec3Property":[0,0,0]},{"floatProperty1":0,"floatProperty2":0,"intProperty":0,"name":"sentry_2","position":[10,0,10],"rotation":[0,0,0],"scale":[1,1,1],"slot":2,"stringProperty":"","type":"sentry_spawn","vec3Property":[0,0,0]}],"environment":{"particleCount":256,"transformationDuration":4,"transformationStart":45},"environmentPreset":"starry_crystal","gameMode":"arena_survival","geometry":{"brushes":[{"color":[0.045000001788139343,0.34000000357627869,0.38999998569488525],"faces":[0,1,2,0,2,3,0,4,5,0,5,1,1,5,6,1,6,2,2,6,7,2,7,3,3,7,4,3,4,0,4,8,5,5,8,6,6,8,7,7,8,4,9,10,11,9,11,12,9,13,14,9,14,10,10,14,15,10,15,11,11,15,16,11,16,12,12,16,13,12,13,9,13,17,14,14,17,15,15,17,16,16,17,13,18,19,20,18,20,21,18,22,23,18,23,19,19,23,24,19,24,20,20,24,25,20,25,21,21,25,22,21,22,18,22,26,23,23,26,24,24,26,25,25,26,22],"id":6,"material":"arena_living_crystal","texCoords":[],"texture":"","type":"wall","vertices":[-2,0,-2,-0.64999997615814209,0,-2,-0.64999997615814209,0,2,-2,0,2,-2,3.0499999523162842,-2,-0.64999997615814209,3.0499999523162842,-2,-0.64999997615814209,3.0499999523162842,2,-2,3.0499999523162842,2,-1.3250000476837158,3.7000000476837158,0.10000000149011612,-0.64999997615814209,0,-2,0.69999998807907104,0,-2,0.69999998807907104,0,2,-0.64999997615814209,0,2,-0.64999997615814209,3.3499999046325684,-2,0.69999998807907104,3.3499999046325684,-2,0.69999998807907104,3.3499999046325684,2,-0.64999997615814209,3.3499999046325684,2,0.02500000037252903,4.1999998092651367,-0.34999999403953552,0.69999998807907104,0,-2,2,0,-2,2,0,2,0.69999998807907104,0,2,0.69999998807907104,3,-2,2,3,-2,2,3,2,0.69999998807907104,3,2,1.3500000238418579,3.6500000953674316,0.25]}],"objects":[{"color":[0.18000000715255737,0.20000000298023224,0.31999999284744263],"id":1,"material":"arena_mineral_floor","name":"Arena floor","position":[0,0,0],"shape":"plane","size":[36,0,36],"texture":"","type":"floor"},{"color":[0.14000000059604645,0.17000000178813934,0.28999999165534973],"id":2,"material":"arena_boundary","name":"North wall","position":[0,2.9000000953674316,-18.5],"shape":"box","size":[38,6.1999998092651367,1],"texture":"","type":"wall"},{"color":[0.14000000059604645,0.17000000178813934,0.28999999165534973],"id":3,"material":"arena_boundary","name":"South wall","position":[0,2.9000000953674316,18.5],"shape":"box","size":[38,6.1999998092651367,1],"texture":"","type":"wall"},{"color":[0.14000000059604645,0.17000000178813934,0.28999999165534973],"id":4,"material":"arena_boundary","name":"West wall","position":[-18.5,2.9000000953674316,0],"shape":"box","size":[1,6.1999998092651367,36],"texture":"","type":"wall"},{"color":[0.14000000059604645,0.17000000178813934,0.28999999165534973],"id":5,"material":"arena_boundary","name":"East wall","position":[18.5,2.9000000953674316,0],"shape":"box","size":[1,6.1999998092651367,36],"texture":"","type":"wall"},{"color":[0.17000000178813934,0.18000000715255737,0.31000000238418579],"id":7,"material":"arena_cover","name":"West cover","position":[-9,0.69999998807907104,0],"shape":"box","size":[2,1.3999999761581421,4],"texture":"","type":"wall"},{"color":[0.17000000178813934,0.18000000715255737,0.31000000238418579],"id":8,"material":"arena_cover","name":"East cover","position":[9,0.69999998807907104,0],"shape":"box","size":[2,1.3999999761581421,4],"texture":"","type":"wall"}]},"lights":[{"anchor":{"brushId":6,"offset":[0,3.0999999046325684,0]},"color":[0.18000000715255737,0.52999997138977051,0.64999997615814209],"direction":[0,-1,0],"innerConeAngle":30,"intensity":0.64999997615814209,"outerConeAngle":45,"position":[0,5.1999998092651367,0],"range":18,"type":"point"},{"anchor":{"entityName":"rift_north","offset":[0,2,0]},"color":[0.15000000596046448,0.30000001192092896,0.60000002384185791],"direction":[0,-1,0],"innerConeAngle":30,"intensity":0.34999999403953552,"outerConeAngle":45,"position":[0,2,-15],"range":9,"type":"point"},{"anchor":{"entityName":"rift_east","offset":[0,2,0]},"color":[0.15000000596046448,0.30000001192092896,0.60000002384185791],"direction":[0,-1,0],"innerConeAngle":30,"intensity":0.34999999403953552,"outerConeAngle":45,"position":[15,2,0],"range":9,"type":"point"},{"anchor":{"entityName":"rift_south","offset":[0,2,0]},"color":[0.15000000596046448,0.30000001192092896,0.60000002384185791],"direction":[0,-1,0],"innerConeAngle":30,"intensity":0.34999999403953552,"outerConeAngle":45,"position":[0,2,15],"range":9,"type":"point"},{"anchor":{"entityName":"rift_west","offset":[0,2,0]},"color":[0.15000000596046448,0.30000001192092896,0.60000002384185791],"direction":[0,-1,0],"innerConeAngle":30,"intensity":0.34999999403953552,"outerConeAngle":45,"position":[-15,2,0],"range":9,"type":"point"}],"schemaVersion":2,"version":"1.0","worldSettings":{"ambientLight":[0.31999999284744263,0.36000001430511475,0.47999998927116394],"backgroundColor":[0.0080000003799796104,0.014000000432133675,0.035999998450279236],"gravity":-9.8000001907348633}}
+{
+  "schemaVersion": 3,
+  "version": "1.0",
+  "gameMode": "arena_survival",
+  "environmentPreset": "starry_crystal",
+  "contentVersion": "crystal-combat-world-v1",
+  "worldSettings": {
+    "gravity": -9.8,
+    "ambientLight": [
+      0.3,
+      0.35,
+      0.42
+    ],
+    "backgroundColor": [
+      0.008,
+      0.014,
+      0.036
+    ]
+  },
+  "environment": {
+    "transformationStart": 45,
+    "transformationDuration": 4,
+    "particleCount": 128,
+    "architecture": "crystal_combat",
+    "landmarkPosition": [
+      0,
+      8,
+      2
+    ],
+    "landmarkScale": [
+      6,
+      12,
+      6
+    ]
+  },
+  "arena": {
+    "floorBrushId": 1
+  },
+  "geometry": {
+    "brushes": [],
+    "objects": [
+      {
+        "id": 1,
+        "name": "Continuous lower foundation",
+        "shape": "plane",
+        "position": [
+          0,
+          0,
+          0
+        ],
+        "size": [
+          64,
+          0,
+          64
+        ],
+        "material": "combat_foundation",
+        "color": [
+          0.18,
+          0.24,
+          0.27
+        ],
+        "type": "floor"
+      }
+    ],
+    "models": [
+      {
+        "id": 10,
+        "name": "Upper broken-ring walk 180",
+        "asset": "../models/crystal_combat/ring_deck_30.obj",
+        "collisionAsset": "../models/crystal_combat/ring_deck_30.obj",
+        "position": [
+          0,
+          6,
+          0
+        ],
+        "rotation": [
+          0,
+          -180,
+          0
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ],
+        "material": "combat_deck",
+        "color": [
+          0.25,
+          0.31,
+          0.35
+        ]
+      },
+      {
+        "id": 11,
+        "name": "Upper broken-ring walk 210",
+        "asset": "../models/crystal_combat/ring_deck_30.obj",
+        "collisionAsset": "../models/crystal_combat/ring_deck_30.obj",
+        "position": [
+          0,
+          6,
+          0
+        ],
+        "rotation": [
+          0,
+          -210,
+          0
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ],
+        "material": "combat_deck",
+        "color": [
+          0.25,
+          0.31,
+          0.35
+        ]
+      },
+      {
+        "id": 12,
+        "name": "Upper broken-ring walk 240",
+        "asset": "../models/crystal_combat/ring_deck_30.obj",
+        "collisionAsset": "../models/crystal_combat/ring_deck_30.obj",
+        "position": [
+          0,
+          6,
+          0
+        ],
+        "rotation": [
+          0,
+          -240,
+          0
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ],
+        "material": "combat_deck",
+        "color": [
+          0.25,
+          0.31,
+          0.35
+        ]
+      },
+      {
+        "id": 13,
+        "name": "Upper broken-ring walk 270",
+        "asset": "../models/crystal_combat/ring_deck_30.obj",
+        "collisionAsset": "../models/crystal_combat/ring_deck_30.obj",
+        "position": [
+          0,
+          6,
+          0
+        ],
+        "rotation": [
+          0,
+          -270,
+          0
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ],
+        "material": "combat_deck",
+        "color": [
+          0.25,
+          0.31,
+          0.35
+        ]
+      },
+      {
+        "id": 14,
+        "name": "Upper broken-ring walk 300",
+        "asset": "../models/crystal_combat/ring_deck_30.obj",
+        "collisionAsset": "../models/crystal_combat/ring_deck_30.obj",
+        "position": [
+          0,
+          6,
+          0
+        ],
+        "rotation": [
+          0,
+          -300,
+          0
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ],
+        "material": "combat_deck",
+        "color": [
+          0.25,
+          0.31,
+          0.35
+        ]
+      },
+      {
+        "id": 15,
+        "name": "Upper broken-ring walk 330",
+        "asset": "../models/crystal_combat/ring_deck_30.obj",
+        "collisionAsset": "../models/crystal_combat/ring_deck_30.obj",
+        "position": [
+          0,
+          6,
+          0
+        ],
+        "rotation": [
+          0,
+          -330,
+          0
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ],
+        "material": "combat_deck",
+        "color": [
+          0.25,
+          0.31,
+          0.35
+        ]
+      },
+      {
+        "id": 16,
+        "name": "West ascent",
+        "asset": "../models/crystal_combat/ramp_6x22.obj",
+        "collisionAsset": "../models/crystal_combat/ramp_6x22.obj",
+        "position": [
+          -15,
+          0,
+          7.5
+        ],
+        "rotation": [
+          0,
+          0,
+          0
+        ],
+        "scale": [
+          1,
+          1,
+          0.6818181818181818
+        ],
+        "material": "combat_deck",
+        "color": [
+          0.25,
+          0.31,
+          0.35
+        ]
+      },
+      {
+        "id": 17,
+        "name": "East ascent",
+        "asset": "../models/crystal_combat/ramp_6x22.obj",
+        "collisionAsset": "../models/crystal_combat/ramp_6x22.obj",
+        "position": [
+          15,
+          0,
+          7.5
+        ],
+        "rotation": [
+          0,
+          0,
+          0
+        ],
+        "scale": [
+          1,
+          1,
+          0.6818181818181818
+        ],
+        "material": "combat_deck",
+        "color": [
+          0.25,
+          0.31,
+          0.35
+        ]
+      },
+      {
+        "id": 18,
+        "name": "Orbital outer shell 0",
+        "asset": "../models/crystal_combat/curved_wall_45.obj",
+        "collisionAsset": "../models/crystal_combat/curved_wall_45.obj",
+        "position": [
+          0,
+          0,
+          0
+        ],
+        "rotation": [
+          0,
+          0,
+          0
+        ],
+        "scale": [
+          1,
+          1.5,
+          1
+        ],
+        "material": "combat_ivory",
+        "color": [
+          0.46,
+          0.49,
+          0.43
+        ]
+      },
+      {
+        "id": 19,
+        "name": "Orbital outer shell 45",
+        "asset": "../models/crystal_combat/curved_wall_45.obj",
+        "collisionAsset": "../models/crystal_combat/curved_wall_45.obj",
+        "position": [
+          0,
+          0,
+          0
+        ],
+        "rotation": [
+          0,
+          -45,
+          0
+        ],
+        "scale": [
+          1,
+          1.7,
+          1
+        ],
+        "material": "combat_ivory",
+        "color": [
+          0.46,
+          0.49,
+          0.43
+        ]
+      },
+      {
+        "id": 20,
+        "name": "Orbital outer shell 90",
+        "asset": "../models/crystal_combat/curved_wall_45.obj",
+        "collisionAsset": "../models/crystal_combat/curved_wall_45.obj",
+        "position": [
+          0,
+          0,
+          0
+        ],
+        "rotation": [
+          0,
+          -90,
+          0
+        ],
+        "scale": [
+          1,
+          2.0,
+          1
+        ],
+        "material": "combat_brown",
+        "color": [
+          0.19,
+          0.13,
+          0.1
+        ]
+      },
+      {
+        "id": 21,
+        "name": "Orbital outer shell 135",
+        "asset": "../models/crystal_combat/curved_wall_45.obj",
+        "collisionAsset": "../models/crystal_combat/curved_wall_45.obj",
+        "position": [
+          0,
+          0,
+          0
+        ],
+        "rotation": [
+          0,
+          -135,
+          0
+        ],
+        "scale": [
+          1,
+          2.3,
+          1
+        ],
+        "material": "combat_brown",
+        "color": [
+          0.19,
+          0.13,
+          0.1
+        ]
+      },
+      {
+        "id": 22,
+        "name": "Orbital outer shell 180",
+        "asset": "../models/crystal_combat/curved_wall_45.obj",
+        "collisionAsset": "../models/crystal_combat/curved_wall_45.obj",
+        "position": [
+          0,
+          0,
+          0
+        ],
+        "rotation": [
+          0,
+          -180,
+          0
+        ],
+        "scale": [
+          1,
+          2.1,
+          1
+        ],
+        "material": "combat_brown",
+        "color": [
+          0.19,
+          0.13,
+          0.1
+        ]
+      },
+      {
+        "id": 23,
+        "name": "Orbital outer shell 225",
+        "asset": "../models/crystal_combat/curved_wall_45.obj",
+        "collisionAsset": "../models/crystal_combat/curved_wall_45.obj",
+        "position": [
+          0,
+          0,
+          0
+        ],
+        "rotation": [
+          0,
+          -225,
+          0
+        ],
+        "scale": [
+          1,
+          1.45,
+          1
+        ],
+        "material": "combat_crystal",
+        "color": [
+          0.09,
+          0.22,
+          0.29
+        ]
+      },
+      {
+        "id": 24,
+        "name": "Orbital outer shell 270",
+        "asset": "../models/crystal_combat/curved_wall_45.obj",
+        "collisionAsset": "../models/crystal_combat/curved_wall_45.obj",
+        "position": [
+          0,
+          0,
+          0
+        ],
+        "rotation": [
+          0,
+          -270,
+          0
+        ],
+        "scale": [
+          1,
+          1.5,
+          1
+        ],
+        "material": "combat_crystal",
+        "color": [
+          0.09,
+          0.22,
+          0.29
+        ]
+      },
+      {
+        "id": 25,
+        "name": "Orbital outer shell 315",
+        "asset": "../models/crystal_combat/curved_wall_45.obj",
+        "collisionAsset": "../models/crystal_combat/curved_wall_45.obj",
+        "position": [
+          0,
+          0,
+          0
+        ],
+        "rotation": [
+          0,
+          -315,
+          0
+        ],
+        "scale": [
+          1,
+          1.7,
+          1
+        ],
+        "material": "combat_crystal",
+        "color": [
+          0.09,
+          0.22,
+          0.29
+        ]
+      },
+      {
+        "id": 26,
+        "name": "Central invaded keel",
+        "asset": "../models/crystal_combat/crystal_shell.obj",
+        "collisionAsset": "../models/crystal_combat/crystal_shell.obj",
+        "position": [
+          0,
+          0,
+          2
+        ],
+        "rotation": [
+          0,
+          0,
+          0
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ],
+        "material": "combat_crystal",
+        "color": [
+          0.09,
+          0.22,
+          0.29
+        ]
+      },
+      {
+        "id": 27,
+        "name": "Lower ravine crystal vault",
+        "asset": "../models/crystal_combat/crystal_vault.obj",
+        "collisionAsset": "../models/crystal_combat/crystal_vault.obj",
+        "position": [
+          0,
+          0,
+          -23
+        ],
+        "rotation": [
+          0,
+          0,
+          0
+        ],
+        "scale": [
+          1,
+          1,
+          0.72
+        ],
+        "material": "combat_crystal",
+        "color": [
+          0.09,
+          0.22,
+          0.29
+        ]
+      },
+      {
+        "id": 28,
+        "name": "Leaning orbital buttress -12",
+        "asset": "../models/crystal_combat/leaning_support.obj",
+        "collisionAsset": "../models/crystal_combat/leaning_support.obj",
+        "position": [
+          -26,
+          0,
+          -12
+        ],
+        "rotation": [
+          0,
+          0,
+          0
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ],
+        "material": "combat_ivory",
+        "color": [
+          0.46,
+          0.49,
+          0.43
+        ]
+      },
+      {
+        "id": 29,
+        "name": "Leaning orbital buttress 0",
+        "asset": "../models/crystal_combat/leaning_support.obj",
+        "collisionAsset": "../models/crystal_combat/leaning_support.obj",
+        "position": [
+          -26,
+          0,
+          0
+        ],
+        "rotation": [
+          0,
+          0,
+          0
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ],
+        "material": "combat_ivory",
+        "color": [
+          0.46,
+          0.49,
+          0.43
+        ]
+      },
+      {
+        "id": 30,
+        "name": "Leaning orbital buttress 12",
+        "asset": "../models/crystal_combat/leaning_support.obj",
+        "collisionAsset": "../models/crystal_combat/leaning_support.obj",
+        "position": [
+          -26,
+          0,
+          12
+        ],
+        "rotation": [
+          0,
+          0,
+          0
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ],
+        "material": "combat_ivory",
+        "color": [
+          0.46,
+          0.49,
+          0.43
+        ]
+      },
+      {
+        "id": 31,
+        "name": "South tactical cover",
+        "asset": "../models/crystal_combat/low_cover.obj",
+        "collisionAsset": "../models/crystal_combat/low_cover.obj",
+        "position": [
+          0,
+          0,
+          12
+        ],
+        "rotation": [
+          0,
+          20,
+          0
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ],
+        "material": "combat_ivory",
+        "color": [
+          0.46,
+          0.49,
+          0.43
+        ]
+      },
+      {
+        "id": 32,
+        "name": "East tactical cover",
+        "asset": "../models/crystal_combat/low_cover.obj",
+        "collisionAsset": "../models/crystal_combat/low_cover.obj",
+        "position": [
+          23,
+          0,
+          -9
+        ],
+        "rotation": [
+          0,
+          -25,
+          0
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ],
+        "material": "combat_ivory",
+        "color": [
+          0.46,
+          0.49,
+          0.43
+        ]
+      }
+    ]
+  },
+  "entities": [
+    {
+      "type": "player_start",
+      "name": "South arrival",
+      "position": [
+        0,
+        0,
+        18
+      ],
+      "rotation": [
+        0,
+        -90,
+        0
+      ]
+    },
+    {
+      "type": "rift",
+      "name": "Rift 0",
+      "slot": 0,
+      "position": [
+        -23,
+        0,
+        4
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "type": "rift",
+      "name": "Rift 1",
+      "slot": 1,
+      "position": [
+        23,
+        0,
+        4
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "type": "rift",
+      "name": "Rift 2",
+      "slot": 2,
+      "position": [
+        0,
+        6,
+        -15
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "type": "rift",
+      "name": "Rift 3",
+      "slot": 3,
+      "position": [
+        0,
+        0,
+        22
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "type": "sentry_spawn",
+      "name": "Sentry 0",
+      "slot": 0,
+      "position": [
+        -21,
+        0,
+        -8
+      ]
+    },
+    {
+      "type": "sentry_spawn",
+      "name": "Sentry 1",
+      "slot": 1,
+      "position": [
+        22,
+        0,
+        -4
+      ]
+    },
+    {
+      "type": "sentry_spawn",
+      "name": "Sentry 2",
+      "slot": 2,
+      "position": [
+        10.6066,
+        6,
+        -10.6066
+      ]
+    }
+  ],
+  "lights": [
+    {
+      "type": "point",
+      "position": [
+        0,
+        12,
+        2
+      ],
+      "color": [
+        0.44,
+        0.58,
+        0.74
+      ],
+      "intensity": 1.1,
+      "range": 25
+    },
+    {
+      "type": "point",
+      "position": [
+        0,
+        4,
+        -22
+      ],
+      "color": [
+        0.22,
+        0.6,
+        0.62
+      ],
+      "intensity": 0.9,
+      "range": 15
+    },
+    {
+      "type": "point",
+      "position": [
+        -23,
+        8,
+        4
+      ],
+      "color": [
+        0.65,
+        0.46,
+        0.3
+      ],
+      "intensity": 0.8,
+      "range": 18
+    },
+    {
+      "type": "point",
+      "position": [
+        23,
+        6,
+        3
+      ],
+      "color": [
+        0.72,
+        0.82,
+        0.68
+      ],
+      "intensity": 1.1,
+      "range": 18
+    },
+    {
+      "type": "point",
+      "position": [
+        0,
+        10,
+        -15
+      ],
+      "color": [
+        0.4,
+        0.43,
+        0.72
+      ],
+      "intensity": 0.8,
+      "range": 18
+    }
+  ],
+  "spatial": {
+    "mode": "triangles",
+    "navigation": {
+      "nodes": [
+        {
+          "id": 1,
+          "position": [
+            -24,
+            0,
+            -6
+          ]
+        },
+        {
+          "id": 2,
+          "position": [
+            -24,
+            0,
+            6
+          ]
+        },
+        {
+          "id": 3,
+          "position": [
+            -18,
+            0,
+            -18
+          ]
+        },
+        {
+          "id": 4,
+          "position": [
+            -18,
+            0,
+            -12
+          ]
+        },
+        {
+          "id": 5,
+          "position": [
+            -18,
+            0,
+            -6
+          ]
+        },
+        {
+          "id": 6,
+          "position": [
+            -18,
+            0,
+            18
+          ]
+        },
+        {
+          "id": 7,
+          "position": [
+            -12,
+            0,
+            -24
+          ]
+        },
+        {
+          "id": 8,
+          "position": [
+            -12,
+            0,
+            -18
+          ]
+        },
+        {
+          "id": 9,
+          "position": [
+            -12,
+            0,
+            -12
+          ]
+        },
+        {
+          "id": 10,
+          "position": [
+            -12,
+            0,
+            -6
+          ]
+        },
+        {
+          "id": 11,
+          "position": [
+            -12,
+            0,
+            18
+          ]
+        },
+        {
+          "id": 12,
+          "position": [
+            -12,
+            0,
+            24
+          ]
+        },
+        {
+          "id": 13,
+          "position": [
+            -6,
+            0,
+            -18
+          ]
+        },
+        {
+          "id": 14,
+          "position": [
+            -6,
+            0,
+            -12
+          ]
+        },
+        {
+          "id": 15,
+          "position": [
+            -6,
+            0,
+            -6
+          ]
+        },
+        {
+          "id": 16,
+          "position": [
+            -6,
+            0,
+            0
+          ]
+        },
+        {
+          "id": 17,
+          "position": [
+            -6,
+            0,
+            6
+          ]
+        },
+        {
+          "id": 18,
+          "position": [
+            -6,
+            0,
+            12
+          ]
+        },
+        {
+          "id": 19,
+          "position": [
+            -6,
+            0,
+            18
+          ]
+        },
+        {
+          "id": 20,
+          "position": [
+            -6,
+            0,
+            24
+          ]
+        },
+        {
+          "id": 21,
+          "position": [
+            0,
+            0,
+            -24
+          ]
+        },
+        {
+          "id": 22,
+          "position": [
+            0,
+            0,
+            -18
+          ]
+        },
+        {
+          "id": 23,
+          "position": [
+            0,
+            0,
+            -12
+          ]
+        },
+        {
+          "id": 24,
+          "position": [
+            0,
+            0,
+            -6
+          ]
+        },
+        {
+          "id": 25,
+          "position": [
+            0,
+            0,
+            18
+          ]
+        },
+        {
+          "id": 26,
+          "position": [
+            0,
+            0,
+            24
+          ]
+        },
+        {
+          "id": 27,
+          "position": [
+            6,
+            0,
+            -18
+          ]
+        },
+        {
+          "id": 28,
+          "position": [
+            6,
+            0,
+            -12
+          ]
+        },
+        {
+          "id": 29,
+          "position": [
+            6,
+            0,
+            -6
+          ]
+        },
+        {
+          "id": 30,
+          "position": [
+            6,
+            0,
+            0
+          ]
+        },
+        {
+          "id": 31,
+          "position": [
+            6,
+            0,
+            6
+          ]
+        },
+        {
+          "id": 32,
+          "position": [
+            6,
+            0,
+            12
+          ]
+        },
+        {
+          "id": 33,
+          "position": [
+            6,
+            0,
+            18
+          ]
+        },
+        {
+          "id": 34,
+          "position": [
+            6,
+            0,
+            24
+          ]
+        },
+        {
+          "id": 35,
+          "position": [
+            12,
+            0,
+            -24
+          ]
+        },
+        {
+          "id": 36,
+          "position": [
+            12,
+            0,
+            -18
+          ]
+        },
+        {
+          "id": 37,
+          "position": [
+            12,
+            0,
+            -12
+          ]
+        },
+        {
+          "id": 38,
+          "position": [
+            12,
+            0,
+            -6
+          ]
+        },
+        {
+          "id": 39,
+          "position": [
+            12,
+            0,
+            18
+          ]
+        },
+        {
+          "id": 40,
+          "position": [
+            12,
+            0,
+            24
+          ]
+        },
+        {
+          "id": 41,
+          "position": [
+            18,
+            0,
+            -18
+          ]
+        },
+        {
+          "id": 42,
+          "position": [
+            18,
+            0,
+            -12
+          ]
+        },
+        {
+          "id": 43,
+          "position": [
+            18,
+            0,
+            -6
+          ]
+        },
+        {
+          "id": 44,
+          "position": [
+            18,
+            0,
+            18
+          ]
+        },
+        {
+          "id": 45,
+          "position": [
+            24,
+            0,
+            -12
+          ]
+        },
+        {
+          "id": 46,
+          "position": [
+            24,
+            0,
+            -6
+          ]
+        },
+        {
+          "id": 47,
+          "position": [
+            24,
+            0,
+            0
+          ]
+        },
+        {
+          "id": 48,
+          "position": [
+            24,
+            0,
+            6
+          ]
+        },
+        {
+          "id": 49,
+          "position": [
+            24,
+            0,
+            12
+          ]
+        },
+        {
+          "id": 50,
+          "position": [
+            -21,
+            0,
+            -16
+          ]
+        },
+        {
+          "id": 51,
+          "position": [
+            -21,
+            0,
+            -8
+          ]
+        },
+        {
+          "id": 52,
+          "position": [
+            -21,
+            0,
+            4
+          ]
+        },
+        {
+          "id": 53,
+          "position": [
+            -21,
+            0,
+            12
+          ]
+        },
+        {
+          "id": 54,
+          "position": [
+            21,
+            0,
+            -16
+          ]
+        },
+        {
+          "id": 55,
+          "position": [
+            21,
+            0,
+            4
+          ]
+        },
+        {
+          "id": 56,
+          "position": [
+            21,
+            0,
+            12
+          ]
+        },
+        {
+          "id": 57,
+          "position": [
+            -15.0,
+            6,
+            0.0
+          ]
+        },
+        {
+          "id": 58,
+          "position": [
+            -14.48889,
+            6,
+            -3.88229
+          ]
+        },
+        {
+          "id": 59,
+          "position": [
+            -12.99038,
+            6,
+            -7.5
+          ]
+        },
+        {
+          "id": 60,
+          "position": [
+            -10.6066,
+            6,
+            -10.6066
+          ]
+        },
+        {
+          "id": 61,
+          "position": [
+            -7.5,
+            6,
+            -12.99038
+          ]
+        },
+        {
+          "id": 62,
+          "position": [
+            -3.88229,
+            6,
+            -14.48889
+          ]
+        },
+        {
+          "id": 63,
+          "position": [
+            -0.0,
+            6,
+            -15.0
+          ]
+        },
+        {
+          "id": 64,
+          "position": [
+            3.88229,
+            6,
+            -14.48889
+          ]
+        },
+        {
+          "id": 65,
+          "position": [
+            7.5,
+            6,
+            -12.99038
+          ]
+        },
+        {
+          "id": 66,
+          "position": [
+            10.6066,
+            6,
+            -10.6066
+          ]
+        },
+        {
+          "id": 67,
+          "position": [
+            12.99038,
+            6,
+            -7.5
+          ]
+        },
+        {
+          "id": 68,
+          "position": [
+            14.48889,
+            6,
+            -3.88229
+          ]
+        },
+        {
+          "id": 69,
+          "position": [
+            15.0,
+            6,
+            -0.0
+          ]
+        },
+        {
+          "id": 70,
+          "position": [
+            -15,
+            4.8,
+            3
+          ]
+        },
+        {
+          "id": 71,
+          "position": [
+            -15,
+            3.6,
+            6
+          ]
+        },
+        {
+          "id": 72,
+          "position": [
+            -15,
+            2.4,
+            9
+          ]
+        },
+        {
+          "id": 73,
+          "position": [
+            -15,
+            1.2,
+            12
+          ]
+        },
+        {
+          "id": 74,
+          "position": [
+            -15,
+            0.0,
+            15
+          ]
+        },
+        {
+          "id": 75,
+          "position": [
+            -15,
+            0,
+            17
+          ]
+        },
+        {
+          "id": 76,
+          "position": [
+            15,
+            4.8,
+            3
+          ]
+        },
+        {
+          "id": 77,
+          "position": [
+            15,
+            3.6,
+            6
+          ]
+        },
+        {
+          "id": 78,
+          "position": [
+            15,
+            2.4,
+            9
+          ]
+        },
+        {
+          "id": 79,
+          "position": [
+            15,
+            1.2,
+            12
+          ]
+        },
+        {
+          "id": 80,
+          "position": [
+            15,
+            0.0,
+            15
+          ]
+        },
+        {
+          "id": 81,
+          "position": [
+            15,
+            0,
+            17
+          ]
+        },
+        {
+          "id": 82,
+          "position": [
+            -23,
+            0,
+            4
+          ]
+        },
+        {
+          "id": 83,
+          "position": [
+            23,
+            0,
+            4
+          ]
+        },
+        {
+          "id": 84,
+          "position": [
+            0,
+            0,
+            22
+          ]
+        },
+        {
+          "id": 85,
+          "position": [
+            22,
+            0,
+            -4
+          ]
+        }
+      ],
+      "links": [
+        {
+          "from": 1,
+          "to": 4,
+          "bidirectional": true
+        },
+        {
+          "from": 1,
+          "to": 5,
+          "bidirectional": true
+        },
+        {
+          "from": 1,
+          "to": 51,
+          "bidirectional": true
+        },
+        {
+          "from": 2,
+          "to": 52,
+          "bidirectional": true
+        },
+        {
+          "from": 2,
+          "to": 53,
+          "bidirectional": true
+        },
+        {
+          "from": 3,
+          "to": 4,
+          "bidirectional": true
+        },
+        {
+          "from": 3,
+          "to": 7,
+          "bidirectional": true
+        },
+        {
+          "from": 3,
+          "to": 8,
+          "bidirectional": true
+        },
+        {
+          "from": 3,
+          "to": 9,
+          "bidirectional": true
+        },
+        {
+          "from": 3,
+          "to": 50,
+          "bidirectional": true
+        },
+        {
+          "from": 4,
+          "to": 5,
+          "bidirectional": true
+        },
+        {
+          "from": 4,
+          "to": 8,
+          "bidirectional": true
+        },
+        {
+          "from": 4,
+          "to": 9,
+          "bidirectional": true
+        },
+        {
+          "from": 4,
+          "to": 10,
+          "bidirectional": true
+        },
+        {
+          "from": 4,
+          "to": 50,
+          "bidirectional": true
+        },
+        {
+          "from": 4,
+          "to": 51,
+          "bidirectional": true
+        },
+        {
+          "from": 5,
+          "to": 9,
+          "bidirectional": true
+        },
+        {
+          "from": 5,
+          "to": 10,
+          "bidirectional": true
+        },
+        {
+          "from": 5,
+          "to": 51,
+          "bidirectional": true
+        },
+        {
+          "from": 6,
+          "to": 11,
+          "bidirectional": true
+        },
+        {
+          "from": 6,
+          "to": 12,
+          "bidirectional": true
+        },
+        {
+          "from": 6,
+          "to": 53,
+          "bidirectional": true
+        },
+        {
+          "from": 7,
+          "to": 8,
+          "bidirectional": true
+        },
+        {
+          "from": 8,
+          "to": 9,
+          "bidirectional": true
+        },
+        {
+          "from": 8,
+          "to": 13,
+          "bidirectional": true
+        },
+        {
+          "from": 8,
+          "to": 14,
+          "bidirectional": true
+        },
+        {
+          "from": 9,
+          "to": 10,
+          "bidirectional": true
+        },
+        {
+          "from": 9,
+          "to": 13,
+          "bidirectional": true
+        },
+        {
+          "from": 9,
+          "to": 14,
+          "bidirectional": true
+        },
+        {
+          "from": 9,
+          "to": 15,
+          "bidirectional": true
+        },
+        {
+          "from": 10,
+          "to": 14,
+          "bidirectional": true
+        },
+        {
+          "from": 10,
+          "to": 15,
+          "bidirectional": true
+        },
+        {
+          "from": 10,
+          "to": 16,
+          "bidirectional": true
+        },
+        {
+          "from": 11,
+          "to": 12,
+          "bidirectional": true
+        },
+        {
+          "from": 11,
+          "to": 18,
+          "bidirectional": true
+        },
+        {
+          "from": 11,
+          "to": 19,
+          "bidirectional": true
+        },
+        {
+          "from": 11,
+          "to": 20,
+          "bidirectional": true
+        },
+        {
+          "from": 12,
+          "to": 19,
+          "bidirectional": true
+        },
+        {
+          "from": 12,
+          "to": 20,
+          "bidirectional": true
+        },
+        {
+          "from": 13,
+          "to": 14,
+          "bidirectional": true
+        },
+        {
+          "from": 13,
+          "to": 22,
+          "bidirectional": true
+        },
+        {
+          "from": 13,
+          "to": 23,
+          "bidirectional": true
+        },
+        {
+          "from": 14,
+          "to": 15,
+          "bidirectional": true
+        },
+        {
+          "from": 14,
+          "to": 22,
+          "bidirectional": true
+        },
+        {
+          "from": 14,
+          "to": 23,
+          "bidirectional": true
+        },
+        {
+          "from": 14,
+          "to": 24,
+          "bidirectional": true
+        },
+        {
+          "from": 15,
+          "to": 16,
+          "bidirectional": true
+        },
+        {
+          "from": 15,
+          "to": 23,
+          "bidirectional": true
+        },
+        {
+          "from": 15,
+          "to": 24,
+          "bidirectional": true
+        },
+        {
+          "from": 16,
+          "to": 17,
+          "bidirectional": true
+        },
+        {
+          "from": 17,
+          "to": 18,
+          "bidirectional": true
+        },
+        {
+          "from": 18,
+          "to": 19,
+          "bidirectional": true
+        },
+        {
+          "from": 18,
+          "to": 25,
+          "bidirectional": true
+        },
+        {
+          "from": 19,
+          "to": 20,
+          "bidirectional": true
+        },
+        {
+          "from": 19,
+          "to": 25,
+          "bidirectional": true
+        },
+        {
+          "from": 19,
+          "to": 26,
+          "bidirectional": true
+        },
+        {
+          "from": 20,
+          "to": 25,
+          "bidirectional": true
+        },
+        {
+          "from": 20,
+          "to": 26,
+          "bidirectional": true
+        },
+        {
+          "from": 21,
+          "to": 22,
+          "bidirectional": true
+        },
+        {
+          "from": 22,
+          "to": 23,
+          "bidirectional": true
+        },
+        {
+          "from": 22,
+          "to": 27,
+          "bidirectional": true
+        },
+        {
+          "from": 22,
+          "to": 28,
+          "bidirectional": true
+        },
+        {
+          "from": 23,
+          "to": 24,
+          "bidirectional": true
+        },
+        {
+          "from": 23,
+          "to": 27,
+          "bidirectional": true
+        },
+        {
+          "from": 23,
+          "to": 28,
+          "bidirectional": true
+        },
+        {
+          "from": 23,
+          "to": 29,
+          "bidirectional": true
+        },
+        {
+          "from": 24,
+          "to": 28,
+          "bidirectional": true
+        },
+        {
+          "from": 24,
+          "to": 29,
+          "bidirectional": true
+        },
+        {
+          "from": 25,
+          "to": 26,
+          "bidirectional": true
+        },
+        {
+          "from": 25,
+          "to": 32,
+          "bidirectional": true
+        },
+        {
+          "from": 25,
+          "to": 33,
+          "bidirectional": true
+        },
+        {
+          "from": 25,
+          "to": 34,
+          "bidirectional": true
+        },
+        {
+          "from": 26,
+          "to": 33,
+          "bidirectional": true
+        },
+        {
+          "from": 26,
+          "to": 34,
+          "bidirectional": true
+        },
+        {
+          "from": 27,
+          "to": 28,
+          "bidirectional": true
+        },
+        {
+          "from": 27,
+          "to": 36,
+          "bidirectional": true
+        },
+        {
+          "from": 27,
+          "to": 37,
+          "bidirectional": true
+        },
+        {
+          "from": 28,
+          "to": 29,
+          "bidirectional": true
+        },
+        {
+          "from": 28,
+          "to": 36,
+          "bidirectional": true
+        },
+        {
+          "from": 28,
+          "to": 37,
+          "bidirectional": true
+        },
+        {
+          "from": 28,
+          "to": 38,
+          "bidirectional": true
+        },
+        {
+          "from": 29,
+          "to": 30,
+          "bidirectional": true
+        },
+        {
+          "from": 29,
+          "to": 37,
+          "bidirectional": true
+        },
+        {
+          "from": 29,
+          "to": 38,
+          "bidirectional": true
+        },
+        {
+          "from": 30,
+          "to": 31,
+          "bidirectional": true
+        },
+        {
+          "from": 30,
+          "to": 38,
+          "bidirectional": true
+        },
+        {
+          "from": 31,
+          "to": 32,
+          "bidirectional": true
+        },
+        {
+          "from": 32,
+          "to": 33,
+          "bidirectional": true
+        },
+        {
+          "from": 32,
+          "to": 39,
+          "bidirectional": true
+        },
+        {
+          "from": 33,
+          "to": 34,
+          "bidirectional": true
+        },
+        {
+          "from": 33,
+          "to": 39,
+          "bidirectional": true
+        },
+        {
+          "from": 33,
+          "to": 40,
+          "bidirectional": true
+        },
+        {
+          "from": 34,
+          "to": 39,
+          "bidirectional": true
+        },
+        {
+          "from": 34,
+          "to": 40,
+          "bidirectional": true
+        },
+        {
+          "from": 35,
+          "to": 36,
+          "bidirectional": true
+        },
+        {
+          "from": 35,
+          "to": 41,
+          "bidirectional": true
+        },
+        {
+          "from": 36,
+          "to": 37,
+          "bidirectional": true
+        },
+        {
+          "from": 36,
+          "to": 41,
+          "bidirectional": true
+        },
+        {
+          "from": 36,
+          "to": 42,
+          "bidirectional": true
+        },
+        {
+          "from": 37,
+          "to": 38,
+          "bidirectional": true
+        },
+        {
+          "from": 37,
+          "to": 41,
+          "bidirectional": true
+        },
+        {
+          "from": 37,
+          "to": 42,
+          "bidirectional": true
+        },
+        {
+          "from": 37,
+          "to": 43,
+          "bidirectional": true
+        },
+        {
+          "from": 38,
+          "to": 42,
+          "bidirectional": true
+        },
+        {
+          "from": 38,
+          "to": 43,
+          "bidirectional": true
+        },
+        {
+          "from": 39,
+          "to": 40,
+          "bidirectional": true
+        },
+        {
+          "from": 39,
+          "to": 44,
+          "bidirectional": true
+        },
+        {
+          "from": 40,
+          "to": 44,
+          "bidirectional": true
+        },
+        {
+          "from": 41,
+          "to": 42,
+          "bidirectional": true
+        },
+        {
+          "from": 41,
+          "to": 45,
+          "bidirectional": true
+        },
+        {
+          "from": 41,
+          "to": 54,
+          "bidirectional": true
+        },
+        {
+          "from": 42,
+          "to": 43,
+          "bidirectional": true
+        },
+        {
+          "from": 42,
+          "to": 45,
+          "bidirectional": true
+        },
+        {
+          "from": 42,
+          "to": 54,
+          "bidirectional": true
+        },
+        {
+          "from": 43,
+          "to": 46,
+          "bidirectional": true
+        },
+        {
+          "from": 43,
+          "to": 47,
+          "bidirectional": true
+        },
+        {
+          "from": 44,
+          "to": 49,
+          "bidirectional": true
+        },
+        {
+          "from": 44,
+          "to": 56,
+          "bidirectional": true
+        },
+        {
+          "from": 45,
+          "to": 54,
+          "bidirectional": true
+        },
+        {
+          "from": 46,
+          "to": 47,
+          "bidirectional": true
+        },
+        {
+          "from": 47,
+          "to": 48,
+          "bidirectional": true
+        },
+        {
+          "from": 47,
+          "to": 55,
+          "bidirectional": true
+        },
+        {
+          "from": 48,
+          "to": 49,
+          "bidirectional": true
+        },
+        {
+          "from": 48,
+          "to": 55,
+          "bidirectional": true
+        },
+        {
+          "from": 48,
+          "to": 56,
+          "bidirectional": true
+        },
+        {
+          "from": 49,
+          "to": 55,
+          "bidirectional": true
+        },
+        {
+          "from": 49,
+          "to": 56,
+          "bidirectional": true
+        },
+        {
+          "from": 50,
+          "to": 51,
+          "bidirectional": true
+        },
+        {
+          "from": 52,
+          "to": 53,
+          "bidirectional": true
+        },
+        {
+          "from": 55,
+          "to": 56,
+          "bidirectional": true
+        },
+        {
+          "from": 57,
+          "to": 58,
+          "bidirectional": true
+        },
+        {
+          "from": 58,
+          "to": 59,
+          "bidirectional": true
+        },
+        {
+          "from": 59,
+          "to": 60,
+          "bidirectional": true
+        },
+        {
+          "from": 60,
+          "to": 61,
+          "bidirectional": true
+        },
+        {
+          "from": 61,
+          "to": 62,
+          "bidirectional": true
+        },
+        {
+          "from": 62,
+          "to": 63,
+          "bidirectional": true
+        },
+        {
+          "from": 63,
+          "to": 64,
+          "bidirectional": true
+        },
+        {
+          "from": 64,
+          "to": 65,
+          "bidirectional": true
+        },
+        {
+          "from": 65,
+          "to": 66,
+          "bidirectional": true
+        },
+        {
+          "from": 66,
+          "to": 67,
+          "bidirectional": true
+        },
+        {
+          "from": 67,
+          "to": 68,
+          "bidirectional": true
+        },
+        {
+          "from": 68,
+          "to": 69,
+          "bidirectional": true
+        },
+        {
+          "from": 57,
+          "to": 70,
+          "bidirectional": true
+        },
+        {
+          "from": 70,
+          "to": 71,
+          "bidirectional": true
+        },
+        {
+          "from": 71,
+          "to": 72,
+          "bidirectional": true
+        },
+        {
+          "from": 72,
+          "to": 73,
+          "bidirectional": true
+        },
+        {
+          "from": 73,
+          "to": 74,
+          "bidirectional": true
+        },
+        {
+          "from": 6,
+          "to": 75,
+          "bidirectional": true
+        },
+        {
+          "from": 11,
+          "to": 75,
+          "bidirectional": true
+        },
+        {
+          "from": 12,
+          "to": 75,
+          "bidirectional": true
+        },
+        {
+          "from": 74,
+          "to": 75,
+          "bidirectional": true
+        },
+        {
+          "from": 69,
+          "to": 76,
+          "bidirectional": true
+        },
+        {
+          "from": 76,
+          "to": 77,
+          "bidirectional": true
+        },
+        {
+          "from": 77,
+          "to": 78,
+          "bidirectional": true
+        },
+        {
+          "from": 78,
+          "to": 79,
+          "bidirectional": true
+        },
+        {
+          "from": 79,
+          "to": 80,
+          "bidirectional": true
+        },
+        {
+          "from": 39,
+          "to": 81,
+          "bidirectional": true
+        },
+        {
+          "from": 44,
+          "to": 81,
+          "bidirectional": true
+        },
+        {
+          "from": 40,
+          "to": 81,
+          "bidirectional": true
+        },
+        {
+          "from": 80,
+          "to": 81,
+          "bidirectional": true
+        },
+        {
+          "from": 52,
+          "to": 82,
+          "bidirectional": true
+        },
+        {
+          "from": 2,
+          "to": 82,
+          "bidirectional": true
+        },
+        {
+          "from": 55,
+          "to": 83,
+          "bidirectional": true
+        },
+        {
+          "from": 48,
+          "to": 83,
+          "bidirectional": true
+        },
+        {
+          "from": 47,
+          "to": 83,
+          "bidirectional": true
+        },
+        {
+          "from": 26,
+          "to": 84,
+          "bidirectional": true
+        },
+        {
+          "from": 25,
+          "to": 84,
+          "bidirectional": true
+        },
+        {
+          "from": 20,
+          "to": 84,
+          "bidirectional": true
+        },
+        {
+          "from": 46,
+          "to": 85,
+          "bidirectional": true
+        },
+        {
+          "from": 43,
+          "to": 85,
+          "bidirectional": true
+        },
+        {
+          "from": 47,
+          "to": 85,
+          "bidirectional": true
+        }
+      ]
+    },
+    "regions": [
+      {
+        "id": "ring_court",
+        "name": "BROKEN RING COURT",
+        "min": [
+          -12,
+          -1,
+          -10
+        ],
+        "max": [
+          12,
+          4,
+          18
+        ]
+      },
+      {
+        "id": "ravine",
+        "name": "LOWER CRYSTAL RAVINE",
+        "min": [
+          -11,
+          -1,
+          -28
+        ],
+        "max": [
+          11,
+          4,
+          -10
+        ]
+      },
+      {
+        "id": "upper_walk",
+        "name": "UPPER ORBITAL WALK",
+        "min": [
+          -19,
+          5,
+          -19
+        ],
+        "max": [
+          19,
+          9,
+          2
+        ]
+      },
+      {
+        "id": "support_court",
+        "name": "LEANING SUPPORT COURT",
+        "min": [
+          -29,
+          -1,
+          -18
+        ],
+        "max": [
+          -19,
+          12,
+          19
+        ]
+      },
+      {
+        "id": "sky_passage",
+        "name": "OPEN SKY PASSAGE",
+        "min": [
+          19,
+          -1,
+          -19
+        ],
+        "max": [
+          29,
+          5,
+          20
+        ]
+      }
+    ],
+    "route": [
+      [
+        0,
+        0,
+        18
+      ],
+      [
+        8,
+        0,
+        19
+      ],
+      [
+        15,
+        0,
+        17
+      ],
+      [
+        15,
+        0,
+        15
+      ],
+      [
+        15,
+        1.2,
+        12
+      ],
+      [
+        15,
+        2.4,
+        9
+      ],
+      [
+        15,
+        3.6,
+        6
+      ],
+      [
+        15,
+        4.8,
+        3
+      ],
+      [
+        15,
+        6.0,
+        0
+      ],
+      [
+        14.48889,
+        6,
+        -3.88229
+      ],
+      [
+        12.99038,
+        6,
+        -7.5
+      ],
+      [
+        10.6066,
+        6,
+        -10.6066
+      ],
+      [
+        7.5,
+        6,
+        -12.99038
+      ],
+      [
+        3.88229,
+        6,
+        -14.48889
+      ],
+      [
+        -0.0,
+        6,
+        -15.0
+      ],
+      [
+        -3.88229,
+        6,
+        -14.48889
+      ],
+      [
+        -7.5,
+        6,
+        -12.99038
+      ],
+      [
+        -10.6066,
+        6,
+        -10.6066
+      ],
+      [
+        -12.99038,
+        6,
+        -7.5
+      ],
+      [
+        -14.48889,
+        6,
+        -3.88229
+      ],
+      [
+        -15.0,
+        6,
+        0.0
+      ],
+      [
+        -15,
+        4.8,
+        3
+      ],
+      [
+        -15,
+        3.6,
+        6
+      ],
+      [
+        -15,
+        2.4,
+        9
+      ],
+      [
+        -15,
+        1.2,
+        12
+      ],
+      [
+        -15,
+        0.0,
+        15
+      ],
+      [
+        -15,
+        0,
+        17
+      ],
+      [
+        -20,
+        0,
+        17
+      ],
+      [
+        -22,
+        0,
+        8
+      ],
+      [
+        -22,
+        0,
+        5
+      ],
+      [
+        -22,
+        0,
+        -6
+      ],
+      [
+        -18,
+        0,
+        -17
+      ],
+      [
+        -9,
+        0,
+        -16
+      ],
+      [
+        0,
+        0,
+        -16
+      ],
+      [
+        0,
+        0,
+        -23
+      ],
+      [
+        0,
+        0,
+        -15
+      ],
+      [
+        0,
+        0,
+        -8
+      ],
+      [
+        8,
+        0,
+        -8
+      ],
+      [
+        10,
+        0,
+        2
+      ],
+      [
+        8,
+        0,
+        16
+      ],
+      [
+        0,
+        0,
+        18
+      ]
+    ]
+  }
+}

@@ -145,3 +145,108 @@ MAP-CORE 的 HUD 集成范围包括 `include/hud`、`src/hud` 及 `tests/hud_*` 
 
 源码导入已完成，仓库内编辑器构建及 3/3 CTest 通过；交互代码与已验收的相邻
 版本相同。本次交付使用现有 `macos-port` 分支。
+
+## 太空恐怖表现改造（2026-10-08）
+
+用户要求更黑暗的太空恐怖与不可名状的怪物；本轮以
+[美术方向](../plan/cosmic-horror-art-pass.md) 为共同规范。
+
+| 任务 | 唯一执行入口 | 写入范围 | 状态 |
+| --- | --- | --- | --- |
+| HORROR-ENV | NEBULA | include/src/environment、map_renderer.h/.cpp、环境 shader、pixel.frag；地图 JSON 只读 | 已交付；两轮实际GL及几何/地图/重置检查通过 |
+| HORROR-CHAR | KINETIC | include/src/character、character shader；玩法源码只读 | 已交付；第二版炮台、10,240组几何与最终六姿势GL通过 |
+| HORROR-AUDIO | ECHO | include/src/audio、res/audio、tools/audio、tests/audio_* | 已交付；离线混音、生成一致性和预警定位检查通过；听感待人测 |
+| HORROR-UI | PRISM | include/src/hud、HUD shader、tests/hud_* | 已交付；CPU与两尺寸8状态GL预览通过 |
+| HORROR-INTEGRATE | VECTOR | App/main、Makefile、集成测试、res/maps 内容身份；其他角色交付后必要集成 | 已交付；最终Debug/Release、14张整合GL、实际流程10/10、旧图与三局性能通过 |
+| HORROR-ACCEPT | ATLAS | plan、docs、README、AGENTS.md 和角色配置；跨角色验收 | 已完成视觉复核、逐帧性能独立复算及证据归档；人工试玩待完成 |
+
+前三专业角色与主 agent 同时工作；后两角色随后执行，避免超过四个活动入口。
+真实 GL/音频设备运行由 ATLAS 串行分配，性能测量独占运行窗口。
+
+本轮文件写入任务已关闭，GPU时段释放；交付与验证边界见
+[太空恐怖改造记录](cosmic-horror-acceptance.md)。此版尚未人工试玩与耳机评估，
+不将自动化检查等同于主观恐怖感验收；未自动提交或推送本轮修改。
+
+## 双竞技场（2026-10-08）
+
+用户追加要求：保留太空恐怖地图及全部敌人改动，另提供原先水晶竞技场。
+本轮将环境按地图预设选择；敌人、武器、音频和玩法维持当前版本。
+`hollow_orbit_arena.json` 保存太空恐怖地图并继续作为默认入口；
+`starry_crystal_arena.json` 恢复原水晶地图内容与表现。
+
+| 任务 | 唯一执行入口 | 写入范围 | 状态 |
+| --- | --- | --- | --- |
+| DUAL-ENV | NEBULA | include/src/environment、map_renderer.h/.cpp、环境 shaders、环境验证程序与说明 | 已交付；两图各7张对各自基线逐像素一致，来回切换/reset通过 |
+| DUAL-INTEGRATE | VECTOR | map.h/.cpp、res/maps、App/main、Makefile、HUD地图名称数据/标签、地图与集成测试、仓库内编辑器必要预设兼容 | 已交付；Debug/Release、两图各10项流程及各14张整合图、旧图、编辑器4/4通过 |
+| DUAL-ACCEPT | ATLAS | docs、plan、README、AGENTS.md 方向说明及证据 | 已完成独立字节/像素/hash核对及双地图交付归档 |
+
+两专业角色仅修改上表范围；环境与公共数据接口约定使用新增
+`EnvironmentPreset::HollowOrbit`，已有 `StarryCrystal` 恢复原义。
+实际 GL 运行先交 NEBULA，交付后由 VECTOR 集成运行，避免相互干扰。
+
+本轮写入任务已关闭。保留34个敌人/武器/音频文件原样；一次首帧READY缺字
+未在同程序重检复现，原图与重检均归档，未声称修复未知原因。
+证据与边界见[双地图追加验证](cosmic-horror-acceptance.md#双地图追加验证)。
+
+## Crystal 场景探索化（2026-10-13）
+
+用户要求只修改Crystal Arena，增加主题化、多变空间，并允许超出纯射击框架。
+依据[参考研究](crystal-world-references.md)，实施范围见
+[失焦天文馆](../plan/crystal-observatory.md)。本轮保留全部既有未提交工作。
+
+| 任务 | 唯一入口 | 写入范围 | 状态 |
+| --- | --- | --- | --- |
+| CRYSTAL-REFERENCE | 临时研究 agent crystal_scene_references | docs/crystal-world-references.md | 已交付；明确jdh指定片段不可访问 |
+| CRYSTAL-WORLD | VECTOR | 地图公共数据、res/maps/starry_crystal_arena.json、探索流程、App/build、必要HUD数据与提示、tests、编辑器兼容 | 已交付；真实109m闭环、Debug/Release、两图流程各10/10与编辑器5/5通过 |
+| CRYSTAL-ART | NEBULA | include/src/environment、map_renderer.h/.cpp、starry_crystal shaders、环境验证程序 | 已交付；两轮构图复核、碎弧投影与reset通过，Hollow画面一致 |
+| CRYSTAL-ACCEPT | ATLAS | plan/docs/README/AGENTS、证据归档与视觉审阅 | 已完成；独立核对截图、原始性能CSV、保护文件及源码/二进制哈希 |
+
+VECTOR唯一编辑地图JSON；NEBULA先提供空间与锚点需求。两者共享数据接口先对齐。
+角色/武器/音频文件只读。GL先由NEBULA预览、完成后交VECTOR正式整合与性能测量。
+
+ATLAS追加允许VECTOR对 `include/player/player.h`、`src/player/player.cpp` 提取
+值式按键输入入口，使GLFW与合成WASD走同一移动/碰撞分支。仅输入接入为保护
+基线例外，移动参数与规则保持，Player内部不加入验收专用玩法或传送分支。
+
+CRYSTAL本轮任务已关闭，GPU已释放。最终记录见[探索验收](crystal-observatory-acceptance.md)。
+性能门槛通过但保留326ms单帧峰值，原因未定位；初次探索与可读性仍待人类试玩。
+本轮未提交或推送，不修改Hollow默认入口与既有敌人/武器/音频。
+
+## Crystal 立体战斗地图（2026-10-13，访谈确认后）
+
+用户已确认[完整实施范围](../plan/crystal-combat-world.md)：五区持续战斗、双层坡道，
+战术与空间探索同等重要；90秒敌潮＋清场、小地图原样、纯视觉异变、混合建模流程。
+取代上一轮Crystal解谜推进。保留全部已有改动，基线位于artifacts/acceptance/crystal-combat。
+
+| 任务 | 唯一入口 | 写入范围 | 状态 |
+| --- | --- | --- | --- |
+| CRYSTAL-SPACE | VECTOR | Map/资产/空间查询/碰撞/导航、player/enemy/weapon必要接入、App/HUD数据/Makefile/tests；Hollow表现只读 | 已交付：真实三角空间、普通输入巡路/实战、Debug/Release及两图回归通过 |
+| CRYSTAL-WORLD-ART | NEBULA | Crystal地图JSON、res/models/crystal_combat与生成工具、environment/map_renderer、Crystal shaders与预览 | 已交付：五区地形、7类OBJ、实际GL构图/异变与Hollow一致性通过 |
+| CRYSTAL-EDITOR | PRISM | tools/map_editor/**、编辑器测试及其文档 | 已交付：混合编辑、7/7两构建测试、实际UI及两尺寸布局通过 |
+| CRYSTAL-COMBAT-ACCEPT | ATLAS | plan/docs/README/AGENTS、审阅和证据归档 | 已完成：独立图像/CSV/hash复核，证据归档 |
+
+本轮地图JSON唯一作者改为NEBULA，VECTOR通过约定交接请求地图调整。
+VECTOR可以为新几何修改移动/敌人/射线查询实现，参数与战斗手感目标保持。
+角色/武器美术、音频、Hollow地图/shaders、全局pixel后处理只读。
+三专业聊天＋ATLAS为四个活动入口；先CPU/资产工作，GPU时段由ATLAS串行分配。
+
+任务均已关闭，GPU已释放。工程验收见[交付记录](crystal-combat-acceptance.md)。
+保留两轮约400ms孤立长帧，原因未定位；人工认路/暗色怪物可读性/战斗趣味待试玩。
+本轮不提交或推送，旧工作区改动全部保留。
+
+## Crystal 材质贴图（2026-10-13）
+
+用户认可立体地图，授权ATLAS评估贴图替换并直接交NEBULA生成。
+
+| 任务 | 唯一入口 | 写入范围 | 状态 |
+| --- | --- | --- | --- |
+| CRYSTAL-TEXTURES | NEBULA | 新增res/texture/crystal_combat/**与素材说明/提示词；Crystal shaders；map_renderer.h/.cpp必要贴图绑定；环境验证程序及纹理验证说明 | 已交付：四类imagegen贴图、真实采样/回退/异变/保护文件及构建验证通过 |
+| CRYSTAL-TEXTURE-REVIEW | ATLAS | 团队记录、材质取舍、交付审阅 | 已完成：原图/重复预览/实际角色画面及哈希复核 |
+
+四类表面：地板/坡道金属板、浅色矿化陶瓷巨构、深色侵蚀外壳、低对比晶体裂理。
+NEBULA使用内置imagegen生成原创位图（用户本轮授权覆盖旧角色配置仅程序化资产偏好），
+保留原图/提示词与可供游戏加载的版本。保持几何、碰撞、导航、地图布局、敌人/武器/
+音频和Hollow不变。当前仅NEBULA持有GPU验证时段；其他专业任务已关闭。
+
+贴图任务已关闭，GPU释放；素材与提示词见res/texture/crystal_combat，
+[取舍与验收](crystal-texture-pass.md)。本轮未修改地图几何/玩法，未提交或推送。

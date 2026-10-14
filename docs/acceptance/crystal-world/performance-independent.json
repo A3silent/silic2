@@ -1,0 +1,13 @@
+{
+  "method": "ATLAS recomputation from unmodified sequential raw CSV; floor((n-1)*q) quantiles",
+  "frames": 27803,
+  "sum_seconds": 67.44655892700001,
+  "p95_ms": 5.68504,
+  "p99_ms": 10.7493,
+  "max_ms": 326.327,
+  "over_50ms": 32,
+  "longest_over_50ms": 1,
+  "focus_resumes": 7,
+  "csv_sha256": "c45f82427d6def63e07a4f60f0991ac70bff58da28729f7a3197f36a47d51fc3",
+  "spike_cause": "not established"
+}

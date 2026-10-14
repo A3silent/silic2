@@ -1,0 +1,306 @@
+{
+  "version": 1,
+  "task": "CRYSTAL-TEXTURES",
+  "assets": [
+    {
+      "id": "metal_deck",
+      "generator": "built-in image_gen.imagegen",
+      "generationDate": "2026-10-13",
+      "calls": 1,
+      "referenceImages": [],
+      "transparentBackground": false,
+      "toolOutputPath": "/Users/ritzsun/.codex/generated_images/01a11546-cc0a-7502-84f2-d9b174237024/exec-f99dd959-4698-487e-8784-6199d26662f2.png",
+      "original": {
+        "path": "res/texture/crystal_combat/originals/metal_deck.png",
+        "sha256": "6992fc57af64ca47e5c055bbc9892530493a793355823949524230d66cf2c2b0",
+        "bytes": 1774442,
+        "dimensions": [
+          1254,
+          1254
+        ]
+      },
+      "prompt": {
+        "path": "res/texture/crystal_combat/prompts/metal_deck.txt",
+        "sha256": "0902636d37ce44f90e9623ea4743ed12be6a1d23ec34a06515e6aac2fdcb9c34",
+        "bytes": 1606
+      },
+      "runtime": {
+        "path": "res/texture/crystal_combat/metal_deck-64.png",
+        "sha256": "118e9ef3864a5b4b4be6c8cf81e993a9b5815d9b18dd036257297b5f4d75a59f",
+        "bytes": 5542,
+        "dimensions": [
+          64,
+          64
+        ],
+        "mode": "RGB"
+      },
+      "conversion": "Pillow RGB conversion and BOX resize only; no seam repair or recoloring",
+      "materials": [
+        "combat_foundation",
+        "combat_deck"
+      ],
+      "worldRepeatMetres": 6,
+      "strength": 0.8,
+      "meanRGB255": [
+        71.05615234375,
+        76.814453125,
+        82.189453125
+      ],
+      "tilingMetrics": {
+        "originalDimensions": [
+          1254,
+          1254
+        ],
+        "runtimeDimensions": [
+          64,
+          64
+        ],
+        "meanRGB": [
+          71.05615234375,
+          76.814453125,
+          82.189453125
+        ],
+        "edgeMeanAbsLR": 1.59375,
+        "edgeMeanAbsTB": 2.265625,
+        "interiorMeanAbs": 2.1829117063492065
+      },
+      "gpuSamplingProof": {
+        "material": "metal_deck",
+        "gpuSize": [
+          64,
+          64
+        ],
+        "changedPixelsAgainstFlatGPUData": 116188,
+        "totalWindowPixels": 921600,
+        "exactRestore": true
+      }
+    },
+    {
+      "id": "mineral_ceramic",
+      "generator": "built-in image_gen.imagegen",
+      "generationDate": "2026-10-13",
+      "calls": 1,
+      "referenceImages": [],
+      "transparentBackground": false,
+      "toolOutputPath": "/Users/ritzsun/.codex/generated_images/01a11546-cc0a-7502-84f2-d9b174237024/exec-e9ec2c8f-1918-41c6-954c-ef54893a7bed.png",
+      "original": {
+        "path": "res/texture/crystal_combat/originals/mineral_ceramic.png",
+        "sha256": "d12732e381a46b92340163507b5a04de4ec0ac2bd670229f8e1beb2eb01181d2",
+        "bytes": 2021741,
+        "dimensions": [
+          1254,
+          1254
+        ]
+      },
+      "prompt": {
+        "path": "res/texture/crystal_combat/prompts/mineral_ceramic.txt",
+        "sha256": "27d8466365708b6657fc6cef58c2c9dbf70005b639b80438cd24582edffd00b0",
+        "bytes": 1586
+      },
+      "runtime": {
+        "path": "res/texture/crystal_combat/mineral_ceramic-64.png",
+        "sha256": "a6d9cbb0558568f825c1c87183535eeed82387938cb90bef029f8e4e0562cd3e",
+        "bytes": 7451,
+        "dimensions": [
+          64,
+          64
+        ],
+        "mode": "RGB"
+      },
+      "conversion": "Pillow RGB conversion and BOX resize only; no seam repair or recoloring",
+      "materials": [
+        "combat_ivory"
+      ],
+      "worldRepeatMetres": 5,
+      "strength": 0.55,
+      "meanRGB255": [
+        171.4111328125,
+        164.49951171875,
+        150.974853515625
+      ],
+      "tilingMetrics": {
+        "originalDimensions": [
+          1254,
+          1254
+        ],
+        "runtimeDimensions": [
+          64,
+          64
+        ],
+        "meanRGB": [
+          171.4111328125,
+          164.49951171875,
+          150.974853515625
+        ],
+        "edgeMeanAbsLR": 4.885416666666667,
+        "edgeMeanAbsTB": 4.208333333333333,
+        "interiorMeanAbs": 5.987929894179894
+      },
+      "gpuSamplingProof": {
+        "material": "mineral_ceramic",
+        "gpuSize": [
+          64,
+          64
+        ],
+        "changedPixelsAgainstFlatGPUData": 97228,
+        "totalWindowPixels": 921600,
+        "exactRestore": true
+      }
+    },
+    {
+      "id": "dark_shell",
+      "generator": "built-in image_gen.imagegen",
+      "generationDate": "2026-10-13",
+      "calls": 1,
+      "referenceImages": [],
+      "transparentBackground": false,
+      "toolOutputPath": "/Users/ritzsun/.codex/generated_images/01a11546-cc0a-7502-84f2-d9b174237024/exec-4bbf87fc-ed7c-40f2-a830-a527bc18c4a9.png",
+      "original": {
+        "path": "res/texture/crystal_combat/originals/dark_shell.png",
+        "sha256": "0ca6d82ba3ad48792aaab0d064948d6e2fd147c909b5c9397ff5fc0acdb349e3",
+        "bytes": 1812375,
+        "dimensions": [
+          1254,
+          1254
+        ]
+      },
+      "prompt": {
+        "path": "res/texture/crystal_combat/prompts/dark_shell.txt",
+        "sha256": "d6e8aae5c2ed0a740e5f8839d73afca2d4333d083ab5d3cc682ee18b9243f0b7",
+        "bytes": 1595
+      },
+      "runtime": {
+        "path": "res/texture/crystal_combat/dark_shell-64.png",
+        "sha256": "6bdcd79ec58d0f4a010da1311abbdf1e097a6f14763bd47fa1636a7293e0a780",
+        "bytes": 6575,
+        "dimensions": [
+          64,
+          64
+        ],
+        "mode": "RGB"
+      },
+      "conversion": "Pillow RGB conversion and BOX resize only; no seam repair or recoloring",
+      "materials": [
+        "combat_brown"
+      ],
+      "worldRepeatMetres": 8,
+      "strength": 0.65,
+      "meanRGB255": [
+        66.043701171875,
+        53.534912109375,
+        41.572021484375
+      ],
+      "tilingMetrics": {
+        "originalDimensions": [
+          1254,
+          1254
+        ],
+        "runtimeDimensions": [
+          64,
+          64
+        ],
+        "meanRGB": [
+          66.043701171875,
+          53.534912109375,
+          41.572021484375
+        ],
+        "edgeMeanAbsLR": 4.067708333333333,
+        "edgeMeanAbsTB": 4.083333333333333,
+        "interiorMeanAbs": 3.5217013888888893
+      },
+      "gpuSamplingProof": {
+        "material": "dark_shell",
+        "gpuSize": [
+          64,
+          64
+        ],
+        "changedPixelsAgainstFlatGPUData": 218324,
+        "totalWindowPixels": 921600,
+        "exactRestore": true
+      }
+    },
+    {
+      "id": "crystal_cleavage",
+      "generator": "built-in image_gen.imagegen",
+      "generationDate": "2026-10-13",
+      "calls": 1,
+      "referenceImages": [],
+      "transparentBackground": false,
+      "toolOutputPath": "/Users/ritzsun/.codex/generated_images/01a11546-cc0a-7502-84f2-d9b174237024/exec-aab2fb6b-9a19-4027-8e6e-edf13c202ae7.png",
+      "original": {
+        "path": "res/texture/crystal_combat/originals/crystal_cleavage.png",
+        "sha256": "4e32b765e0b5c29da06a20e141db14b2bce9d2e162f9317abef07d00a0302bad",
+        "bytes": 1472364,
+        "dimensions": [
+          1254,
+          1254
+        ]
+      },
+      "prompt": {
+        "path": "res/texture/crystal_combat/prompts/crystal_cleavage.txt",
+        "sha256": "16b9838662f43a2696274a07c783a9c9d180a0c0a1ab408a3447e5ec5da18c19",
+        "bytes": 1636
+      },
+      "runtime": {
+        "path": "res/texture/crystal_combat/crystal_cleavage-64.png",
+        "sha256": "90ea33ec9ad29e207ced486590e53925ce75bed4bba5720c63f9a172f463e078",
+        "bytes": 7453,
+        "dimensions": [
+          64,
+          64
+        ],
+        "mode": "RGB"
+      },
+      "conversion": "Pillow RGB conversion and BOX resize only; no seam repair or recoloring",
+      "materials": [
+        "combat_crystal"
+      ],
+      "worldRepeatMetres": 6,
+      "strength": 0.48,
+      "meanRGB255": [
+        75.647216796875,
+        104.992431640625,
+        121.86083984375
+      ],
+      "tilingMetrics": {
+        "originalDimensions": [
+          1254,
+          1254
+        ],
+        "runtimeDimensions": [
+          64,
+          64
+        ],
+        "meanRGB": [
+          75.647216796875,
+          104.992431640625,
+          121.86083984375
+        ],
+        "edgeMeanAbsLR": 5.723958333333333,
+        "edgeMeanAbsTB": 4.520833333333333,
+        "interiorMeanAbs": 6.135706018518518
+      },
+      "gpuSamplingProof": {
+        "material": "crystal_cleavage",
+        "gpuSize": [
+          64,
+          64
+        ],
+        "changedPixelsAgainstFlatGPUData": 187896,
+        "totalWindowPixels": 921600,
+        "exactRestore": true
+      }
+    }
+  ],
+  "seamless": false,
+  "projection": "world triplanar, normal weights exponent 8",
+  "modulationRatioClamp": [
+    0.55,
+    1.45
+  ],
+  "logicalRGBMipBytes": 65532,
+  "physicalGPUBytesMeasured": false,
+  "additionalDrawCalls": 0,
+  "additionalGeometryBytes": 0,
+  "acceptance": "src/environment/validation/TEXTURES.md"
+}

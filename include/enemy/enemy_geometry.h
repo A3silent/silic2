@@ -27,6 +27,7 @@ inline bool segment(const glm::vec3& start,const glm::vec3& end,const AABB& box,
 }
 inline bool clear(const glm::vec3& start,const glm::vec3& end,const Map* map,float radius=0) {
     if(!map) return true;
+    if(auto world=map->getSpatialWorld())return !world->raycast(start,end,radius).hit;
     for(const auto& brush:map->getBrushes()) {
         if(brush.vertices.empty()) continue;
         auto box=bounds(brush); box.min-=glm::vec3(radius); box.max+=glm::vec3(radius);

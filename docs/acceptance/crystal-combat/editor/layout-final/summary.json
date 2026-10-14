@@ -1,0 +1,16 @@
+{
+  "release_frames_ms": {
+    "13": 80.0213,
+    "29": 78.8283
+  },
+  "all_frames_max_ms": 83.5154,
+  "count": 40,
+  "binary_sha256": "c79a79f375bcbf436b4f3f19ef099508b4b13f7d9164324db25282932e186eb2",
+  "map_sha256": "001ac8d47a498c5e3262b34d97269c4c9a0e5dea44574b9f7a3581d9910e50ac",
+  "exit_code": 0,
+  "actual_image_review": [
+    "frame-12.png",
+    "frame-28.png"
+  ],
+  "note": "All raw durations retained, including captures and resize. Real ImGui/OpenGL with synthetic pointer/keyboard, not human usability."
+}

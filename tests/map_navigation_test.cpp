@@ -12,7 +12,7 @@ using silic2::test::require;
 
 Map sampleMap() {
     Map map;
-    require(map.loadFromFile("res/maps/starry_crystal_arena.json"), "load actual arena: " + map.getLastError());
+    require(map.loadFromFile("tests/fixtures/starry_crystal_arena_v2.json"), "load actual arena: " + map.getLastError());
     require(map.getGameMode() == GameMode::ArenaSurvival, "sample explicitly declares arena mode");
     return map;
 }
@@ -83,7 +83,7 @@ void testEditedGeometry() {
     require(glm::length(glm::vec2(enemy.getPosition().x-6,enemy.getPosition().z))<.1f,
             "actual Chaser crosses former obstacle location without a hardcoded arena route");
     // Reuse a Map and force both graphs' edge caches to be populated.
-    require(map.loadFromFile("res/maps/starry_crystal_arena.json"),"reload original sample");
+    require(map.loadFromFile("tests/fixtures/starry_crystal_arena_v2.json"),"reload original sample");
     auto reloaded=ArenaDefinition::fromMap(map);
     verifyRoutes(reloaded);
     require(!reloaded.hasClearPath({-6,0,0},{6,0,0},.34f),"reload restores original navigation geometry");

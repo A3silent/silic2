@@ -108,7 +108,7 @@ std::vector<DirectorEvent> EncounterDirector::update(double dt, const DirectorIn
         }
         auto safe = [&](int index) {
             const auto delta = arena.rifts[index] - input.playerPosition;
-            return delta.x * delta.x + delta.z * delta.z >= 25.0f;
+            return arena.spatialWorld ? glm::dot(delta,delta)>=25.0f : delta.x * delta.x + delta.z * delta.z >= 25.0f;
         };
         if (chaser && request.warningStart >= 0.0) {
             if (!safe(request.location)) {

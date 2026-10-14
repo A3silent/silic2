@@ -75,7 +75,12 @@ private:
 
     void triangle(glm::vec3 a, glm::vec3 b, glm::vec3 c,
                   const glm::vec3& color, float emission);
-    void crystal(const glm::mat4& transform, const glm::vec3& color, float emission = 0.0f);
+    // Tapered pentagonal bone/metal segments; geometry stays in caller's envelope.
+    void bone(const glm::mat4& root, glm::vec3 a, glm::vec3 b,
+              float radiusA, float radiusB, const glm::vec3& color, float emission = 0.0f);
+    void cup(const glm::mat4& root, float opening, const glm::vec3& shell,
+             const glm::vec3& lining, float hit);
+    friend struct CharacterGeometryProbe; // CPU-only bounds/budget verification.
     void box(const glm::mat4& transform, const glm::vec3& color, float emission = 0.0f);
     void addCharacter(const CharacterView& character);
     void draw(const glm::mat4& view, const glm::mat4& projection, bool firstPerson);

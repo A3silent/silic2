@@ -1,0 +1,4 @@
+build=RelWithDebInfo
+source=/Users/ritzsun/Desktop/game/opengl/silic2/res/maps/starry_crystal_arena.json
+nodes=85
+models=23

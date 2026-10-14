@@ -1,0 +1,20 @@
+[
+  {
+    "actual": "artifacts/acceptance/crystal-combat/env/hollow-before.ppm",
+    "baseline": "artifacts/acceptance/dual-arena/env/hollow/phase-before.ppm",
+    "identical": true,
+    "sha256": "fb422637df2dc14879e4eafaa533c2b34108ef673a41b7e1fb814d8d0d9f0dac"
+  },
+  {
+    "actual": "artifacts/acceptance/crystal-combat/env/hollow-mid.ppm",
+    "baseline": "artifacts/acceptance/dual-arena/env/hollow/phase-mid.ppm",
+    "identical": true,
+    "sha256": "cc672982c22590a9d55fceb7865d07a758c10c167173f5bca4ef53494c302abd"
+  },
+  {
+    "actual": "artifacts/acceptance/crystal-combat/env/hollow-after.ppm",
+    "baseline": "artifacts/acceptance/dual-arena/env/hollow/phase-after.ppm",
+    "identical": true,
+    "sha256": "6b6b8d87e891317a6d709635d383ce013cff965bd96c47d508e0df69a39a2685"
+  }
+]

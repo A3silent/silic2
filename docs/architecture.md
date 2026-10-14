@@ -3,7 +3,7 @@
 ## Shared Map Module and Editor
 
 The game and `tools/map_editor` build the same data-only `Map` and
-`SimpleJson` sources. The editor's `SILIC2_ROOT` CMake setting points to this
+`SimpleJson`, static OBJ loader and `SpatialWorld` sources. The editor's `SILIC2_ROOT` CMake setting points to this
 repository; it no longer compiles a separate format implementation.
 
 `Map` owns parsing, migration, validation, primitive compilation and serialization.
@@ -28,13 +28,52 @@ authoring view; final game materials, effects and physics still run in the game.
 
 See [format and compatibility](map-format.md) and
 [cross-program acceptance](map-editor-upgrade.md). This change preserves the
-sample's shooting, movement and collision algorithms.
+legacy map behavior; triangle maps opt into the new shared spatial queries.
+
+## Crystal combat world (2026-10-13)
+
+Both shipped arenas select `ArenaSurvival`. Crystal explicitly enables schema v3
+`spatial.mode: "triangles"`; Hollow and legacy maps retain their previous paths.
+`Map` compiles transformed primitives and static OBJ instances into visual and
+collision triangles. `SpatialWorld` hides triangle/BVH intersection, ground
+support, upright actor movement and height-aware graph routing. Player movement,
+weapons, enemy projectiles and line-of-sight consume the same actual surfaces.
+Bounds accelerate queries; they do not fill mesh openings with solid boxes.
+
+Authored graph nodes use actual 3D feet positions. Links are validated for support
+and clearance; bridge upper/lower nodes remain separate and connect through ramps.
+Shared target routing caches avoid repeating a full graph search for every enemy
+on every frame. Existing movement and weapon tuning stays unchanged.
+
+`environment.architecture: "crystal_combat"` selects Crystal's landmark and distant
+structures independently of game mode. The 45-second timed transformation changes
+presentation only. Reachable structures render the same modeled surfaces used by
+collision. Crystal and Hollow retain separate shaders and share postprocessing,
+character presentation and audio. The minimap keeps its existing full-map behavior.
+
+`PlayerInput` remains the common value adapter for GLFW and explicitly labelled
+synthetic acceptance input. Tests using it traverse actual ramps and passages;
+fixed-camera screenshots and forced states are separate presentation probes.
+See [plan](../plan/crystal-combat-world.md), [spatial contract](crystal-spatial-contract.md)
+and [acceptance](crystal-combat-acceptance.md).
+
+The earlier `ExplorationController` and Observatory fixture remain for backwards
+compatibility and regression tests. Neither shipped map now requires observation
+or an exit to win. Historical evidence is in [Observatory acceptance](crystal-observatory-acceptance.md).
 
 ## Two-minute Sample Integration (2026-10-07)
 
 The accepted sample scope is `plan/two-minute-sample.md`; actual validation lives
-in `docs/sample-acceptance.md`. The default entry is now the starry crystal arena,
-seed 42. An explicit positional map path still loads legacy static encounters.
+in `docs/sample-acceptance.md`. The default entry is `hollow_orbit_arena.json`,
+seed 42. An explicit positional map path can select another arena or legacy map.
+
+The 2026-10-08 presentation revision adds Hollow Orbit. The later dual-map decision
+keeps its `hollow_orbit` environment separate from the original `starry_crystal`
+environment in `starry_crystal_arena.json`. This was the state of the dual-map
+pass; the Crystal combat revision above enlarges and adds real vertical routes to Crystal.
+Both continue to share the current eldritch enemy presentation.
+Current art and validation:
+[cosmic horror pass](cosmic-horror-acceptance.md).
 
 - `ArenaDefinition` provides arena geometry constraints and deterministic waypoint
   navigation. `EncounterDirector` advances an event timeline with safe spawn
@@ -182,7 +221,9 @@ with `make -f Makefile.map test`.
 
 ---
 
-## Map Format (JSON v1.0)
+## Legacy Map Format (JSON v1.0)
+
+Current v2/v3 fields are documented in [map format](map-format.md).
 
 ```json
 {
@@ -221,7 +262,9 @@ with `make -f Makefile.map test`.
 
 | File | Notes |
 |------|-------|
-| `test_room.json` | Default; floor + 4 walls + platform + enemy_spawn + item_pickup |
+| `hollow_orbit_arena.json` | Default; space-horror survival arena |
+| `starry_crystal_arena.json` | Crystal combat world, schema v3 triangle geometry |
+| `test_room.json` | Legacy; floor + 4 walls + platform + enemy_spawn + item_pickup |
 | `simple_corridor.json` | Long corridor, movement testing |
 | `textured_room.json` | Texture support demonstration |
 | `kailiang_room.json` | Larger space, multiple lights |

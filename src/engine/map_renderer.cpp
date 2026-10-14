@@ -7,6 +7,23 @@
 #include <iostream>
 
 namespace silic2 {
+namespace {
+struct CrystalTextureProfile { const char* file; glm::vec3 mean; float worldSize, strength; };
+const CrystalTextureProfile crystalProfiles[] = {
+    {"res/texture/crystal_combat/metal_deck-64.png",{.27865f,.30123f,.32231f},6.f,.80f},
+    {"res/texture/crystal_combat/mineral_ceramic-64.png",{.67220f,.64510f,.59206f},5.f,.55f},
+    {"res/texture/crystal_combat/dark_shell-64.png",{.25899f,.20994f,.16303f},8.f,.65f},
+    {"res/texture/crystal_combat/crystal_cleavage-64.png",{.29666f,.41174f,.47789f},6.f,.48f}
+};
+int crystalProfile(const std::string& material) {
+    if(material=="combat_foundation" || material=="combat_deck") return 0;
+    if(material=="combat_ivory") return 1;
+    if(material=="combat_brown") return 2;
+    if(material=="combat_crystal") return 3;
+    return -1;
+}
+}
+
 
 MapRenderer::MapRenderer() {
     std::cout << "MapRenderer: Initializing..." << std::endl;
@@ -29,13 +46,20 @@ bool MapRenderer::loadMap(const Map& map) {
     currentMap = &map;
     
     const auto& brushes = map.getBrushes();
-    const bool arena = map.getEnvironmentPreset() == EnvironmentPreset::StarryCrystal;
+    const auto preset=map.getEnvironmentPreset();
+    const bool arena = preset==EnvironmentPreset::StarryCrystal || preset==EnvironmentPreset::HollowOrbit;
     if (arena) {
         environment = std::make_unique<EnvironmentRenderer>(deriveEnvironmentScene(map));
-        arenaShader = std::make_unique<Shader>("res/shaders/map.vert", "res/shaders/environment_map.frag");
+        arenaShader = std::make_unique<Shader>("res/shaders/map.vert", environmentShaderPaths(preset).mapFragment);
         GLint linked = GL_FALSE;
         glGetProgramiv(arenaShader->ID, GL_LINK_STATUS, &linked);
         if (!linked) throw std::runtime_error("Arena material shader failed to link");
+    }
+    if(environment && environment->scene().combatWorld) {
+        // Four cache lookups only at map load; failed files leave the original
+        // procedural material active, with no texture I/O in a combat frame.
+        for(size_t i=0;i<crystalTextures.size();++i)
+            crystalTextures[i]=TextureManager::getInstance().loadTexture(crystalProfiles[i].file);
     }
     std::cout << "Loading " << brushes.size() << " brushes for rendering..." << std::endl;
     
@@ -57,6 +81,11 @@ bool MapRenderer::loadMap(const Map& map) {
             renderable->texture = TextureManager::getInstance().loadTexture(brush.texture);
         }
         
+        if(environment && environment->scene().combatWorld && brush.texture.empty()) {
+            renderable->crystalTextureProfile=crystalProfile(brush.material);
+            if(renderable->crystalTextureProfile>=0)
+                renderable->texture=crystalTextures[renderable->crystalTextureProfile];
+        }
         setupBrushGeometry(brush, *renderable);
         renderableBrushes.push_back(std::move(renderable));
     }
@@ -72,6 +101,7 @@ void MapRenderer::clearMap() {
     arenaShader.reset();
     combinedLights.clear();
     renderableBrushes.clear();
+    crystalTextures.fill(nullptr);
     lightData.clear();
     dynamicLights.clear();
     currentMap = nullptr;
@@ -107,14 +137,29 @@ void MapRenderer::render(const glm::mat4& view, const glm::mat4& projection) {
     
     if (environment) {
         environment->setMapUniforms(*shader);
+        const auto& obstacles=currentMap->getArenaLayout().obstacles;
+        const size_t contactCount=std::min(obstacles.size(),size_t(16));
+        shader->setInt("obstacleCount",static_cast<int>(contactCount));
+        for(size_t i=0;i<contactCount;++i){
+            const auto& box=obstacles[i];
+            shader->setVec4("obstacleRects["+std::to_string(i)+"]",box.min.x,box.min.z,box.max.x,box.max.z);
+        }
     }
 
     // Combine static and dynamic lights — cache for other renderers (e.g. enemies)
     combinedLights = lightData;
     if (environment) {
         const float phase = environment->transformation();
-        for (auto& light : combinedLights)
-            light.color *= glm::mix(glm::vec3(1.f), glm::vec3(1.2f,.7f,1.15f), phase);
+        for (auto& light : combinedLights) {
+            if(environment->scene().settings.preset==EnvironmentPreset::StarryCrystal) {
+                light.color*=glm::mix(glm::vec3(1.f),glm::vec3(1.2f,.7f,1.15f),phase);
+                continue;
+            }
+            // Preset palette conversion only: authored anchors/ranges/intensities
+            // stay authoritative; combat lights appended below keep warm cues.
+            const float luminance=glm::dot(light.color,glm::vec3(.2126f,.7152f,.0722f));
+            light.color=glm::mix(glm::vec3(.91f,.94f,.82f),glm::vec3(.74f,.86f,.67f),phase)*luminance;
+        }
         const auto& rifts = environment->scene().rifts;
         const auto& warnings = environment->warnings();
         for (size_t i = 0; i < rifts.size(); ++i) {
@@ -300,11 +345,30 @@ void MapRenderer::renderBrush(const RenderableBrush& brush, const glm::mat4& mod
     if (environment) {
         shader.setInt("materialKind", brush.surfaceType == SurfaceType::FLOOR ? 1 :
                       brush.material == "arena_living_crystal" ? 2 : 0);
+        if (environment->scene().observatory && brush.surfaceType != SurfaceType::FLOOR) {
+            int kind = brush.material == "observatory_salt" ? 4 :
+                       brush.material == "observatory_ink" ? 5 :
+                       brush.material == "observatory_ivory" ? 6 : 3;
+            shader.setInt("materialKind",kind);
+        }
+        if (environment->scene().combatWorld) {
+            int kind=brush.material=="combat_crystal"?12:brush.material=="combat_ivory"?13:
+                     brush.material=="combat_brown"?14:brush.material=="combat_foundation"?10:11;
+            shader.setInt("materialKind",kind);
+        }
         shader.setVec3("brushMinimum",brush.minimum);
         shader.setVec3("brushSize",glm::max(brush.maximum-brush.minimum,glm::vec3(.001f)));
     }
     // Bind texture
-    if (brush.texture) {
+    const bool profileEnabled=brush.crystalTextureProfile<0 ||
+        (crystalTextureMask & (1u<<brush.crystalTextureProfile));
+    if (brush.texture && profileEnabled) {
+        if(brush.crystalTextureProfile>=0) {
+            const auto& profile=crystalProfiles[brush.crystalTextureProfile];
+            shader.setVec3("textureMean",profile.mean);
+            shader.setFloat("textureWorldScale",1.f/profile.worldSize);
+            shader.setFloat("textureStrength",profile.strength);
+        }
         shader.setBool("useTexture", true);
         shader.setInt("texture1", 0);
         brush.texture->bind(0);
@@ -334,6 +398,10 @@ void MapRenderer::addDynamicLight(const glm::vec3& position, const glm::vec3& co
 
 void MapRenderer::clearDynamicLights() {
     dynamicLights.clear();
+}
+
+void MapRenderer::setObservationState(float progress, bool complete) {
+    if (environment) environment->setObservationState(progress,complete);
 }
 
 void MapRenderer::setEnvironmentTime(float seconds) {

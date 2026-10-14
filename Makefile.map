@@ -87,6 +87,8 @@ ENGINE_SRCS := src/engine/main.cpp \
                src/engine/shader.cpp \
                src/engine/texture.cpp \
                src/engine/map.cpp \
+               src/engine/mesh_asset.cpp \
+               src/engine/spatial_world.cpp \
                src/engine/map_renderer.cpp \
                src/engine/pixel_renderer.cpp \
                src/engine/simple_json.cpp \
@@ -114,7 +116,8 @@ GAME_SRCS := src/game/seed_service.cpp \
              src/game/run_stats.cpp \
              src/game/run_controller.cpp \
              src/game/arena_definition.cpp \
-             src/game/encounter_director.cpp
+             src/game/encounter_director.cpp \
+             src/game/exploration_controller.cpp
 
 PRESENTATION_SRCS := src/environment/environment_scene.cpp src/environment/environment_renderer.cpp src/character/character_presentation.cpp src/audio/audio_system.cpp src/audio/miniaudio_impl.cpp
 
@@ -133,6 +136,8 @@ TEST_SRCS := tests/test_main.cpp \
              tests/run_controller_test.cpp \
              tests/enemy_ground_test.cpp \
              tests/encounter_director_test.cpp \
+             tests/exploration_test.cpp \
+             tests/spatial_world_test.cpp \
              tests/enemy_combat_test.cpp \
              tests/audio_system_test.cpp \
              tests/hud_view_model_test.cpp \
@@ -146,12 +151,19 @@ TEST_SUPPORT_SRCS := src/player/player.cpp src/engine/camera.cpp src/engine/game
                      src/audio/miniaudio_impl.cpp \
                      src/enemy/enemy.cpp \
                      src/engine/map.cpp \
+                     src/engine/mesh_asset.cpp \
+                     src/engine/spatial_world.cpp \
                      src/engine/simple_json.cpp \
                      src/engine/collision.cpp
 TEST_SUPPORT_OBJS := $(patsubst src/%.cpp,$(OBJ_DIR)/%.o,$(TEST_SUPPORT_SRCS))
 TEST_TARGET := $(BUILD_DIR)/silic2-tests$(if $(filter windows,$(PLATFORM)),.exe,)
 
-ALL_OBJS := $(APP_OBJS) $(TEST_OBJS)
+HORROR_PREVIEW_OBJ := $(OBJ_DIR)/tests/horror_scene_preview.o
+HORROR_PREVIEW_TARGET := $(BUILD_DIR)/horror-scene-preview$(if $(filter windows,$(PLATFORM)),.exe,)
+
+SPATIAL_PROBE_OBJ := $(OBJ_DIR)/tests/spatial_combat_probe.o
+SPATIAL_PROBE_TARGET := $(BUILD_DIR)/spatial-combat-probe
+ALL_OBJS := $(APP_OBJS) $(TEST_OBJS) $(HORROR_PREVIEW_OBJ) $(SPATIAL_PROBE_OBJ)
 DEPS := $(ALL_OBJS:.o=.d)
 OBJ_DIRS := $(sort $(patsubst %/,%,$(dir $(ALL_OBJS))))
 
@@ -186,6 +198,12 @@ $(TEST_TARGET): $(TEST_OBJS) $(GAME_OBJS) $(TEST_SUPPORT_OBJS)
 test: $(TEST_TARGET)
 	./$(TEST_TARGET)
 
+# Opt-in synthetic GL capture; building this target never opens a window.
+$(HORROR_PREVIEW_TARGET): $(HORROR_PREVIEW_OBJ) $(filter-out $(OBJ_DIR)/engine/main.o $(OBJ_DIR)/engine/app.o,$(APP_OBJS))
+	$(CXX) $^ -o $@ $(LDFLAGS) $(LIBS)
+
+horror-preview: $(HORROR_PREVIEW_TARGET)
+
 # Convenience configuration targets
 debug:
 	$(MAKE) -f $(firstword $(MAKEFILE_LIST)) BUILD=debug all
@@ -199,7 +217,14 @@ run: $(APP_TARGET)
 run-release:
 	$(MAKE) -f $(firstword $(MAKEFILE_LIST)) BUILD=release run
 
-# Map shortcuts
+# Map shortcuts; default launch remains Hollow Orbit.
+hollow-orbit: $(APP_TARGET)
+	./$(APP_TARGET) res/maps/hollow_orbit_arena.json
+
+starry-crystal: $(APP_TARGET)
+	./$(APP_TARGET) res/maps/starry_crystal_arena.json
+
+# Legacy map shortcuts
 test-room: $(APP_TARGET)
 	./$(APP_TARGET) res/maps/test_room.json
 
@@ -219,4 +244,11 @@ print-config:
 clean:
 	$(CLEAN_CMD)
 
-.PHONY: all debug release run run-release test test-room corridor textured-room print-config clean
+.PHONY: hollow-orbit starry-crystal horror-preview all debug release run run-release test test-room corridor textured-room print-config clean
+
+$(SPATIAL_PROBE_TARGET): $(SPATIAL_PROBE_OBJ) $(GAME_OBJS) $(TEST_SUPPORT_OBJS)
+	$(CXX) $^ -o $@ $(LDFLAGS) $(LIBS)
+
+spatial-probe: $(SPATIAL_PROBE_TARGET)
+
+.PHONY: spatial-probe

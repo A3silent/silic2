@@ -1,0 +1,16 @@
+-- Configuring done (0.1s)
+-- Generating done (0.0s)
+-- Build files have been written to: /tmp/silic2-crystal-editor-build
+[ 41%] Built target imgui
+[ 52%] Building CXX object CMakeFiles/silic2_map_data.dir/Users/ritzsun/Desktop/game/opengl/silic2/src/engine/map.cpp.o
+[ 52%] Building CXX object CMakeFiles/silic2_map_data.dir/Users/ritzsun/Desktop/game/opengl/silic2/src/engine/mesh_asset.cpp.o
+[ 58%] Building CXX object CMakeFiles/silic2_map_data.dir/Users/ritzsun/Desktop/game/opengl/silic2/src/engine/spatial_world.cpp.o
+[ 64%] Linking CXX static library libsilic2_map_data.a
+[ 70%] Built target silic2_map_data
+[ 76%] Building CXX object CMakeFiles/editor_document.dir/src/editor_document.cpp.o
+[ 82%] Linking CXX static library libeditor_document.a
+[ 82%] Built target editor_document
+[ 94%] Building CXX object CMakeFiles/map_editor.dir/src/map_editor_final.cpp.o
+[ 94%] Building CXX object CMakeFiles/map_editor.dir/tests/editor_self_test.cpp.o
+[100%] Linking CXX executable map_editor
+[100%] Built target map_editor

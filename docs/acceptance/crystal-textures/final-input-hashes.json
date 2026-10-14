@@ -1,0 +1,23 @@
+{
+  "include/engine/map_renderer.h": "4ab1629fd182677baa825c5a3d7768c81044f7177646a3293c9c2cb61be18742",
+  "src/engine/map_renderer.cpp": "eed398be616ad1c3295c5ca25ce77a5db0abcdb33be10b4fc8237bc805f3c93c",
+  "res/shaders/starry_crystal_map.frag": "bc86566b14e3400bfd924ef5c5871df73bfaa6c98060b0f8bdb31f20230aa758",
+  "src/environment/validation/texture_preview.cpp": "c75bef9b530c88bdccaf0d81d16345435f1679bdd8e4591b8f6560fac7d770ab",
+  "src/environment/validation/combat_preview.cpp": "87c7b8374e1f10b41512bf112bb08b2db727e4ae743d0fad51946bf4c36dd982",
+  "src/environment/validation/TEXTURES.md": "dd12e57ba299bd68c6e3a56952f68cbcacfd1ebac67194a3ed24a7d8f3cb8b63",
+  "res/texture/crystal_combat/dark_shell-64.png": "6bdcd79ec58d0f4a010da1311abbdf1e097a6f14763bd47fa1636a7293e0a780",
+  "res/texture/crystal_combat/mineral_ceramic-64.png": "a6d9cbb0558568f825c1c87183535eeed82387938cb90bef029f8e4e0562cd3e",
+  "res/texture/crystal_combat/README.md": "b740f176d7ce1034c2af9e266f551b1719fa438d28046ba5fcda13bfb01b3d2f",
+  "res/texture/crystal_combat/generation-sources.json": "c3f6f40701b4e7007293f753ebd5e1d57ca1cbde59aa3a745c68bb5aa8c642ab",
+  "res/texture/crystal_combat/crystal_cleavage-64.png": "90ea33ec9ad29e207ced486590e53925ce75bed4bba5720c63f9a172f463e078",
+  "res/texture/crystal_combat/manifest.json": "324cbd9a14faa261747ca3a494bc95655b6f6e8d10078e0002a4054ec3eea88e",
+  "res/texture/crystal_combat/metal_deck-64.png": "118e9ef3864a5b4b4be6c8cf81e993a9b5815d9b18dd036257297b5f4d75a59f",
+  "res/texture/crystal_combat/originals/crystal_cleavage.png": "4e32b765e0b5c29da06a20e141db14b2bce9d2e162f9317abef07d00a0302bad",
+  "res/texture/crystal_combat/originals/metal_deck.png": "6992fc57af64ca47e5c055bbc9892530493a793355823949524230d66cf2c2b0",
+  "res/texture/crystal_combat/originals/dark_shell.png": "0ca6d82ba3ad48792aaab0d064948d6e2fd147c909b5c9397ff5fc0acdb349e3",
+  "res/texture/crystal_combat/originals/mineral_ceramic.png": "d12732e381a46b92340163507b5a04de4ec0ac2bd670229f8e1beb2eb01181d2",
+  "res/texture/crystal_combat/prompts/dark_shell.txt": "d6e8aae5c2ed0a740e5f8839d73afca2d4333d083ab5d3cc682ee18b9243f0b7",
+  "res/texture/crystal_combat/prompts/crystal_cleavage.txt": "16b9838662f43a2696274a07c783a9c9d180a0c0a1ab408a3447e5ec5da18c19",
+  "res/texture/crystal_combat/prompts/metal_deck.txt": "0902636d37ce44f90e9623ea4743ed12be6a1d23ec34a06515e6aac2fdcb9c34",
+  "res/texture/crystal_combat/prompts/mineral_ceramic.txt": "27d8466365708b6657fc6cef58c2c9dbf70005b639b80438cd24582edffd00b0"
+}

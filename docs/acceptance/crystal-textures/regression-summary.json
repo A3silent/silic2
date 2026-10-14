@@ -1,0 +1,9 @@
+{
+  "protectedFileCount": 68,
+  "changedProtectedFiles": [],
+  "hollowExactPixelMatches": {
+    "hollow-before.ppm": true,
+    "hollow-after.ppm": true,
+    "hollow-mid.ppm": true
+  }
+}

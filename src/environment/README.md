@@ -1,4 +1,9 @@
-# Starry crystal arena environment
+# Map-selected arena environments
+
+The current map-selected themes and dual-map validation/resource record are in
+[validation/DUAL.md](validation/DUAL.md). HollowOrbit preserves the dark orbital
+horror presentation; StarryCrystal restores the original crystal arena. The
+historical horror-pass record remains in [validation/HORROR.md](validation/HORROR.md).
 
 All geometry, shaders and particles are original procedural assets. Presentation
 consumes no gameplay RNG and reads no files during combat.
@@ -7,7 +12,7 @@ consumes no gameplay RNG and reads no files during combat.
 
 Build both src/environment/environment_renderer.cpp and environment_scene.cpp.
 MapRenderer::loadMap enables this preset only when Map::getEnvironmentPreset()
-is EnvironmentPreset::StarryCrystal. A material name cannot activate encounters
+is StarryCrystal or HollowOrbit. A material name cannot activate encounters
 or switch off the environment. Legacy maps default to None. A starry scene with
 no floor draws only its sky.
 
@@ -44,8 +49,8 @@ collision changes during the transition. Rifts apply authored XYZ Euler rotation
 apertures and warm warning lights share that transform. Particle distribution and
 peripheral scenery follow the shared main-floor bounds/elevation.
 
-The preset retains its motif frequencies, 76 distant silhouettes and colors as
-art choices, rather than authored world coordinates. Four rift warning slots
+The presets retain their motif frequencies and distant scenery (76 crystal
+silhouettes or 14 broken rib frames) as art choices, not authored world coordinates. Four rift warning slots
 remain the encounter contract; arbitrary enemy-wave cardinality is out of scope.
 
 ## Authoring and compatibility

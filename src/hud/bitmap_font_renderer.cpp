@@ -100,22 +100,25 @@ void BitmapFontRenderer::append(HudBatch& batch,std::string_view text,float x,fl
 }
 
 namespace {
-const glm::vec4 ink(0.035f,0.055f,0.105f,0.94f);
-const glm::vec4 white(0.91f,0.96f,1.0f,1.0f);
-const glm::vec4 muted(0.55f,0.67f,0.76f,1.0f);
-const glm::vec4 cyan(0.30f,0.94f,0.94f,1.0f);
+// Quiet instrument palette. Warm high-intensity color remains reserved for
+// actual danger; hit/kill feedback stays cold and distinct from attack warnings.
+const glm::vec4 ink(0.038f,0.045f,0.043f,0.94f);
+const glm::vec4 bone(0.91f,0.89f,0.82f,1.0f);
+const glm::vec4 muted(0.65f,0.66f,0.61f,1.0f);
+const glm::vec4 amber(0.76f,0.65f,0.46f,1.0f);
+const glm::vec4 feedback(0.88f,0.95f,1.0f,1.0f);
 const glm::vec4 warm(1.0f,0.48f,0.28f,1.0f);
 float ratio(float hp,float maxHp) { return maxHp>0 ? std::clamp(hp/maxHp,0.0f,1.0f):0; }
 std::string integer(float number) { return std::to_string(static_cast<int>(std::ceil(std::max(number,0.0f)))); }
 float fade(float age,float lifetime) { return age>=0 && age<lifetime ? 1-age/lifetime:0; }
-void text(HudBatch& b,std::string_view value,float x,float y,float p,const glm::vec4& color=white) {
+void text(HudBatch& b,std::string_view value,float x,float y,float p,const glm::vec4& color=bone) {
     BitmapFontRenderer::append(b,value,std::round(x),std::round(y),p,color);
 }
-void centered(HudBatch& b,std::string_view value,float x,float y,float p,const glm::vec4& color=white) {
+void centered(HudBatch& b,std::string_view value,float x,float y,float p,const glm::vec4& color=bone) {
     text(b,value,x-BitmapFontRenderer::width(value,p)*0.5f,y,p,color);
 }
 void panel(HudBatch& b,float x,float y,float w,float h) {
-    b.rect(x,y,w,h,ink); b.rect(x,y,2,h,cyan);
+    b.rect(x,y,w,h,ink); b.rect(x,y,2,h,amber);
 }
 void minimap(HudBatch& b,const HudViewModel& m,float x,float y,float size,float p) {
     panel(b,x,y,size,size+25);
@@ -123,15 +126,15 @@ void minimap(HudBatch& b,const HudViewModel& m,float x,float y,float size,float 
     const glm::vec2 lo=m.mapMinXZ, span=glm::max(m.mapMaxXZ-lo,glm::vec2(1));
     auto point=[&](glm::vec2 world) { return glm::vec2(x+8,y+8)+glm::clamp((world-lo)/span,glm::vec2(0),glm::vec2(1))*inner; };
     auto inside=[&](glm::vec2 world) { return world.x>=lo.x && world.y>=lo.y && world.x<=lo.x+span.x && world.y<=lo.y+span.y; };
-    b.rect(x+8,y+8,inner,inner,{0.06f,0.1f,0.16f,1});
+    b.rect(x+8,y+8,inner,inner,{0.065f,0.075f,0.073f,1});
     for(const auto& terrain:m.terrain) {
         const glm::vec2 a=point(terrain.minXZ),z=point(terrain.maxXZ);
-        b.rect(a.x,a.y,z.x-a.x,z.y-a.y,{0.27f,0.35f,0.47f,1});
+        b.rect(a.x,a.y,z.x-a.x,z.y-a.y,{0.32f,0.35f,0.33f,1});
     }
     for(const auto& r:m.rifts) {
         if(!inside(r.worldXZ)) continue;
         const glm::vec2 q=point(r.worldXZ);
-        const glm::vec4 color=r.warning ? warm:cyan;
+        const glm::vec4 color=r.warning ? warm:amber;
         const float radius=r.warning ? 5.0f:3.0f;
         b.line(q+glm::vec2(0,-radius),q+glm::vec2(radius,0),1.5f,color);
         b.line(q+glm::vec2(radius,0),q+glm::vec2(0,radius),1.5f,color);
@@ -148,7 +151,7 @@ void minimap(HudBatch& b,const HudViewModel& m,float x,float y,float size,float 
     glm::vec2 f=m.playerForwardXZ;
     f=glm::length(f)>0.001f ? glm::normalize(f):glm::vec2(0,-1);
     const glm::vec2 right(-f.y,f.x);
-    b.triangle(q+f*6.0f,q-f*4.0f-right*4.0f,q-f*4.0f+right*4.0f,white);
+    b.triangle(q+f*6.0f,q-f*4.0f-right*4.0f,q-f*4.0f+right*4.0f,bone);
     text(b,"N",x+size-16,y+10,p,muted);
     text(b,"VISIBLE CONTACTS",x+8,y+size+6,1,muted);
 }
@@ -169,20 +172,24 @@ void buildHudGeometry(HudBatch& b,const HudViewModel& m,int logicalWidth,int log
             b.rect(x-1,y-1,52,7,ink);b.rect(x,y,50*ratio(e.hp,e.maxHp),5,warm);
         }
         panel(b,margin,margin,178,63);
-        text(b,"COMBAT",margin+12,margin+10,1,muted);
+        text(b,m.exploration?"JOURNEY":"COMBAT",margin+12,margin+10,1,muted);
         text(b,hudClock(m.combatSeconds),margin+12,margin+29,3);
         const std::string phase=hudPhaseLabel(m);
-        centered(b,phase,cx,margin+6,p,cyan);
+        centered(b,phase,cx,margin+6,p,amber);
         centered(b,hudObjectiveLabel(m),cx,margin+29,1,muted);
+        if(m.exploration && m.observationAvailable) {
+            centered(b,"OBSERVATION " + std::to_string(int(m.observationProgress*100)) + "%",cx,margin+46,1,amber);
+            b.rect(cx-60,margin+59,120,4,ink); b.rect(cx-60,margin+59,120*m.observationProgress,4,bone);
+        }
         minimap(b,m,w-margin-156,margin,156,1);
         panel(b,margin,h-margin-67,218,67);
         text(b,"HP",margin+12,h-margin-55,p,muted);
         text(b,integer(m.hp)+" / "+integer(m.maxHp),margin+55,h-margin-55,p);
-        b.rect(margin+12,h-margin-25,194,10,{0.13f,0.20f,0.27f,1});
-        b.rect(margin+12,h-margin-25,194*ratio(m.hp,m.maxHp),10,m.hp<=m.maxHp*0.3f?warm:cyan);
+        b.rect(margin+12,h-margin-25,194,10,{0.19f,0.21f,0.20f,1});
+        b.rect(margin+12,h-margin-25,194*ratio(m.hp,m.maxHp),10,m.hp<=m.maxHp*0.3f?warm:bone);
         text(b,"ESC  PAUSE",w-margin-118,h-margin-14,1,muted);
         const float cy=h*0.5f;
-        const glm::vec4 cross=fade(m.killAge,0.35f)>0 ? warm:white;
+        const glm::vec4 cross=fade(m.killAge,0.35f)>0 ? feedback:bone;
         for(int s:{-1,1}) {
             b.rect(cx+s*8-1,cy-1,2,2,ink);
             b.rect(cx-1,cy+s*8-1,2,2,ink);
@@ -196,7 +203,7 @@ void buildHudGeometry(HudBatch& b,const HudViewModel& m,int logicalWidth,int log
             for(int sx:{-1,1}) for(int sy:{-1,1})
                 b.line({cx+sx*13,cy+sy*13},{cx+sx*8,cy+sy*8},2,{cross.r,cross.g,cross.b,hit});
         }
-        if(fade(m.killAge,0.6f)>0) centered(b,"KILL",cx,cy+28,1,{warm.r,warm.g,warm.b,fade(m.killAge,0.6f)});
+        if(fade(m.killAge,0.6f)>0) centered(b,"KILL",cx,cy+28,1,{feedback.r,feedback.g,feedback.b,fade(m.killAge,0.6f)});
         const float hurt=fade(m.damageAge,0.8f);
         if(hurt>0) {
             glm::vec2 d(std::sin(m.damageDirectionRadians),-std::cos(m.damageDirectionRadians));
@@ -205,15 +212,15 @@ void buildHudGeometry(HudBatch& b,const HudViewModel& m,int logicalWidth,int log
         }
     }
     if(m.phase!=HudPhase::Playing) {
-        b.rect(0,0,w,h,{0.015f,0.025f,0.055f,live?0.72f:0.62f});
+        b.rect(0,0,w,h,{0.018f,0.023f,0.022f,live?0.72f:0.62f});
         const bool result=m.phase==HudPhase::Won || m.phase==HudPhase::Dead;
         const float pw=std::min(560.0f,w-48),ph=result?390.0f:m.phase==HudPhase::Ready?352.0f:220.0f;
         const float x=cx-pw*0.5f,y=(h-ph)*0.5f;
         panel(b,x,y,pw,ph);
-        text(b,m.arenaSurvival?"SILIC2 / CRYSTAL ARENA":"SILIC2 / MAP",x+26,y+22,1,cyan);
-        const std::string title=m.phase==HudPhase::Ready?"READY":m.phase==HudPhase::Paused?"PAUSED":m.phase==HudPhase::Won?"WIN":"DEAD";
-        text(b,title,x+26,y+48,5,m.phase==HudPhase::Dead?warm:white);
-        b.rect(x+26,y+102,pw-52,1,{0.2f,0.3f,0.4f,1});
+        text(b,(m.arenaSurvival||m.exploration)?"SILIC2 / "+m.mapName:"SILIC2 / MAP",x+26,y+22,1,amber);
+        const std::string title=m.phase==HudPhase::Ready?"READY":m.phase==HudPhase::Paused?"PAUSED":m.phase==HudPhase::Won?(m.exploration?"ALIGNED":"WIN"):"DEAD";
+        text(b,title,x+26,y+48,5,m.phase==HudPhase::Dead?warm:bone);
+        b.rect(x+26,y+102,pw-52,1,{0.29f,0.30f,0.27f,1});
         if(m.phase==HudPhase::Ready) {
             text(b,hudReadyObjective(m),x+26,y+123,p);
             text(b,"WASD     MOVE",x+26,y+161,p,muted);
@@ -221,10 +228,10 @@ void buildHudGeometry(HudBatch& b,const HudViewModel& m,int logicalWidth,int log
             text(b,"SHIFT    TOGGLE SPRINT",x+26,y+211,p,muted);
             text(b,"CTRL     CROUCH / SLIDE",x+26,y+236,p,muted);
             text(b,"SPACE    JUMP       ESC  PAUSE",x+26,y+261,p,muted);
-            text(b,"ENTER  BEGIN",x+26,y+309,p,cyan);
+            text(b,"ENTER  BEGIN",x+26,y+309,p,amber);
         } else if(m.phase==HudPhase::Paused) {
             text(b,"COMBAT AND SOUND ARE FROZEN",x+26,y+124,p,muted);
-            text(b,"ESC  RESUME",x+26,y+177,p,cyan);
+            text(b,"ESC  RESUME",x+26,y+177,p,amber);
         } else {
             const std::string labels[]={"TIME","KILLS","ACCURACY","HP LOST","FATAL SOURCE"};
             std::string fatal=m.phase==HudPhase::Won?"NONE":hudFatalSource(m.fatalSource);
@@ -234,7 +241,7 @@ void buildHudGeometry(HudBatch& b,const HudViewModel& m,int logicalWidth,int log
                 text(b,labels[i],x+26,y+125+i*34,p,muted);
                 text(b,values[i],x+pw-26-BitmapFontRenderer::width(values[i],p),y+125+i*34,p);
             }
-            text(b,m.resultLockRemaining>0 ? "RESTART LOCKED - 1 SECOND":"R / LEFT CLICK  RESTART",x+26,y+327,p,m.resultLockRemaining>0?muted:cyan);
+            text(b,m.resultLockRemaining>0 ? "RESTART LOCKED - 1 SECOND":"R / LEFT CLICK  RESTART",x+26,y+327,p,m.resultLockRemaining>0?muted:amber);
             text(b,"SAME SEED  "+std::to_string(m.seed),x+26,y+360,1,muted);
         }
     }

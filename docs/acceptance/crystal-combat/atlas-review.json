@@ -1,0 +1,16 @@
+{
+  "reviewer": "ATLAS",
+  "game_source_hashes_checked": 633,
+  "game_binary_hashes_checked": 6,
+  "editor_binary_sha256": "c79a79f375bcbf436b4f3f19ef099508b4b13f7d9164324db25282932e186eb2",
+  "protected_files_unchanged": 35,
+  "hollow_integrated_ppm_exact_matches": 14,
+  "hollow_environment_ppm_exact_matches": 3,
+  "combat_csv_independently_recomputed": true,
+  "editor_final_800_image_inspected": true,
+  "human_playtest": false,
+  "known_limitations": [
+    "Isolated ~400ms frame stalls remain unexplained.",
+    "Dark enemy readability, wayfinding and combat enjoyment require human playtesting."
+  ]
+}

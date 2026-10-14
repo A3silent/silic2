@@ -1,0 +1,82 @@
+{
+  "task": "HORROR-CHAR",
+  "recorded_at": "2026-10-08T00:19:51.592585+08:00",
+  "baseline_commit": "ed76aeefe97a2171323047eba24388edd25051d9",
+  "resolution": [
+    320,
+    200
+  ],
+  "world_fov_degrees": 45,
+  "weapon_fov_degrees": 70,
+  "camera": [
+    0,
+    1.3,
+    5
+  ],
+  "look_at": [
+    0,
+    0.9,
+    0
+  ],
+  "frames": {
+    "0": "idle/movement",
+    "1": "tracking charge 0.45",
+    "2": "locked charge 0.85",
+    "3": "locked plus hit",
+    "4": "death fragments; dead Chaser removed",
+    "5": "slide plus accepted primary shot"
+  },
+  "source_sha256": {
+    "include/character/character_presentation.h": "77d66f4de24cc8d20e32844fcd07fc70f26d1f9fe048621527d75531e96cdd94",
+    "src/character/character_presentation.cpp": "82d05129028366da046e649e2957e4a1819c38b9d3ba4bfe6b5719fedda29fee",
+    "src/character/preview/preview_main.cpp": "7ecfe774e73768e0698b6e73cf095a9fb332e5b6276a4a71ce5a41f39ae312f1",
+    "src/character/preview/geometry_check.cpp": "2f75ee09eaf62083a79579017ec24b3970d9571fd4d5dd0433cd91e37379f26c",
+    "res/shaders/character.vert": "2ba1fce72bc491362b227b4d28a03895853ab8d3c9f33dccb9ad59e28b9eb87c",
+    "res/shaders/character.frag": "935bc5f2647bcc46dcb7096350a02a190c02e31ee93313dc09d9dbaf9c317daf"
+  },
+  "binary_sha256": {
+    "/tmp/kinetic-horror-before-preview": "7039a4ec96eb8af621102b9fd7e67785b34d28b72ec63a00dfbaf80ad7f1a673",
+    "/tmp/kinetic-horror-preview": "174fc0144a1de5835d1165ea5f2b780635f9e5d8808f085d56ad39fd4aaf3ee3",
+    "/tmp/kinetic-geometry-check": "9717320e3cfe0f2c28d1f8d11b6217e571678f2f48139047b6cbe779aee70716"
+  },
+  "png_sha256": {
+    "after-0.png": "3786e59c9c90a84223300e5cb249b9e3bb92e6e625757cac95dc4cebe6803992",
+    "after-1.png": "f295d1bef34ccc62f0c9a436d6397c685a905695cd2213bdca515094d004776e",
+    "after-2.png": "fa792cf8138fe82ef844e9b3eac868f23ce588e0f25e6abb96af5718ac87b511",
+    "after-3.png": "79fcf002779267157b72e1e799579edcda8533f210b893303e459cc2957accf7",
+    "after-4.png": "9e021b4aa72c8076e5ab780ce3d59069ef2eb675ad4649c198ff2fd44b3e0f04",
+    "after-5.png": "a46b8110c6e4708acb872ae35425f6272495ca7919a840a6dbd69b31a189c065",
+    "before-0.png": "edfcd4398bae63683312be918da58c15b470de28483b1902d7c2da4912f5a5e8",
+    "before-1.png": "2ccd3dd9c2b80480fb403f5edd715d0ad82182d55a39ee60527743bdb716cff3",
+    "before-2.png": "43f7d6c1c3f601132fb84370fa1f50bb9a3920999348f7e620192bea6b947b12",
+    "before-3.png": "fe79f221e266b16bee29f03b9a7a87c7f5100cb4af68837f95749857d0cae068",
+    "before-4.png": "f4ca2b9085dc8b2baf460e053ac92babb90ede93aee4f630e2cf97bb5eb35a8f",
+    "before-5.png": "5ac91d3bacf30d5d531c83ba6dda53f308793c7d80204e2591a7318a638c6eb0"
+  },
+  "checks": [
+    "10240 CPU body-envelope/finite-vertex/normal checks",
+    "62964 capped world vertices <= 65536 reserved",
+    "256 fragment ring unchanged",
+    "world and viewmodel: one draw each",
+    "shader compilation/link and no GL errors",
+    "GL state restored",
+    "world depth unchanged by viewmodel",
+    "zero dt freeze, expiry, 50 presentation resets",
+    "all six final revision2 PNGs visually inspected; six original baseline PNGs previously inspected"
+  ],
+  "pending": [
+    "final scene contrast",
+    "final integrated performance regression",
+    "human threat-readability/playtest",
+    "Windows/Linux runtime"
+  ],
+  "gpu_released": true,
+  "revision": "Sentry local shape revision 2 (final)",
+  "visual_findings": [
+    "left/up eccentric opening visible at 320x200",
+    "unequal upper-right thick plate and left tissue seam break circular rim",
+    "muted tissue wall separated from black recessed floor",
+    "warm charge/locked remains in actual mouth during cold hit flash"
+  ],
+  "geometry_log": "geometry-sentry-revision2.log"
+}

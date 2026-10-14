@@ -5,7 +5,7 @@
 #include <vector>
 
 namespace silic2::editor {
-enum class ObjectKind { None, Brush, Object, Entity, Light };
+enum class ObjectKind { None, Brush, Object, Entity, Light, Model, NavNode };
 struct Selection {
     ObjectKind kind = ObjectKind::None;
     size_t index = 0;
@@ -21,6 +21,8 @@ public:
     void select(Selection selected);
     bool selected() const;
     Bounds selectedBounds() const;
+    glm::vec3 selectedPosition() const;
+    glm::vec3 selectedSize() const;
     uint64_t revision() const { return state.revision; }
     bool dirty() const { return state.revision!=savedRevision; }
     const std::string& path() const { return currentPath; }
@@ -42,9 +44,13 @@ public:
     void duplicate(float offset=1);
     void erase();
     void addBox(glm::vec3 center,glm::vec3 size);
+    void addPrimitive(const std::string& shape,glm::vec3 center,glm::vec3 size);
+    bool addModel(const std::string& asset,const std::string& collisionAsset,glm::vec3 position);
+    void addNavNode(glm::vec3 position);
+    bool connectNavNodes(int from,int to,bool bidirectional=true);
     void addEntity(EntityType type,glm::vec3 position);
     void addLight(glm::vec3 position);
-    Selection pick(glm::vec3 origin,glm::vec3 direction,bool includeMarkers=true) const;
+    Selection pick(glm::vec3 origin,glm::vec3 direction,bool includeMarkers=true,bool includeNavigation=false,bool collision=false) const;
     static Bounds brushBounds(const Brush& brush);
     static glm::vec3 snap(glm::vec3 value,float step);
 private:
@@ -57,5 +63,7 @@ private:
     void record(DocumentState before,const std::string& label,uint64_t token);
     uint32_t nextBrushId() const;
 };
+int measureEditorEdits(const std::string& fixture,const std::string& outputDirectory);
+int runHybridSelfTests(const std::string& outputDirectory);
 int runEditorSelfTests(const std::string& fixture,const std::string& outputDirectory);
 } // namespace silic2::editor

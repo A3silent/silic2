@@ -9,6 +9,13 @@ For current prototype work, read `plan/two-minute-sample.md` before implementati
 It records the accepted two-minute sample and takes precedence over older phase
 plans where they disagree. Later explicit user decisions can revise this scope.
 
+For scene, character, weapon, UI or audio presentation work, also read
+`plan/cosmic-horror-art-pass.md`; it records the horror direction and the later
+dual-map decision retaining the original crystal environment as a separate preset.
+For Crystal geometry, combat layout, collision/navigation or editor work, read
+`plan/crystal-combat-world.md`. This user-confirmed plan supersedes the earlier
+Crystal exploration revision and restores combat-first arena survival.
+
 ## Roles and routing
 
 For project-wide planning and coordination, the primary agent is **01 ATLAS**.

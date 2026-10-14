@@ -1,0 +1,19 @@
+{
+  "date": "2026-10-08",
+  "validation": "actual GL + CPU; not full-game performance",
+  "sha256": {
+    "res/maps/starry_crystal_arena.json": "2bf654e11cd75566916a8cbb690faddc198aaffd4092a9de8668eda4bf604f2b",
+    "res/shaders/environment_crystal.frag": "aef71d140892c7b3b43cbed977b0119aa3cbf8b72c643365c16cb9bec665f84e",
+    "res/shaders/environment_crystal.vert": "82fe0903f5d9a6ea4f52a2c99878f0facf51648cafbd336b99eb61efb360af4f",
+    "res/shaders/environment_map.frag": "1b6894edb1f102ef19b45fc6ce4ee389a11324105f1ad6839dd7322ab0c4d275",
+    "res/shaders/environment_particle.frag": "48c5be45f443fbe6245d5bea19a7a16e3bade7aa818076d6b63bdda12cb7e1cc",
+    "res/shaders/environment_particle.vert": "386caa37477438b4ebd349526ce5dff1e1f0fab4465f9fa9812ef1410d54fef3",
+    "res/shaders/environment_sky.frag": "67266fc639e8ac4c1ded50f28f08ca8f8567b30b0d029e391819f3346d49203f",
+    "res/shaders/environment_sky.vert": "03d747dfeade37bdee016f395430487f53dfd4fba2c392ec47a844880686ad53",
+    "res/shaders/pixel.frag": "e9e5e015faac0cbaa08cfbae8d2233411dd95c0d3e13695f2da3be67efb5ca66",
+    "src/engine/map_renderer.cpp": "79f80c721597fec99c259d6f9527f50f6cd878edb73950ab35e00898cee0eed0",
+    "src/environment/environment_scene.cpp": "f06dc31f24680909815b1149e3bd2c8bc0074aeb3a83b167f102c7f67e0b0edd",
+    "src/environment/validation/horror_preview.cpp": "c84477ad025ee9c04de415bf6fac4df110053b9d609090067681f827e190eab1",
+    "src/environment/validation/scene_math_test.cpp": "3dada7e95df2852171c3ae1ad384713da5c45d283d5995a3dca345eee1600377"
+  }
+}

@@ -14,7 +14,8 @@ Propose any required gameplay changes through ATLAS/VECTOR rather than silently
 changing rules to fit art. PRISM owns screen-space HUD indicators; NEBULA owns
 world scenery and environment VFX; ECHO owns sounds.
 
-For the current sample use original procedural crystal-themed character assets.
+For the current presentation direction read plan/cosmic-horror-art-pass.md;
+use original procedural eldritch character and weapon assets.
 Keep existing aiming and movement behavior, respect the approved scope and frame
 budget, and keep hit flashes distinguishable from Sentry charging cues.
 A broad character role does not authorize extra weapons or abilities this phase.

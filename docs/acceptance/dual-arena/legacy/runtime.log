@@ -1,0 +1,44 @@
+OpenGL 4.1 Metal - 89.4
+ACCEPTANCE synthetic input: screenshots (not a human playtest)
+MapRenderer: Initializing...
+Initializing map shaders...
+Loading map vertex and fragment shaders...
+Successfully loaded shaders: res/shaders/map.vert, res/shaders/map.frag
+Map shaders loaded successfully
+MapRenderer created successfully with shaders
+Successfully loaded shaders: res/shaders/pixel.vert, res/shaders/pixel.frag
+Successfully loaded shaders: res/shaders/bullet.vert, res/shaders/bullet.frag
+Successfully loaded shaders: res/shaders/glow.vert, res/shaders/glow.frag
+Successfully loaded shaders: res/shaders/enemy.vert, res/shaders/enemy.frag
+Successfully loaded shaders: res/shaders/hud_batch.vert, res/shaders/hud_batch.frag
+Successfully loaded shaders: res/shaders/character.vert, res/shaders/character.frag
+Successfully loaded shaders: res/shaders/enemy.vert, res/shaders/enemy.frag
+MapRenderer: Initializing...
+Initializing map shaders...
+Loading map vertex and fragment shaders...
+Successfully loaded shaders: res/shaders/map.vert, res/shaders/map.frag
+Map shaders loaded successfully
+MapRenderer created successfully with shaders
+Loading 6 brushes for rendering...
+Brush 1 setup: 4 vertices, 6 indices
+Brush 2 setup: 4 vertices, 6 indices
+Brush 3 setup: 4 vertices, 6 indices
+Brush 4 setup: 4 vertices, 6 indices
+Brush 5 setup: 4 vertices, 6 indices
+Brush 6 setup: 4 vertices, 6 indices
+Updated lighting: 3 lights
+Map loaded successfully. 6 brushes ready for rendering.
+Warning: No floor surfaces found, using default spawn area
+Ground particle system initialized with 6 floor spawn points
+Spawned enemy at (-5, 1, -5)
+EnemyManager: 1 enemy/enemies spawned.
+Initializing particle system rendering resources...
+Successfully loaded shaders: res/shaders/particle.vert, res/shaders/particle.frag
+Particle shaders loaded successfully
+Successfully loaded shaders: res/shaders/particle_box.vert, res/shaders/particle_box.frag
+Particle box shaders loaded successfully
+Particle system initialized with 2000 max particles
+Screenshot: /Users/ritzsun/Desktop/game/opengl/silic2/artifacts/acceptance/dual-arena/legacy/ready.ppm
+Screenshot: /Users/ritzsun/Desktop/game/opengl/silic2/artifacts/acceptance/dual-arena/legacy/playing.ppm
+Screenshot: /Users/ritzsun/Desktop/game/opengl/silic2/artifacts/acceptance/dual-arena/legacy/paused.ppm
+Screenshot: /Users/ritzsun/Desktop/game/opengl/silic2/artifacts/acceptance/dual-arena/legacy/combat.ppm

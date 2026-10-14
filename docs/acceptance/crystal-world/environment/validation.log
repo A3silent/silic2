@@ -1,0 +1,75 @@
+MapRenderer: Initializing...
+Initializing map shaders...
+Loading map vertex and fragment shaders...
+Successfully loaded shaders: res/shaders/map.vert, res/shaders/map.frag
+Map shaders loaded successfully
+MapRenderer created successfully with shaders
+Successfully loaded shaders: res/shaders/environment_sky.vert, res/shaders/starry_crystal_sky.frag
+Successfully loaded shaders: res/shaders/environment_crystal.vert, res/shaders/starry_crystal_detail.frag
+Successfully loaded shaders: res/shaders/starry_crystal_particle.vert, res/shaders/starry_crystal_particle.frag
+Successfully loaded shaders: res/shaders/map.vert, res/shaders/starry_crystal_map.frag
+Loading 19 brushes for rendering...
+Brush 1 setup: 4 vertices, 6 indices
+Brush 2 setup: 8 vertices, 36 indices
+Brush 3 setup: 8 vertices, 36 indices
+Brush 4 setup: 8 vertices, 36 indices
+Brush 5 setup: 8 vertices, 36 indices
+Brush 6 setup: 8 vertices, 36 indices
+Brush 7 setup: 8 vertices, 36 indices
+Brush 8 setup: 8 vertices, 36 indices
+Brush 9 setup: 8 vertices, 36 indices
+Brush 10 setup: 8 vertices, 36 indices
+Brush 11 setup: 8 vertices, 36 indices
+Brush 12 setup: 8 vertices, 36 indices
+Brush 13 setup: 8 vertices, 36 indices
+Brush 14 setup: 8 vertices, 36 indices
+Brush 15 setup: 8 vertices, 36 indices
+Brush 16 setup: 8 vertices, 36 indices
+Brush 17 setup: 8 vertices, 36 indices
+Brush 18 setup: 8 vertices, 36 indices
+Brush 19 setup: 8 vertices, 36 indices
+Updated lighting: 6 lights
+Map loaded successfully. 19 brushes ready for rendering.
+Successfully loaded shaders: res/shaders/pixel.vert, res/shaders/pixel.frag
+Successfully loaded shaders: res/shaders/environment_sky.vert, res/shaders/environment_sky.frag
+Successfully loaded shaders: res/shaders/environment_crystal.vert, res/shaders/environment_crystal.frag
+Successfully loaded shaders: res/shaders/environment_particle.vert, res/shaders/environment_particle.frag
+Successfully loaded shaders: res/shaders/map.vert, res/shaders/environment_map.frag
+Loading 8 brushes for rendering...
+Brush 6 setup: 27 vertices, 126 indices
+Brush 1 setup: 4 vertices, 6 indices
+Brush 2 setup: 8 vertices, 36 indices
+Brush 3 setup: 8 vertices, 36 indices
+Brush 4 setup: 8 vertices, 36 indices
+Brush 5 setup: 8 vertices, 36 indices
+Brush 7 setup: 8 vertices, 36 indices
+Brush 8 setup: 8 vertices, 36 indices
+Updated lighting: 5 lights
+Map loaded successfully. 8 brushes ready for rendering.
+Successfully loaded shaders: res/shaders/environment_sky.vert, res/shaders/starry_crystal_sky.frag
+Successfully loaded shaders: res/shaders/environment_crystal.vert, res/shaders/starry_crystal_detail.frag
+Successfully loaded shaders: res/shaders/starry_crystal_particle.vert, res/shaders/starry_crystal_particle.frag
+Successfully loaded shaders: res/shaders/map.vert, res/shaders/starry_crystal_map.frag
+Loading 19 brushes for rendering...
+Brush 1 setup: 4 vertices, 6 indices
+Brush 2 setup: 8 vertices, 36 indices
+Brush 3 setup: 8 vertices, 36 indices
+Brush 4 setup: 8 vertices, 36 indices
+Brush 5 setup: 8 vertices, 36 indices
+Brush 6 setup: 8 vertices, 36 indices
+Brush 7 setup: 8 vertices, 36 indices
+Brush 8 setup: 8 vertices, 36 indices
+Brush 9 setup: 8 vertices, 36 indices
+Brush 10 setup: 8 vertices, 36 indices
+Brush 11 setup: 8 vertices, 36 indices
+Brush 12 setup: 8 vertices, 36 indices
+Brush 13 setup: 8 vertices, 36 indices
+Brush 14 setup: 8 vertices, 36 indices
+Brush 15 setup: 8 vertices, 36 indices
+Brush 16 setup: 8 vertices, 36 indices
+Brush 17 setup: 8 vertices, 36 indices
+Brush 18 setup: 8 vertices, 36 indices
+Brush 19 setup: 8 vertices, 36 indices
+Updated lighting: 6 lights
+Map loaded successfully. 19 brushes ready for rendering.
+PASS actual GL nodes, actual arc projection maximum error=1.63913e-06, frozen/reset/cross-theme pixels, serialized map unchanged. vertices=5256 triangles=1752 VBO bytes=147168 internal320x200 output=1280x720

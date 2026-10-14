@@ -1,0 +1,6 @@
+[ 41%] Built target imgui
+[ 70%] Built target silic2_map_data
+[ 82%] Built target editor_document
+[ 88%] Building CXX object CMakeFiles/map_editor.dir/src/map_editor_final.cpp.o
+[ 94%] Linking CXX executable map_editor
+[100%] Built target map_editor

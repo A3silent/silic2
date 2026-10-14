@@ -1,0 +1,112 @@
+{
+  "origin": "original procedural Silic2 assets",
+  "units": "metres",
+  "up": "Y",
+  "modules": {
+    "ring_deck_30": {
+      "file": "ring_deck_30.obj",
+      "vertices": 108,
+      "triangles": 36,
+      "minimum": [
+        10.392304845413264,
+        -0.8,
+        0.0
+      ],
+      "maximum": [
+        18.0,
+        0,
+        8.999999999999998
+      ]
+    },
+    "curved_wall_45": {
+      "file": "curved_wall_45.obj",
+      "vertices": 156,
+      "triangles": 52,
+      "minimum": [
+        19.79898987322333,
+        0,
+        0.0
+      ],
+      "maximum": [
+        29.4,
+        7,
+        20.788939366884495
+      ]
+    },
+    "ramp_6x22": {
+      "file": "ramp_6x22.obj",
+      "vertices": 36,
+      "triangles": 12,
+      "minimum": [
+        -3,
+        -0.6,
+        -11
+      ],
+      "maximum": [
+        3,
+        6,
+        11
+      ]
+    },
+    "crystal_shell": {
+      "file": "crystal_shell.obj",
+      "vertices": 204,
+      "triangles": 68,
+      "minimum": [
+        -3.4927635361351768,
+        0,
+        -3.6437886861451703
+      ],
+      "maximum": [
+        4.1000000000000005,
+        8.0,
+        3.64378868614517
+      ]
+    },
+    "crystal_vault": {
+      "file": "crystal_vault.obj",
+      "vertices": 252,
+      "triangles": 84,
+      "minimum": [
+        -6.8,
+        0.0,
+        -4
+      ],
+      "maximum": [
+        6.8,
+        6.629509802836401,
+        4
+      ]
+    },
+    "leaning_support": {
+      "file": "leaning_support.obj",
+      "vertices": 36,
+      "triangles": 12,
+      "minimum": [
+        -1.1,
+        0,
+        -1.1
+      ],
+      "maximum": [
+        5.300000000000001,
+        11,
+        1.1
+      ]
+    },
+    "low_cover": {
+      "file": "low_cover.obj",
+      "vertices": 36,
+      "triangles": 12,
+      "minimum": [
+        -2,
+        0,
+        -0.8
+      ],
+      "maximum": [
+        2.3,
+        1.2,
+        0.8
+      ]
+    }
+  }
+}

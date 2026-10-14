@@ -1,0 +1,3 @@
+21db1120300cde1607672298a46c58e5e7a390309621f3e2a46766169f0aef87  tools/map_editor/build/map_editor
+001ac8d47a498c5e3262b34d97269c4c9a0e5dea44574b9f7a3581d9910e50ac  res/maps/starry_crystal_arena.json
+c1ee7da393aef5e371556df4ad5c1855bb815b11c34d092ac5b95b5fbb10eada  /tmp/silic2-crystal-editor-acceptance/final-cpu/input-map.json

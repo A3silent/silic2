@@ -1,0 +1,74 @@
+{
+  "metal_deck": {
+    "originalDimensions": [
+      1254,
+      1254
+    ],
+    "runtimeDimensions": [
+      64,
+      64
+    ],
+    "meanRGB": [
+      71.05615234375,
+      76.814453125,
+      82.189453125
+    ],
+    "edgeMeanAbsLR": 1.59375,
+    "edgeMeanAbsTB": 2.265625,
+    "interiorMeanAbs": 2.1829117063492065
+  },
+  "mineral_ceramic": {
+    "originalDimensions": [
+      1254,
+      1254
+    ],
+    "runtimeDimensions": [
+      64,
+      64
+    ],
+    "meanRGB": [
+      171.4111328125,
+      164.49951171875,
+      150.974853515625
+    ],
+    "edgeMeanAbsLR": 4.885416666666667,
+    "edgeMeanAbsTB": 4.208333333333333,
+    "interiorMeanAbs": 5.987929894179894
+  },
+  "dark_shell": {
+    "originalDimensions": [
+      1254,
+      1254
+    ],
+    "runtimeDimensions": [
+      64,
+      64
+    ],
+    "meanRGB": [
+      66.043701171875,
+      53.534912109375,
+      41.572021484375
+    ],
+    "edgeMeanAbsLR": 4.067708333333333,
+    "edgeMeanAbsTB": 4.083333333333333,
+    "interiorMeanAbs": 3.5217013888888893
+  },
+  "crystal_cleavage": {
+    "originalDimensions": [
+      1254,
+      1254
+    ],
+    "runtimeDimensions": [
+      64,
+      64
+    ],
+    "meanRGB": [
+      75.647216796875,
+      104.992431640625,
+      121.86083984375
+    ],
+    "edgeMeanAbsLR": 5.723958333333333,
+    "edgeMeanAbsTB": 4.520833333333333,
+    "interiorMeanAbs": 6.135706018518518
+  }
+}

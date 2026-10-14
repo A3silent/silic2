@@ -1,0 +1,58 @@
+OpenGL 4.1 Metal - 89.4
+ACCEPTANCE synthetic input: flow (not a human playtest)
+MapRenderer: Initializing...
+Initializing map shaders...
+Loading map vertex and fragment shaders...
+Successfully loaded shaders: res/shaders/map.vert, res/shaders/map.frag
+Map shaders loaded successfully
+MapRenderer created successfully with shaders
+Successfully loaded shaders: res/shaders/pixel.vert, res/shaders/pixel.frag
+Successfully loaded shaders: res/shaders/bullet.vert, res/shaders/bullet.frag
+Successfully loaded shaders: res/shaders/glow.vert, res/shaders/glow.frag
+Successfully loaded shaders: res/shaders/enemy.vert, res/shaders/enemy.frag
+Successfully loaded shaders: res/shaders/hud_batch.vert, res/shaders/hud_batch.frag
+Successfully loaded shaders: res/shaders/character.vert, res/shaders/character.frag
+Successfully loaded shaders: res/shaders/enemy.vert, res/shaders/enemy.frag
+MapRenderer: Initializing...
+Initializing map shaders...
+Loading map vertex and fragment shaders...
+Successfully loaded shaders: res/shaders/map.vert, res/shaders/map.frag
+Map shaders loaded successfully
+MapRenderer created successfully with shaders
+Successfully loaded shaders: res/shaders/environment_sky.vert, res/shaders/starry_crystal_sky.frag
+Successfully loaded shaders: res/shaders/environment_crystal.vert, res/shaders/starry_crystal_detail.frag
+Successfully loaded shaders: res/shaders/starry_crystal_particle.vert, res/shaders/starry_crystal_particle.frag
+Successfully loaded shaders: res/shaders/map.vert, res/shaders/starry_crystal_map.frag
+Loading 24 brushes for rendering...
+Brush 1 setup: 4 vertices, 6 indices
+Brush 10 setup: 108 vertices, 108 indices
+Brush 11 setup: 108 vertices, 108 indices
+Brush 12 setup: 108 vertices, 108 indices
+Brush 13 setup: 108 vertices, 108 indices
+Brush 14 setup: 108 vertices, 108 indices
+Brush 15 setup: 108 vertices, 108 indices
+Brush 16 setup: 36 vertices, 36 indices
+Brush 17 setup: 36 vertices, 36 indices
+Brush 18 setup: 156 vertices, 156 indices
+Brush 19 setup: 156 vertices, 156 indices
+Brush 20 setup: 156 vertices, 156 indices
+Brush 21 setup: 156 vertices, 156 indices
+Brush 22 setup: 156 vertices, 156 indices
+Brush 23 setup: 156 vertices, 156 indices
+Brush 24 setup: 156 vertices, 156 indices
+Brush 25 setup: 156 vertices, 156 indices
+Brush 26 setup: 204 vertices, 204 indices
+Brush 27 setup: 252 vertices, 252 indices
+Brush 28 setup: 36 vertices, 36 indices
+Brush 29 setup: 36 vertices, 36 indices
+Brush 30 setup: 36 vertices, 36 indices
+Brush 31 setup: 36 vertices, 36 indices
+Brush 32 setup: 36 vertices, 36 indices
+Updated lighting: 5 lights
+Map loaded successfully. 24 brushes ready for rendering.
+Ground particle system initialized with 6 floor spawn points
+Screenshot: artifacts/acceptance/crystal-combat/crystal-flow/flow-ready.ppm
+Screenshot: artifacts/acceptance/crystal-combat/crystal-flow/flow-paused.ppm
+{"event":"run_end","content_version":"crystal-combat-world-v1","synthetic_input":true,"acceptance_mode":"flow","seed":42,"run_index":1,"reason":"player_died","run_time":1.309,"room_time":1.309,"kills":0,"shots_fired":2,"shots_hit":0,"hostile_shots":0,"hostile_hits":0,"accuracy":0.000,"damage_events":1,"blocked_damage_events":0,"damage_taken":100.000,"distance":0.000,"sliding_time":0.000,"rooms_cleared":0,"last_damage_source":"enemy_projectile","fatal_source":"enemy_projectile","kills_by_type":{"unknown":0,"chaser":0,"sentry":0},"damage_by_source":{"enemy_contact":0.000,"enemy_projectile":100.000,"environment":0.000,"self_damage":0.000,"unknown":0.000},"spawn_delays":0,"spawn_cancellations":0,"spawn_delays_by_reason":{},"spawn_cancellations_by_reason":{}}
+Screenshot: artifacts/acceptance/crystal-combat/crystal-flow/flow-dead.ppm
+Screenshot: artifacts/acceptance/crystal-combat/crystal-flow/flow-restart.ppm

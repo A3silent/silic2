@@ -1,0 +1,7 @@
+make: Nothing to be done for `all'.
+./bin/macos/release/silic2-tests
+clang++ bin/macos/release/obj/tests/spatial_combat_probe.o bin/macos/release/obj/game/seed_service.o bin/macos/release/obj/game/run_stats.o bin/macos/release/obj/game/run_controller.o bin/macos/release/obj/game/arena_definition.o bin/macos/release/obj/game/encounter_director.o bin/macos/release/obj/game/exploration_controller.o bin/macos/release/obj/player/player.o bin/macos/release/obj/engine/camera.o bin/macos/release/obj/engine/game_config.o bin/macos/release/obj/hud/bitmap_font_renderer.o bin/macos/release/obj/hud/hud_view_model.o bin/macos/release/obj/enemy/enemy_projectile_system.o bin/macos/release/obj/audio/audio_system.o bin/macos/release/obj/audio/miniaudio_impl.o bin/macos/release/obj/enemy/enemy.o bin/macos/release/obj/engine/map.o bin/macos/release/obj/engine/mesh_asset.o bin/macos/release/obj/engine/spatial_world.o bin/macos/release/obj/engine/simple_json.o bin/macos/release/obj/engine/collision.o -o bin/macos/release/spatial-combat-probe -L/opt/homebrew/lib -L/usr/local/lib -lglfw -framework OpenGL -framework Cocoa -framework IOKit -framework CoreVideo -framework CoreAudio -framework AudioToolbox
+Spatial fixture passed: real slope up/down/crest/slide, separate bridge levels, solid interior, ray opening, enemy detour and height contact
+Exploration tests passed: schema, transactional roundtrip, navigation, encounter, actual observation, occlusion, pause, exit and restart
+Audio offline tests passed (headphone/runtime acceptance pending).
+All Silic2 tests passed.

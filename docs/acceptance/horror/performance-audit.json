@@ -1,0 +1,54 @@
+{
+  "configuration": {
+    "event": "configuration",
+    "logical_width": 1280,
+    "logical_height": 720,
+    "framebuffer_width": 2560,
+    "framebuffer_height": 1440,
+    "internal_width": 320,
+    "internal_height": 200,
+    "vsync": false,
+    "audio_available": true,
+    "synthetic_input": true
+  },
+  "runs": [
+    {
+      "run": 1,
+      "combat_seconds": 90.001625,
+      "frames": 40942,
+      "p95_ms": 6.67825,
+      "p99_ms": 10.6925,
+      "max_ms": 279.665,
+      "longest_over_50ms": 2
+    },
+    {
+      "run": 2,
+      "combat_seconds": 90.000763,
+      "frames": 42433,
+      "p95_ms": 6.36954,
+      "p99_ms": 8.14637,
+      "max_ms": 302.807,
+      "longest_over_50ms": 2
+    },
+    {
+      "run": 3,
+      "combat_seconds": 90.002823,
+      "frames": 41239,
+      "p95_ms": 6.65113,
+      "p99_ms": 8.48738,
+      "max_ms": 138.969,
+      "longest_over_50ms": 1
+    }
+  ],
+  "release_sha256": "13b456d30394ccf9c3321a52487e8624bdd36e1ad353c1236fbba3f51dfd4f07",
+  "exit_code": 0,
+  "command": "./silic2-release --vsync off --width 1280 --height 720 --acceptance performance --output artifacts/acceptance/horror/performance-final",
+  "auditor": "ATLAS; independently recomputed from raw CSV",
+  "raw_csv_sha256": {
+    "frames-performance-1.csv": "29681698daefc56519260413b179fef5e5c87f1d7e80dbd646f1c5d7bb495ea4",
+    "frames-performance-2.csv": "bc35faba61dba97c9578e26e70b090ba197b753559271be3ea19ece82db2273f",
+    "frames-performance-3.csv": "32f071e576bd845c4d33618d78e46ba0d8ce62cf02ba8394b82cc3b9ce351359"
+  },
+  "focus_resume_events": 5,
+  "human_playtest": false
+}

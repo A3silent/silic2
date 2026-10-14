@@ -1,0 +1,11 @@
+{
+  "frames": 36652,
+  "p95_ms": 6.41112,
+  "p99_ms": 11.0192,
+  "max_ms": 404.594,
+  "longest_over_50ms": 2,
+  "all_frame_count": 36670,
+  "all_frame_max_ms": 404.588,
+  "passed": true,
+  "method": "ATLAS independently recomputed sorted floor(q*(n-1)); performance CSV excludes flagged screenshot, refocus and nonplaying frames; complete CSV retains these."
+}

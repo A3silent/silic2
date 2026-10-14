@@ -1,0 +1,24 @@
+HYBRID FRAME 14 models 24 objects 1 dirty 1 error 
+GL FRAME 14 logical 1440x900 framebuffer 2880x1800
+HYBRID FRAME 18 models 24 objects 1 dirty 1 error 
+HYBRID FRAME 22 models 24 objects 1 dirty 1 error 
+GL FRAME 22 logical 1440x900 framebuffer 2880x1800
+HYBRID FRAME 26 models 25 objects 1 dirty 1 error 
+HYBRID FRAME 30 models 24 objects 1 dirty 1 error 
+HYBRID FRAME 34 models 25 objects 1 dirty 1 error 
+HYBRID FRAME 41 models 25 objects 2 dirty 1 error 
+GL FRAME 41 logical 1440x900 framebuffer 2880x1800
+HYBRID FRAME 46 models 25 objects 1 dirty 1 error 
+HYBRID FRAME 50 models 25 objects 2 dirty 1 error 
+HYBRID FRAME 63 models 25 objects 2 dirty 0 error 
+GL FRAME 63 logical 1440x900 framebuffer 2880x1800
+HYBRID UI PASS: OBJ import, rotation, scale, clone/undo/redo, ramp add/undo/redo, external Save As and Open through real ImGui controls
+HYBRID FRAME 78 models 25 objects 2 dirty 0 error 
+GL FRAME 79 logical 1440x900 framebuffer 2880x1800
+GL FRAME 82 logical 1440x900 framebuffer 2880x1800
+GL FRAME 86 logical 1440x900 framebuffer 2880x1800
+GL FRAME 92 logical 800x600 framebuffer 1600x1200
+GL FRAME 106 logical 1440x900 framebuffer 2880x1800
+GL FRAME 126 logical 1440x900 framebuffer 2880x1800
+HYBRID DRAG PASS: full map nodes 85, live visual-only position/rotation previews, one commit and one undo per drag
+GL FRAME 144 logical 1440x900 framebuffer 2880x1800

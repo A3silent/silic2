@@ -1,4 +1,4 @@
-# Map format v2
+# Map format v2 / v3
 
 The game and `tools/map_editor` compile the same `src/engine/map.cpp` and
 `src/engine/simple_json.cpp`. `include/engine/map.h` is the shared public interface.
@@ -9,16 +9,19 @@ brushes and navigation are derived at load time.
 
 | Field | Meaning |
 | --- | --- |
-| `schemaVersion` | `2`; missing means the legacy v1 input adapter |
-| `gameMode` | `legacy` or `arena_survival`, required in v2 |
-| `environmentPreset` | `none` or `starry_crystal`, required in v2 |
+| `schemaVersion` | `2` or `3`; missing means the legacy v1 input adapter |
+| `gameMode` | `legacy`, `arena_survival` or `exploration`, required in v2 |
+| `environmentPreset` | `none`, `starry_crystal` or `hollow_orbit`, required in v2; selects environment visuals independently of enemies/game mode |
 | `contentVersion` | Content identity for run records, independent of schema version |
 | `worldSettings` | `gravity`, `ambientLight`, `backgroundColor` retained from v1 |
 | `geometry.brushes` | Existing authored mesh arrays |
-| `geometry.objects` | Parametric boxes and horizontal planes |
+| `geometry.objects` | Parametric boxes, planes and v3 ramps; v3 supports rotation and collision flags |
+| `geometry.models` | v3 static OBJ instances with separate visual/collision assets and TRS |
+| `spatial` | v3 opt-in triangle world, 3D navigation graph, regions and validation route |
 | `entities` | Player/enemy/item/trigger markers and typed arena spawn slots |
 | `lights` | Authored lights, optionally anchored to geometry or an entity |
 | `arena.floorBrushId` | Geometry ID defining the arena floor and XZ extent |
+| `exploration` | Required for exploration mode: zones, encounter, observation, landmark and exit |
 | `environment` | `transformationStart` (default 45), `transformationDuration` (4), `particleCount` (256) |
 
 Positions use world units with Y up. `geometry.objects[].position` is the center,
@@ -30,8 +33,54 @@ does not override that configuration.
 `arena_survival` keeps this sample's fixed encounter rules: one player start,
 four `rift` slots 0–3 and three `sentry_spawn` slots 0–2. Slot identity connects
 the director, HUD and effects; cardinal labels do not force fixed world positions.
-All spawn markers must be on and inside the arena floor, with geometry clearance.
+All spawn markers must be inside the arena XZ bounds with actual support and geometry clearance.
+In triangle mode they can occupy different floor heights.
 The encounter schedule remains gameplay code in this iteration.
+
+## Triangle geometry (v3)
+
+The current Crystal map uses `spatial.mode: "triangles"`. Read the
+[spatial contract](crystal-spatial-contract.md) for model fields, transform order,
+OBJ limits, winding, resource paths and navigation authoring. These are shared
+by game and editor. Hollow remains v2. Asset style does not choose game mode.
+`environment.architecture: "crystal_combat"` selects Crystal architecture;
+`environment.landmarkPosition` and `landmarkScale` position its visual landmark.
+
+Save As rebases asset references against the destination JSON directory. It does
+not package/copy assets. Geometric support/connectivity diagnostics remain
+editable in the editor, but the game rejects diagnosed triangle maps.
+
+## Exploration mode (retained compatibility)
+
+`exploration` selects a finite journey controller independently of the environment
+preset. It requires one player start and `arena.floorBrushId` for shared floor
+bounds/navigation, but does not require arena rift or sentry slots. The historical
+Crystal Observatory fixture is `contentVersion: "crystal-observatory-v1"`.
+
+The root `exploration` object contains:
+
+| Field | Meaning |
+| --- | --- |
+| `zones` | 1–16 `{id, name, min, max}` volumes; unique IDs, used for location labels and encounter entry |
+| `encounterZone` | ID of the zone that starts the finite encounter |
+| `spawns` | 1–8 `{type, position}` entries; existing `chaser` or `sentry`, inside the encounter zone and clear of geometry |
+| `observation`, `exit` | `{min, max}` world-space volumes, tested against player feet |
+| `observerPosition`, `observerEyeHeight` | Authored station feet and eye offset (default 1.6); used to construct the aligned fragments |
+| `target` | World-space focal point; actual eye-to-target angle and brush occlusion determine progress |
+| `holdSeconds`, `angleDegrees` | Continuous observation duration (0.5–10s) and facing tolerance (1–15 degrees) |
+| `landmarkPosition`, `landmarkScale` | Suspended crystal visual anchor and positive dimensions |
+| `ringRadius`, `fragmentDepths` | Arc radius and three increasing fractional depths along the station-to-target line |
+| `guidePoints` | 2–32 floor route points used by scene guidance and labelled synthetic traversal |
+
+Leaving the station, turning away or blocking the sightline resets partial
+observation. Calibration changes rendering but does not complete the level;
+entering the exit afterward does. Pause freezes progress and restart clears it.
+This map's nonzero player-start Y avoids the existing inclusive collision boundary
+at a zero-thickness floor; movement/collision algorithms are unchanged.
+
+The editor preserves the complete `exploration` extension during load/edit/save.
+Advanced exploration properties are authored in JSON; there is no dedicated zone
+or encounter inspector in this pass. Editor preview is not final game rendering.
 
 ## Geometry
 
@@ -52,13 +101,15 @@ Example object entry (a fragment of `geometry.objects`):
 
 Boxes require positive XYZ dimensions. Planes use `shape: "plane"`, positive X/Z
 dimensions and zero Y size; `type: "floor"` or `"ceiling"` selects their facing.
-Parametric object rotation is unsupported and rejected. Existing arbitrary mesh
+V2 keeps its original axis-aligned authoring behavior; use v3 triangle mode for
+rotated structures and ramps. Existing arbitrary mesh
 vertices are retained through `geometry.brushes`; do not silently convert those
 meshes into boxes. Mesh `vertices`, `texCoords` and `faces` remain flat numeric
-arrays. Geometry IDs are unique across both arrays.
+arrays. Geometry IDs are unique across objects, brushes and models.
 
 The arena's explicit floor must be horizontal. Its bounds determine arena extent;
-other relevant brush bounds determine navigation obstacles. Moving an authored
+v2 uses other relevant brush bounds as navigation obstacles. V3 uses actual
+triangles and explicitly connected 3D nodes instead. Moving an authored
 object updates its compiled mesh and collision/navigation input together. The
 visual mesh is not an editable second copy of the parametric object.
 
@@ -76,7 +127,8 @@ lengths, finite numbers, triangle indices, unique IDs and enum values. Malformed
 JSON, unsupported versions and invalid references fail with an error location.
 
 This authoring implementation bounds spatial components to ±100000 world units,
-JSON arrays to 200000 entries and arena navigation obstacles to 64. Zero-area
+JSON arrays to 200000 entries and legacy arena navigation obstacles to 64. V3 navigation is bounded separately
+to 512 nodes and 2048 authored links. Zero-area
 triangles are rejected. These are explicit load constraints, not silent clamps;
 normal sample dimensions are far below them. Arena navigation uses bounded
 geometry-derived waypoints rather than iterating over the entire world extent.

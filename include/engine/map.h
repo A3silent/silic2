@@ -1,5 +1,7 @@
 #pragma once
 #include "engine/simple_json.h"
+#include "engine/spatial_world.h"
+#include <memory>
 #include <array>
 #include <cstdint>
 #include <glm/glm.hpp>
@@ -7,12 +9,14 @@
 #include <vector>
 
 namespace silic2 {
-enum class GameMode { Legacy, ArenaSurvival };
-enum class EnvironmentPreset { None, StarryCrystal };
+enum class GameMode { Legacy, ArenaSurvival, Exploration };
+enum class EnvironmentPreset { None, StarryCrystal, HollowOrbit };
 struct EnvironmentSettings {
     EnvironmentPreset preset = EnvironmentPreset::None;
     float transformationStart = 45, transformationDuration = 4;
     size_t particleCount = 256;
+    std::string architecture;
+    glm::vec3 landmarkPosition{0}, landmarkScale{1};
 };
 struct WorldSettings {
     float gravity = -9.8f;
@@ -29,15 +33,23 @@ struct Brush {
     SurfaceType surfaceType = SurfaceType::UNKNOWN;
     SimpleJson source; // Original extension fields retained during edits/saves.
 };
-enum class ObjectShape { Box, Plane };
+enum class ObjectShape { Box, Plane, Ramp };
 struct GeometryObject {
     uint32_t id = 0;
     std::string name;
     ObjectShape shape = ObjectShape::Box;
     glm::vec3 position{0}, size{1}; // center and full dimensions; plane has size.y=0
+    glm::vec3 rotation{0};
+    bool collision=true;
     std::string material = "default", texture;
     glm::vec3 color{.8f};
     SurfaceType surfaceType = SurfaceType::UNKNOWN;
+    SimpleJson source;
+};
+struct ModelInstance {
+    uint32_t id=0;
+    std::string name, asset, collisionAsset, material="default";
+    glm::vec3 position{0}, rotation{0}, scale{1}, color{.8f};
     SimpleJson source;
 };
 enum class EntityType {
@@ -85,6 +97,34 @@ struct ArenaLayout {
     std::vector<MapObstacle> obstacles;
 };
 
+struct RegionBounds {
+    glm::vec3 minimum{0}, maximum{0};
+    bool contains(glm::vec3 p) const {
+        return p.x>=minimum.x && p.x<=maximum.x && p.y>=minimum.y && p.y<=maximum.y && p.z>=minimum.z && p.z<=maximum.z;
+    }
+};
+struct ExplorationZone : RegionBounds { std::string id, name; };
+struct ExplorationSpawn { std::string type; glm::vec3 position{0}; };
+struct ExplorationSettings {
+    std::vector<ExplorationZone> zones;
+    std::string encounterZone;
+    std::vector<ExplorationSpawn> spawns;
+    RegionBounds observation, exit;
+    glm::vec3 observerPosition{0}, target{0}, landmarkPosition{0}, landmarkScale{1};
+    float observerEyeHeight=1.6f;
+    float holdSeconds=2.5f, angleDegrees=6.f, ringRadius=2.5f;
+    std::array<float,3> fragmentDepths{{.35f,.65f,1.f}};
+    std::vector<glm::vec3> guidePoints;
+};
+
+struct SpatialSettings {
+    bool enabled=false;
+    std::vector<SpatialNavNode> nodes;
+    std::vector<SpatialNavLink> links;
+    std::vector<ExplorationZone> regions;
+    std::vector<glm::vec3> route;
+};
+
 // Data-only shared module. All loads and editor mutations validate a temporary
 // document first; false preserves the old scene and describes the error.
 class Map {
@@ -93,6 +133,13 @@ class Map {
     ~Map() = default;
     bool loadFromFile(const std::string &filename);
     bool loadFromJson(const SimpleJson &document);
+    bool loadFromJson(const SimpleJson &document,const std::string& assetBaseDirectory);
+    const std::string& getAssetBaseDirectory() const { return assetBaseDirectory; }
+    const std::vector<ModelInstance>& getModels() const { return models; }
+    const std::vector<Brush>& getCollisionBrushes() const { return collisionBrushes; }
+    const SpatialSettings& getSpatialSettings() const { return spatialSettings; }
+    std::shared_ptr<const SpatialWorld> getSpatialWorld() const { return spatialWorld; }
+    const std::vector<std::string>& getSpatialDiagnostics() const { return spatialDiagnostics; }
     bool saveToFile(const std::string &filename) const;
     SimpleJson toJson() const;
     void clear();
@@ -100,6 +147,7 @@ class Map {
     const std::string &getLastError() const {
         return lastError;
     }
+    const char* getDisplayName() const;
     int getSchemaVersion() const {
         return schemaVersion;
     }
@@ -115,6 +163,7 @@ class Map {
     const std::string &getContentVersion() const {
         return contentVersion;
     }
+    const ExplorationSettings &getExploration() const { return exploration; }
     const ArenaLayout &getArenaLayout() const {
         return arenaLayout;
     }
@@ -175,7 +224,14 @@ class Map {
     std::vector<Entity> entities;
     std::vector<Light> sourceLights, lights;
     ArenaLayout arenaLayout;
+    ExplorationSettings exploration;
     int64_t floorBrushId = -1;
+    std::string assetBaseDirectory;
+    std::vector<ModelInstance> models;
+    std::vector<Brush> collisionBrushes;
+    SpatialSettings spatialSettings;
+    std::shared_ptr<const SpatialWorld> spatialWorld;
+    std::vector<std::string> spatialDiagnostics;
     void parseDocument(const SimpleJson &document);
     void rebuild();
     bool applyCandidate(const Map &candidate);

@@ -76,6 +76,8 @@ private:
     std::shared_ptr<const ArenaDefinition> arenaDefinition;
     float chargeTime=0, recoverTime=0, secondsSinceDamage=10000;
     float movementSpeed=0;
+    float navigationRefresh=0;
+    glm::vec3 navigationTarget{0};
     std::vector<EnemyAction> pendingActions;
     void updateSentry(float deltaTime,const glm::vec3& playerPos,const Map* map);
     float     velocityY = 0.0f; // vertical velocity (gravity)

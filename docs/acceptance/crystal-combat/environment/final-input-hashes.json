@@ -1,0 +1,125 @@
+{
+  "contentVersion": "crystal-combat-world-v1",
+  "files": [
+    {
+      "path": "res/maps/starry_crystal_arena.json",
+      "bytes": 46569,
+      "sha256": "001ac8d47a498c5e3262b34d97269c4c9a0e5dea44574b9f7a3581d9910e50ac"
+    },
+    {
+      "path": "res/models/crystal_combat/README.md",
+      "bytes": 1872,
+      "sha256": "469976a3c522a26ba1042a06713e26e28346a4b2ccfa3122c073cc802763256a"
+    },
+    {
+      "path": "res/models/crystal_combat/crystal_shell.obj",
+      "bytes": 6965,
+      "sha256": "973725ca4246fdce457b0f9fe3aff57af37714815c75ad771e64207511e0ad50"
+    },
+    {
+      "path": "res/models/crystal_combat/crystal_vault.obj",
+      "bytes": 8691,
+      "sha256": "6e4b485f61762e4465d0107bf00d8612fc388cb5ea2a5bd1f321466772874105"
+    },
+    {
+      "path": "res/models/crystal_combat/curved_wall_45.obj",
+      "bytes": 5453,
+      "sha256": "eb3475fe33c747e360345800b7815862b3eebf6af510bd4c720c8b011c93cecf"
+    },
+    {
+      "path": "res/models/crystal_combat/leaning_support.obj",
+      "bytes": 1275,
+      "sha256": "620d36f1d54ede9b05c2a059d2a7438fb33a366058faf894070fa1f328d8c8c8"
+    },
+    {
+      "path": "res/models/crystal_combat/low_cover.obj",
+      "bytes": 1266,
+      "sha256": "9a7efa4c95d30126cf77fa59bed91d85f0ca247db20b7240deb2d956b3caac69"
+    },
+    {
+      "path": "res/models/crystal_combat/manifest.json",
+      "bytes": 1915,
+      "sha256": "ba5ce35833d9d5a301e1c0a587e84e9b4fc925a1f6b5112d4bf6a4eb4a56f2d9"
+    },
+    {
+      "path": "res/models/crystal_combat/ramp_6x22.obj",
+      "bytes": 1320,
+      "sha256": "18d91b0ee2b75f3497c9c345fd341077ed94a9c1d2f755f3a6abdf13165ecd10"
+    },
+    {
+      "path": "res/models/crystal_combat/ring_deck_30.obj",
+      "bytes": 3753,
+      "sha256": "1e43ae02f9eca7c06219ea2b12a2063cfb4224db0795dc10db37d1aa02f18019"
+    },
+    {
+      "path": "tools/environment/build_crystal_combat_map.py",
+      "bytes": 6594,
+      "sha256": "4813ed338b358c1cb92498453720de8b5013a673c3a6a286289ec216a6b2367d"
+    },
+    {
+      "path": "tools/environment/generate_crystal_combat.py",
+      "bytes": 4397,
+      "sha256": "ce35390c25f59938108ae1f088493f58342cde02097741900d64d19b9264cb61"
+    },
+    {
+      "path": "include/environment/environment_scene.h",
+      "bytes": 2008,
+      "sha256": "823a2319a326c89093cba664af215924c7f387bea55ee36f0d5c99aa3d4a9d90"
+    },
+    {
+      "path": "include/environment/environment_renderer.h",
+      "bytes": 1775,
+      "sha256": "d699c26c22694fc066aa42377e37aaba9512088fb2d069a6f7c0495d0f3d66b1"
+    },
+    {
+      "path": "src/environment/environment_scene.cpp",
+      "bytes": 18985,
+      "sha256": "4c47cbc27e4aec16501265be8ca83de69abb78b990d5e618910b759e033b8c91"
+    },
+    {
+      "path": "src/environment/environment_renderer.cpp",
+      "bytes": 7242,
+      "sha256": "a6371946881a84b99573c3790a3f1a5dc5b7f8709e809e651aa9ae6bd89e64d4"
+    },
+    {
+      "path": "include/engine/map_renderer.h",
+      "bytes": 3082,
+      "sha256": "9e465d3e8e2cdd27dd042283d5b3c161ce870718270e1f6644b226803b011cbc"
+    },
+    {
+      "path": "src/engine/map_renderer.cpp",
+      "bytes": 15117,
+      "sha256": "3c52b668c0964d21329529eae993200a00c811abed2904ca858ea3d6bc357479"
+    },
+    {
+      "path": "res/shaders/starry_crystal_map.frag",
+      "bytes": 10091,
+      "sha256": "6dbbb53ad9fcd12a36df1a98b87c274a2ab1ac07e434ffbd0f656801f2ecc658"
+    },
+    {
+      "path": "res/shaders/starry_crystal_detail.frag",
+      "bytes": 2377,
+      "sha256": "86b22e0bde1310711abaeeb29a2aace584b4490602c5e382a71ac662cf700a0a"
+    },
+    {
+      "path": "res/shaders/starry_crystal_sky.frag",
+      "bytes": 2672,
+      "sha256": "4eadd07c8f745e3acd32a8b16d28205a87a58306115d7126d4e28239d0662070"
+    },
+    {
+      "path": "src/environment/validation/combat_map_check.cpp",
+      "bytes": 1345,
+      "sha256": "3a4a1a1504bfdd1c34bb25a605941cfd0d6939cfbe6a81d656a617589870fb37"
+    },
+    {
+      "path": "src/environment/validation/combat_preview.cpp",
+      "bytes": 4870,
+      "sha256": "ec9d6b4a676860957a8ea6c790ae9249d4490945be661faf6cecc10c4033dc35"
+    },
+    {
+      "path": "src/environment/validation/COMBAT.md",
+      "bytes": 5697,
+      "sha256": "83c9ef7e7b7101d8599ca3490e4ac5ad449f1c98548dcee6e521afa088a3d6c4"
+    }
+  ]
+}

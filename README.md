@@ -2,19 +2,33 @@
 
 A pixel art style first-person shooter game built with OpenGL, featuring Doom-style fast-paced combat and retro 3D visual effects.
 
-## Current Sample: Starry Crystal Arena
+## Current Sample: Hollow Orbit
 
-The default map is a 36×36 open-air crystal arena. Move fast, aim manually, survive
+The default map is a 36×36 space-horror arena inside a decaying orbital structure.
+Calcified growths, an eclipsed celestial mass and hollow creatures establish its
+dark atmosphere. Move fast, aim manually, survive
 90 seconds of scheduled Chaser/Sentry arrivals, then clear the survivors. At 45
-seconds the sky and crystals transform over four seconds. The sample includes one
+seconds the sky and ossified structures transform over four seconds. The sample includes one
 primary weapon, first-person presentation, directional sound, an English bitmap HUD,
 pause/results and same-seed restart. Weapon abilities and progression are later work.
+The Crystal map is now a larger **Crystal Combat World**: five connected regions
+inside a crystal-invaded orbital megastructure, with curved upper walks, wide ramps,
+a real bridge underpass, leaning supports and a crystal vault. It uses the same
+90-second arrivals and cleanup victory as Hollow Orbit. The previous observation
+puzzle is no longer part of this map. Both maps share the current enemies, weapon
+and audio. See the [confirmed plan](plan/crystal-combat-world.md),
+[acceptance evidence](docs/crystal-combat-acceptance.md),
+[spatial authoring contract](docs/crystal-spatial-contract.md) and
+[reference study](docs/crystal-world-references.md).
+Four original 64×64 material textures now add metal, mineralized ceramic,
+weathered shell and crystal detail; see the [texture pass](docs/crystal-texture-pass.md).
 
 Launch from the repository root so shader, map and sound paths resolve. Default seed
 is **42**, default VSync is on, and rendering uses a 320×200 scene with a native
 resolution HUD. This is a sample under acceptance, not a released game; actual
 checks and outstanding human playtests are tracked in
-[sample acceptance](docs/sample-acceptance.md). See [中文说明](README_CN.md),
+[sample acceptance](docs/sample-acceptance.md) and the current
+[horror presentation pass](docs/cosmic-horror-acceptance.md). See [中文说明](README_CN.md),
 [accepted scope](plan/two-minute-sample.md) and [agent team](docs/agent-team.md).
 
 ## Game Features
@@ -23,7 +37,7 @@ checks and outstanding human playtests are tracked in
 - **Retro Pixel Aesthetics** - Low-resolution rendering creates authentic 90s FPS atmosphere
 - **Fast-Paced Combat** - Doom-style fluid movement and intense battles
 - **Companion Map Editor** - `tools/map_editor` shares the game's map data module; see [upgrade details](docs/map-editor-upgrade.md).
-- **Primary Weapon** - Projectile shooting with dynamic lighting and crystal presentation
+- **Primary Weapon** - Projectile shooting with dynamic lighting and a worn mechanical view model
 
 ### 🔧 Technical Features
 - **OpenGL 3.3 Core Profile** - Modern graphics API achieving retro visual effects
@@ -31,6 +45,27 @@ checks and outstanding human playtests are tracked in
 - **Particle Effect System** - Advanced particle effects for explosions, smoke, muzzle flash
 - **Dynamic Lighting** - Real-time lighting with up to 128 light sources
 - **JSON Map Format** - Flexible level data storage and loading
+
+## GitHub asset policy
+
+The remote contains source, map JSON, shaders, generators, manifests, prompts and
+text validation records. Models, material textures, audio, screenshots and videos
+stay local, as do build outputs. Third-party build dependencies remain included.
+Historical evidence images and asset hashes describe the full local version; media
+links will be absent in a source-only clone. Existing remote history is not rewritten.
+
+Before running or testing a fresh clone, regenerate the required Crystal geometry
+and audio from the repository root:
+
+```bash
+python3 tools/environment/generate_crystal_combat.py
+python3 tools/audio/generate.py
+```
+
+The four AI textures require a separate local asset backup in
+`res/texture/crystal_combat/`; the Crystal renderer falls back to procedural
+materials when they are missing. Restore textures referenced by other old maps
+separately. Asset extensions are ignored; do not force-add them to future commits.
 
 ## Build and Run
 
@@ -55,6 +90,12 @@ make -f Makefile.map -j8
 # Reproduce a run with a fixed 64-bit seed
 ./silic2 --seed 42
 ./silic2 res/maps/test_room.json --seed 42
+
+# Crystal Combat World: connected regions, ramps and two walkable levels
+./silic2 res/maps/starry_crystal_arena.json --seed 42
+
+# Space-horror environment (default)
+./silic2 res/maps/hollow_orbit_arena.json --seed 42
 
 # Load specific map
 ./silic2.exe res/maps/textured_room.json 
@@ -126,7 +167,11 @@ cmake --build tools/map_editor/build -j4
 ./tools/map_editor/build/map_editor res/maps/starry_crystal_arena.json
 ```
 
-The editor is a separate application, with its own [controls and build instructions](tools/map_editor/README.md).
+The editor supports primitive ramps and static OBJ instances, transforms/snapping,
+duplication, collision/navigation layers and undo/redo. It shares the game loader
+and spatial module. Save As rebases model references but does not copy assets.
+See its [controls and build instructions](tools/map_editor/README.md) and the
+[v3 spatial contract](docs/crystal-spatial-contract.md).
 It shares the game's [map format and loader](docs/map-format.md).
 
 ## Project Structure

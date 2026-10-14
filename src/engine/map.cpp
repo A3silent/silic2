@@ -1,4 +1,5 @@
 #include "engine/map.h"
+#include "engine/mesh_asset.h"
 #include <algorithm>
 #include <cmath>
 #include <cstdio>
@@ -156,6 +157,16 @@ Brush compile(const GeometryObject &o) {
         b.faces = {0, 2, 1, 0, 3, 2, 4, 5, 6, 4, 6, 7, 0, 4, 7, 0, 7, 3,
                    1, 2, 6, 1, 6, 5, 3, 7, 6, 3, 6, 2, 0, 1, 5, 0, 5, 4};
     }
+    if(o.shape==ObjectShape::Ramp) {
+        const auto h=o.size*.5f;
+        b.vertices={{-h.x,-h.y,h.z},{h.x,-h.y,h.z},{-h.x,-h.y,-h.z},{h.x,-h.y,-h.z},{-h.x,h.y,-h.z},{h.x,h.y,-h.z}};
+        b.faces={0,1,5,0,5,4,0,2,3,0,3,1,2,4,5,2,5,3,1,3,5,0,4,2};
+        for(auto& v:b.vertices)v+=o.position;
+    }
+    if(o.rotation!=glm::vec3(0)) {
+        auto transform=staticTransform(o.position,o.rotation,glm::vec3(1));
+        for(auto& v:b.vertices)v=glm::vec3(transform*glm::vec4(v-o.position,1));
+    }
     return b;
 }
 // Only the published v1 sample is upgraded. Materials never select gameplay.
@@ -193,6 +204,15 @@ J migrate(J j) {
 }
 } // namespace
 Map::Map() = default;
+const char* Map::getDisplayName() const {
+    if(gameMode==GameMode::Exploration) return "CRYSTAL OBSERVATORY";
+    switch(environment.preset) {
+    case EnvironmentPreset::HollowOrbit: return "HOLLOW ORBIT";
+    case EnvironmentPreset::StarryCrystal: return "STARRY CRYSTAL";
+    case EnvironmentPreset::None: return gameMode==GameMode::ArenaSurvival ? "ARENA" : "MAP";
+    }
+    return "MAP";
+}
 void Map::clear() { *this = Map(); }
 bool Map::loadFromFile(const std::string &path) {
     try {
@@ -203,7 +223,7 @@ bool Map::loadFromFile(const std::string &path) {
         b << f.rdbuf();
         if (f.bad())
             fail(path, "read failed");
-        if (!loadFromJson(J::parse(b.str())))
+        if (!loadFromJson(J::parse(b.str()),std::filesystem::absolute(path).parent_path().string()))
             return false;
         filename = path;
         return true;
@@ -212,9 +232,11 @@ bool Map::loadFromFile(const std::string &path) {
         return false;
     }
 }
-bool Map::loadFromJson(const J &document) {
+bool Map::loadFromJson(const J &document) { return loadFromJson(document,assetBaseDirectory); }
+bool Map::loadFromJson(const J &document,const std::string& baseDirectory) {
     try {
         Map candidate;
+        candidate.assetBaseDirectory=std::filesystem::absolute(baseDirectory.empty()?".":baseDirectory).lexically_normal().string();
         candidate.parseDocument(migrate(document));
         candidate.rebuild();
         candidate.filename = filename;
@@ -229,19 +251,23 @@ void Map::parseDocument(const J &d) {
     object(d, "map");
     sourceDocument = d;
     if (d.hasKey("schemaVersion"))
-        schemaVersion = int(integer(d["schemaVersion"], "schemaVersion", 1, 2));
+        schemaVersion = int(integer(d["schemaVersion"], "schemaVersion", 1, 3));
     if (d.hasKey("version") && str(d, "version", "", "map") != "1.0")
         fail("version", "unsupported legacy version");
-    if (schemaVersion == 2 && (!d.hasKey("gameMode") || !d.hasKey("environmentPreset")))
+    if (schemaVersion >= 2 && (!d.hasKey("gameMode") || !d.hasKey("environmentPreset")))
         fail("schemaVersion 2", "gameMode and environmentPreset are required");
     auto mode = str(d, "gameMode", "legacy", "map");
     if (mode == "arena_survival")
         gameMode = GameMode::ArenaSurvival;
+    else if (mode == "exploration")
+        gameMode = GameMode::Exploration;
     else if (mode != "legacy")
         fail("gameMode", "unsupported value " + mode);
     auto preset = str(d, "environmentPreset", "none", "map");
     if (preset == "starry_crystal")
         environment.preset = EnvironmentPreset::StarryCrystal;
+    else if (preset == "hollow_orbit")
+        environment.preset = EnvironmentPreset::HollowOrbit;
     else if (preset != "none")
         fail("environmentPreset", "unsupported value " + preset);
     contentVersion = str(d, "contentVersion", "legacy", "map");
@@ -257,6 +283,10 @@ void Map::parseDocument(const J &d) {
     if (d.hasKey("environment")) {
         const auto &e = d["environment"];
         object(e, "environment");
+        environment.architecture=str(e,"architecture","","environment");
+        environment.landmarkPosition=vec(e,"landmarkPosition",glm::vec3(0),"environment");
+        environment.landmarkScale=vec(e,"landmarkScale",glm::vec3(1),"environment");
+        spatial(environment.landmarkPosition,"environment.landmarkPosition");spatial(environment.landmarkScale,"environment.landmarkScale");
         environment.transformationStart = num(e, "transformationStart", 45, "environment");
         environment.transformationDuration = num(e, "transformationDuration", 4, "environment");
         if (e.hasKey("particleCount"))
@@ -265,6 +295,81 @@ void Map::parseDocument(const J &d) {
     }
     if (environment.transformationStart < 0 || environment.transformationDuration <= 0)
         fail("environment", "start must be nonnegative and duration positive");
+    if(d.hasKey("spatial")) {
+        const auto& settings=d["spatial"];object(settings,"spatial");
+        if(schemaVersion!=3 || str(settings,"mode","","spatial")!="triangles")fail("spatial","requires schemaVersion 3 and mode triangles");
+        spatialSettings.enabled=true;
+        const auto& nav=settings["navigation"];object(nav,"spatial.navigation");array(nav["nodes"],"navigation.nodes");array(nav["links"],"navigation.links");
+        if(nav["nodes"].size()>512 || nav["links"].size()>2048)fail("navigation","exceeds 512 nodes / 2048 links");
+        std::set<uint32_t> ids;
+        for(size_t i=0;i<nav["nodes"].size();++i) { const auto& item=nav["nodes"][i];object(item,"navigation.node");SpatialNavNode n;
+            n.id=integer(item["id"],"navigation.node.id",1,UINT32_MAX);n.position=vector(item["position"],"navigation.node.position");spatial(n.position,"navigation.node.position");
+            if(!ids.insert(n.id).second)fail("navigation.node.id","duplicate id");spatialSettings.nodes.push_back(n);
+        }
+        for(size_t i=0;i<nav["links"].size();++i) { const auto& item=nav["links"][i];object(item,"navigation.link");SpatialNavLink l;
+            l.from=integer(item["from"],"navigation.link.from",1,UINT32_MAX);l.to=integer(item["to"],"navigation.link.to",1,UINT32_MAX);
+            if(!ids.count(l.from)||!ids.count(l.to)||l.from==l.to)fail("navigation.link","invalid node reference");
+            if(item.hasKey("bidirectional")){if(!item["bidirectional"].isBool())fail("navigation.link.bidirectional","expected boolean");l.bidirectional=item["bidirectional"].getBool();}
+            spatialSettings.links.push_back(l);
+        }
+        if(settings.hasKey("regions")){array(settings["regions"],"spatial.regions");std::set<std::string> names;
+            for(size_t i=0;i<settings["regions"].size();++i){const auto& item=settings["regions"][i];ExplorationZone r;r.id=str(item,"id","","region");r.name=str(item,"name",r.id,"region");r.minimum=vector(item["min"],"region.min");r.maximum=vector(item["max"],"region.max");spatial(r.minimum,"region.min");spatial(r.maximum,"region.max");
+                if(r.id.empty()||!names.insert(r.id).second||r.minimum.x>=r.maximum.x||r.minimum.y>=r.maximum.y||r.minimum.z>=r.maximum.z)fail("spatial.region","invalid id/bounds");spatialSettings.regions.push_back(r);}}
+        if(settings.hasKey("route")){array(settings["route"],"spatial.route");if(settings["route"].size()>256)fail("spatial.route","too many points");for(size_t i=0;i<settings["route"].size();++i){auto p=vector(settings["route"][i],"spatial.route");spatial(p,"spatial.route");spatialSettings.route.push_back(p);}}
+    }
+    if (gameMode == GameMode::Exploration) {
+        const auto& e=d["exploration"]; object(e,"exploration");
+        auto region=[&](const J& value,const std::string& path) {
+            object(value,path); RegionBounds r;
+            r.minimum=vector(value["min"],path+".min"); r.maximum=vector(value["max"],path+".max");
+            spatial(r.minimum,path); spatial(r.maximum,path);
+            if(r.minimum.x>=r.maximum.x || r.minimum.y>=r.maximum.y || r.minimum.z>=r.maximum.z) fail(path,"min must be below max");
+            return r;
+        };
+        array(e["zones"],"exploration.zones");
+        if(e["zones"].size()<1 || e["zones"].size()>16) fail("exploration.zones","requires 1..16 zones");
+        std::set<std::string> ids;
+        for(size_t i=0;i<e["zones"].size();++i) { const auto& value=e["zones"][i];
+            ExplorationZone z; static_cast<RegionBounds&>(z)=region(value,"exploration.zone");
+            z.id=str(value,"id","","exploration.zone"); z.name=str(value,"name",z.id,"exploration.zone");
+            if(z.id.empty() || !ids.insert(z.id).second) fail("exploration.zone.id","requires unique nonempty id");
+            exploration.zones.push_back(z);
+        }
+        exploration.encounterZone=str(e,"encounterZone","","exploration");
+        if(!ids.count(exploration.encounterZone)) fail("exploration.encounterZone","missing zone");
+        array(e["spawns"],"exploration.spawns");
+        if(e["spawns"].size()<1 || e["spawns"].size()>8) fail("exploration.spawns","requires 1..8 enemies");
+        for(size_t i=0;i<e["spawns"].size();++i) { const auto& value=e["spawns"][i];
+            ExplorationSpawn spawn; spawn.type=str(value,"type","","exploration.spawn");
+            if(spawn.type!="chaser" && spawn.type!="sentry") fail("exploration.spawn.type","unsupported enemy");
+            spawn.position=vector(value["position"],"exploration.spawn.position"); spatial(spawn.position,"exploration.spawn.position");
+            exploration.spawns.push_back(spawn);
+        }
+        exploration.observation=region(e["observation"],"exploration.observation");
+        exploration.exit=region(e["exit"],"exploration.exit");
+        exploration.observerPosition=vector(e["observerPosition"],"exploration.observerPosition");
+        exploration.target=vector(e["target"],"exploration.target");
+        exploration.landmarkPosition=vector(e["landmarkPosition"],"exploration.landmarkPosition");
+        exploration.landmarkScale=vector(e["landmarkScale"],"exploration.landmarkScale");
+        spatial(exploration.target,"exploration.target"); spatial(exploration.landmarkPosition,"exploration.landmarkPosition");
+        spatial(exploration.landmarkScale,"exploration.landmarkScale");
+        if(!exploration.observation.contains(exploration.observerPosition)) fail("exploration.observerPosition","must lie in observation volume");
+        if(glm::length(exploration.target-exploration.observerPosition)<3) fail("exploration.target","must be distinct from observation station");
+        if(exploration.landmarkScale.x<=0 || exploration.landmarkScale.y<=0 || exploration.landmarkScale.z<=0) fail("exploration.landmarkScale","must be positive");
+        exploration.observerEyeHeight=num(e,"observerEyeHeight",1.6,"exploration");
+        if(exploration.observerEyeHeight<1 || exploration.observerEyeHeight>2) fail("exploration.observerEyeHeight","must be 1..2");
+        exploration.holdSeconds=num(e,"holdSeconds",2.5,"exploration");
+        exploration.angleDegrees=num(e,"angleDegrees",6,"exploration");
+        exploration.ringRadius=num(e,"ringRadius",2.5,"exploration");
+        if(exploration.holdSeconds<.5 || exploration.holdSeconds>10 || exploration.angleDegrees<1 || exploration.angleDegrees>15 || exploration.ringRadius<=0 || exploration.ringRadius>10) fail("exploration","invalid observation tolerance");
+        const auto& depths=e["fragmentDepths"]; array(depths,"exploration.fragmentDepths");
+        if(depths.size()!=3) fail("exploration.fragmentDepths","requires three depths");
+        float previous=0;
+        for(size_t i=0;i<3;++i) { float v=number(depths[i],"exploration.fragmentDepths"); if(v<=previous || v>1) fail("exploration.fragmentDepths","must increase within (0,1]"); exploration.fragmentDepths[i]=v; previous=v; }
+        array(e["guidePoints"],"exploration.guidePoints");
+        if(e["guidePoints"].size()<2 || e["guidePoints"].size()>32) fail("exploration.guidePoints","requires 2..32 points");
+        for(size_t i=0;i<e["guidePoints"].size();++i) { auto point=vector(e["guidePoints"][i],"exploration.guidePoints"); spatial(point,"exploration.guidePoints"); exploration.guidePoints.push_back(point); }
+    }
     if (d.hasKey("arena")) {
         object(d["arena"], "arena");
         if (d["arena"].hasKey("floorBrushId"))
@@ -323,16 +428,18 @@ void Map::parseDocument(const J &d) {
                     o.shape = ObjectShape::Box;
                 else if (s == "plane")
                     o.shape = ObjectShape::Plane;
+                else if(s=="ramp" && spatialSettings.enabled)
+                    o.shape=ObjectShape::Ramp;
                 else
-                    fail(p + ".shape", "expected box or plane");
+                    fail(p + ".shape", "expected box, plane or spatial ramp");
                 o.position = vector(j["position"], p + ".position");
                 o.size = vector(j["size"], p + ".size");
                 if (o.size.x <= 0 || o.size.z <= 0 ||
-                    (o.shape == ObjectShape::Box ? o.size.y <= 0 : o.size.y != 0))
+                    (o.shape != ObjectShape::Plane ? o.size.y <= 0 : o.size.y != 0))
                     fail(p + ".size",
                          "box requires positive XYZ; XZ plane requires positive X/Z and zero Y");
-                if (j.hasKey("rotation"))
-                    fail(p + ".rotation", "box/plane rotation is not supported");
+                if(j.hasKey("rotation")) {if(!spatialSettings.enabled)fail(p+".rotation","requires spatial triangles");o.rotation=vector(j["rotation"],p+".rotation");spatial(o.rotation,p+".rotation");}
+                if(j.hasKey("collision")){if(!spatialSettings.enabled || !j["collision"].isBool())fail(p+".collision","requires spatial boolean");o.collision=j["collision"].getBool();}
                 Brush b;
                 appearance(j, b, p);
                 o.material = b.material;
@@ -341,6 +448,14 @@ void Map::parseDocument(const J &d) {
                 o.surfaceType = b.surfaceType;
                 objects.push_back(std::move(o));
             }
+        }
+    }
+    if(d["geometry"].hasKey("models")) {
+        if(!spatialSettings.enabled)fail("geometry.models","requires spatial triangles");const auto& list=d["geometry"]["models"];array(list,"geometry.models");
+        for(size_t i=0;i<list.size();++i){const auto& j=list[i];object(j,"model");ModelInstance m;m.source=j;m.id=integer(j["id"],"model.id",0,UINT32_MAX);m.name=str(j,"name","","model");m.asset=str(j,"asset","","model");
+            if(m.asset.empty()||!j.hasKey("collisionAsset"))fail("model","asset and explicit collisionAsset required");m.collisionAsset=str(j,"collisionAsset","","model");
+            m.position=vec(j,"position",glm::vec3(0),"model");m.rotation=vec(j,"rotation",glm::vec3(0),"model");m.scale=vec(j,"scale",glm::vec3(1),"model");m.material=str(j,"material","default","model");m.color=vec(j,"color",glm::vec3(.8f),"model");
+            spatial(m.position,"model.position");spatial(m.rotation,"model.rotation");spatial(m.scale,"model.scale");if(m.scale.x<=0||m.scale.y<=0||m.scale.z<=0)fail("model.scale","positive components required");models.push_back(m);
         }
     }
     if (d.hasKey("entities")) {
@@ -417,7 +532,7 @@ void Map::parseDocument(const J &d) {
     }
 }
 void Map::rebuild() {
-    if (legacyBrushes.size() + objects.size() > 4096 || entities.size() > 8192 ||
+    if (legacyBrushes.size() + objects.size() + models.size() > 4096 || entities.size() > 8192 ||
         sourceLights.size() > 1024)
         fail("map", "exceeds limits: 4096 geometry records, 8192 entities, 1024 lights");
     for (const auto &b : legacyBrushes)
@@ -437,9 +552,13 @@ void Map::rebuild() {
         spatial(l.position, "lights.position");
         spatial(l.anchorOffset, "lights.anchor.offset");
     }
-    brushes = legacyBrushes;
-    for (const auto &o : objects)
-        brushes.push_back(compile(o));
+    brushes = legacyBrushes;collisionBrushes=legacyBrushes;
+    for (const auto &o : objects) {auto b=compile(o);brushes.push_back(b);if(o.collision)collisionBrushes.push_back(b);}
+    for(const auto& m:models) {
+        auto compileAsset=[&](const std::string& path) {auto mesh=loadStaticObj((std::filesystem::path(assetBaseDirectory)/path).lexically_normal().string());Brush b;b.id=m.id;b.material=m.material;b.color=m.color;b.vertices=std::move(mesh.vertices);b.faces=std::move(mesh.faces);b.texCoords=std::move(mesh.texCoords);auto transform=staticTransform(m.position,m.rotation,m.scale);
+            for(auto& v:b.vertices){v=glm::vec3(transform*glm::vec4(v,1));spatial(v,"model.transformedVertex");}return b;};
+        brushes.push_back(compileAsset(m.asset));if(!m.collisionAsset.empty())collisionBrushes.push_back(m.collisionAsset==m.asset?brushes.back():compileAsset(m.collisionAsset));
+    }
     std::set<uint32_t> ids;
     for (auto &b : brushes) {
         for (size_t i = 0; i < b.faces.size(); i += 3) {
@@ -515,7 +634,7 @@ void Map::rebuild() {
         }
     }
     if (gameMode == GameMode::ArenaSurvival) {
-        if (arenaLayout.obstacles.size() > 64)
+        if (!spatialSettings.enabled && arenaLayout.obstacles.size() > 64)
             fail("arena", "at most 64 navigation obstacles supported");
         if (!arenaLayout.hasFloor || floorBrushId < 0)
             fail("arena.floorBrushId", "arena_survival requires an explicit floor reference");
@@ -527,7 +646,7 @@ void Map::rebuild() {
         for (bool active : arenaLayout.sentryActive)
             if (!active)
                 fail("entities.sentry_spawn", "arena_survival requires all three slots");
-        for (const auto &e : entities)
+        if(!spatialSettings.enabled)for (const auto &e : entities)
             if (e.type == EntityType::PLAYER_START || e.type == EntityType::RIFT ||
                 e.type == EntityType::SENTRY_SPAWN) {
                 float r = e.type == EntityType::SENTRY_SPAWN ? .6f : .34f;
@@ -542,6 +661,37 @@ void Map::rebuild() {
                         fail("entities." + e.name,
                              "spawn overlaps geometry " + std::to_string(o.brushId));
             }
+    }
+    if(gameMode==GameMode::Exploration) {
+        if(!arenaLayout.hasFloor || floorBrushId<0 || playerCount!=1 || arenaLayout.obstacles.size()>64) fail("exploration","requires one floor, one player and at most 64 obstacles");
+        auto walkable=[&](glm::vec3 p,float radius,const std::string& path) {
+            if(std::abs(p.y-arenaLayout.floorY)>.05f || p.x<arenaLayout.minXZ.x+radius || p.x>arenaLayout.maxXZ.x-radius || p.z<arenaLayout.minXZ.y+radius || p.z>arenaLayout.maxXZ.y-radius) fail(path,"must be on and inside floor");
+            for(const auto& o:arenaLayout.obstacles) if(p.x>o.min.x-radius && p.x<o.max.x+radius && p.z>o.min.z-radius && p.z<o.max.z+radius) fail(path,"overlaps obstacle");
+        };
+        auto validRegion=[&](const RegionBounds& r) {
+            if(r.minimum.x<arenaLayout.minXZ.x || r.maximum.x>arenaLayout.maxXZ.x || r.minimum.z<arenaLayout.minXZ.y || r.maximum.z>arenaLayout.maxXZ.y || r.minimum.y>arenaLayout.floorY || r.maximum.y<arenaLayout.floorY) fail("exploration.region","must contain floor height and lie inside floor bounds");
+        };
+        for(const auto& z:exploration.zones) validRegion(z);
+        validRegion(exploration.observation); validRegion(exploration.exit);
+        if(exploration.observation.minimum.x<=exploration.exit.maximum.x && exploration.observation.maximum.x>=exploration.exit.minimum.x && exploration.observation.minimum.z<=exploration.exit.maximum.z && exploration.observation.maximum.z>=exploration.exit.minimum.z) fail("exploration.exit","must be separate from observation");
+        walkable(arenaLayout.playerStart,.34f,"exploration.player");
+        walkable(exploration.observerPosition,.34f,"exploration.observerPosition");
+        walkable({(exploration.exit.minimum.x+exploration.exit.maximum.x)*.5f,arenaLayout.floorY,(exploration.exit.minimum.z+exploration.exit.maximum.z)*.5f},.34f,"exploration.exit");
+        for(const auto& p:exploration.guidePoints) walkable(p,.34f,"exploration.guidePoints");
+        for(const auto& spawn:exploration.spawns) {
+            walkable(spawn.position,spawn.type=="sentry"?.6f:.34f,"exploration.spawn");
+            for(const auto& z:exploration.zones) if(z.id==exploration.encounterZone && !z.contains(spawn.position)) fail("exploration.spawn","must be in encounter zone");
+        }
+    }
+    if(spatialSettings.enabled) {
+        spatialWorld=std::make_shared<SpatialWorld>(collisionBrushes,spatialSettings.nodes,spatialSettings.links);
+        spatialDiagnostics=spatialWorld->diagnostics();
+        for(const auto& entity:entities)if(entity.type==EntityType::PLAYER_START||entity.type==EntityType::RIFT||entity.type==EntityType::SENTRY_SPAWN){
+            float radius=entity.type==EntityType::SENTRY_SPAWN?.6f:.34f;
+            if(!spatialWorld->isWalkable(entity.position,radius))spatialDiagnostics.push_back("Spawn "+entity.name+" lacks support or clearance");
+            bool connected=false;for(const auto& node:spatialSettings.nodes)if(spatialWorld->canTraverse(entity.position,node.position,radius)){connected=true;break;}
+            if(!connected)spatialDiagnostics.push_back("Spawn "+entity.name+" has no reachable navigation node");
+        }
     }
     lights = sourceLights;
     for (auto &l : lights) {
@@ -570,9 +720,10 @@ void Map::rebuild() {
 J Map::toJson() const {
     J d = original(sourceDocument);
     d["schemaVersion"] = J(double(schemaVersion));
-    d["gameMode"] = J(gameMode == GameMode::ArenaSurvival ? "arena_survival" : "legacy");
+    d["gameMode"] = J(gameMode == GameMode::ArenaSurvival ? "arena_survival" : gameMode == GameMode::Exploration ? "exploration" : "legacy");
     d["environmentPreset"] =
-        J(environment.preset == EnvironmentPreset::StarryCrystal ? "starry_crystal" : "none");
+        J(environment.preset == EnvironmentPreset::StarryCrystal ? "starry_crystal" :
+          environment.preset == EnvironmentPreset::HollowOrbit ? "hollow_orbit" : "none");
     d["contentVersion"] = J(contentVersion);
     J w = original(d["worldSettings"]);
     w["gravity"] = J(double(worldSettings.gravity));
@@ -583,6 +734,7 @@ J Map::toJson() const {
     env["transformationStart"] = J(double(environment.transformationStart));
     env["transformationDuration"] = J(double(environment.transformationDuration));
     env["particleCount"] = J(double(environment.particleCount));
+    if(!environment.architecture.empty()){env["architecture"]=J(environment.architecture);env["landmarkPosition"]=jvec(environment.landmarkPosition);env["landmarkScale"]=jvec(environment.landmarkScale);}
     d["environment"] = env;
     J arena = original(d["arena"]);
     if (floorBrushId >= 0)
@@ -616,14 +768,16 @@ J Map::toJson() const {
         J j = original(o.source);
         j["id"] = J(double(o.id));
         j["name"] = J(o.name);
-        j["shape"] = J(o.shape == ObjectShape::Box ? "box" : "plane");
+        j["shape"] = J(o.shape == ObjectShape::Box ? "box" : o.shape == ObjectShape::Ramp ? "ramp" : "plane");
         j["position"] = jvec(o.position);
         j["size"] = jvec(o.size);
+        if(spatialSettings.enabled){j["rotation"]=jvec(o.rotation);j["collision"]=J(o.collision);}
         appearance(j, o.material, o.texture, o.color, o.surfaceType);
         os.push_back(j);
     }
     g["brushes"] = bs;
     g["objects"] = os;
+    if(!models.empty()) {J list=J::array();for(const auto& m:models){J j=original(m.source);j["id"]=J(double(m.id));j["name"]=J(m.name);j["asset"]=J(m.asset);j["collisionAsset"]=J(m.collisionAsset);j["position"]=jvec(m.position);j["rotation"]=jvec(m.rotation);j["scale"]=jvec(m.scale);j["material"]=J(m.material);j["color"]=jvec(m.color);list.push_back(j);}g["models"]=list;}
     d["geometry"] = g;
     J es = J::array();
     for (const auto &e : entities) {
@@ -678,6 +832,7 @@ J Map::toJson() const {
 bool Map::validate() const {
     try {
         Map c;
+        c.assetBaseDirectory=assetBaseDirectory;
         c.parseDocument(toJson());
         c.rebuild();
         lastError.clear();
@@ -695,7 +850,13 @@ bool Map::saveToFile(const std::string &path) const {
         std::ofstream f(tmp, std::ios::binary | std::ios::trunc);
         if (!f)
             fail(path, "cannot create temporary file");
-        f << toJson().toString() << '\n';
+        J saved=toJson();
+        if(!models.empty())for(size_t i=0;i<models.size();++i)for(const char* key:{"asset","collisionAsset"}) {
+            const auto resource=saved["geometry"]["models"][i].getString(key);if(resource.empty())continue;
+            auto absolute=std::filesystem::absolute(std::filesystem::path(assetBaseDirectory)/resource);
+            saved["geometry"]["models"][i][key]=J(std::filesystem::relative(absolute,std::filesystem::absolute(path).parent_path()).generic_string());
+        }
+        f << saved.toString() << '\n';
         f.close();
         if (!f)
             fail(path, "write failed");

@@ -7,16 +7,20 @@ uniform float time;
 uniform vec4 riftWarnings;
 out vec4 FragColor;
 void main(){
-    if(tint < -.5){
+    if(tint<-.5){
         int id=int(-tint-.5);
         float p=riftWarnings[id];
-        vec3 color=mix(vec3(.025,.16,.2),vec3(.10,.045,.19),phase);
-        if(p>=0.0) color=vec3(.9,.37,.075)*(.72+.28*sin(p*25.13));
+        float tendon=.65+.35*sin(worldPosition.y*5.0+sin(time*.31)*.25);
+        vec3 color=mix(vec3(.10,.105,.078),vec3(.09,.12,.068),phase)*tendon;
+        if(p>=0.0)color=vec3(.9,.30,.055)*(.72+.28*sin(p*25.13));
         FragColor=vec4(color,1.0);return;
     }
-    float facet=.4+.6*max(0.0,dot(normalize(faceNormal),normalize(vec3(-.6,.8,.4))));
-    float vein=pow(.5+.5*sin(worldPosition.y*2.2+tint*8.0-time*.32),12.0);
-    vec3 base=mix(vec3(.025,.12,.16),vec3(.065,.075,.17),phase);
-    vec3 color=base*facet*(.75+tint*.4)+vein*mix(vec3(.01,.045,.05),vec3(.04,.015,.055),phase);
-    FragColor=vec4(color,1.0);
+    float light=.3+.7*max(0.0,dot(normalize(faceNormal),normalize(vec3(-.6,.8,.4))));
+    float scale=.5+.5*sin(worldPosition.y*2.4+worldPosition.x*.7);
+    vec3 iron=mix(vec3(.043,.048,.043),vec3(.075,.066,.050),scale*.4);
+    vec3 bone=vec3(.19,.195,.145);
+    vec3 base=tint>=1.0?mix(iron,bone,tint>=2.0?phase*.85:.50):iron;
+    float seam=pow(.5+.5*sin(worldPosition.y*2.0+fract(tint)*6.0),24.0);
+    vec3 result=base*light+seam*vec3(.017,.020,.013);
+    FragColor=vec4(result,1.0);
 }

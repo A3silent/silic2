@@ -1,0 +1,51 @@
+{
+  "position_drag": {
+    "all_frames_ms": [
+      3.11933,
+      4.34783,
+      3.10471,
+      3.09404,
+      3.04196,
+      3.17346,
+      42.3877,
+      3.39208,
+      3.20012,
+      5.11567,
+      3.10467,
+      3.13754
+    ],
+    "median_ms": 3.1555,
+    "max_ms": 42.3877,
+    "screenshot_frames": [
+      106
+    ]
+  },
+  "rotation_drag": {
+    "all_frames_ms": [
+      3.34021,
+      3.32912,
+      3.32958,
+      3.30912,
+      5.93863,
+      3.16108,
+      34.6806,
+      3.33338,
+      6.36046,
+      3.26929,
+      3.29038,
+      3.27829
+    ],
+    "median_ms": 3.32935,
+    "max_ms": 34.6806,
+    "screenshot_frames": [
+      126
+    ]
+  },
+  "release_frame_ms": {
+    "112": 73.8417,
+    "132": 74.9317
+  },
+  "all_frames_max_ms": 240.059,
+  "all_frames_count": 147,
+  "note": "Raw frame durations include glFinish/screenshot writes, imports, validation commits and window resizing. Synthetic real ImGui/OpenGL input, not human usability evidence."
+}

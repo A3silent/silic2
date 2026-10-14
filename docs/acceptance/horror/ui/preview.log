@@ -1,0 +1,5 @@
+Successfully loaded shaders: res/shaders/hud_batch.vert, res/shaders/hud_batch.frag
+logical 1280x720 framebuffer 2560x1440
+logical 800x600 framebuffer 1600x1200
+
+EXIT 0

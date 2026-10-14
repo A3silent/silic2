@@ -1,0 +1,5 @@
+TRS LAYOUT PASS width 1440 all three-component fields within Inspector; drag preview active
+GL FRAME 12 logical 1440x900 framebuffer 2880x1800
+TRS LAYOUT PASS width 800 all three-component fields within Inspector; drag preview active
+GL FRAME 28 logical 800x600 framebuffer 1600x1200
+HYBRID UI: layout drag must commit once

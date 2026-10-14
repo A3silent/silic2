@@ -75,17 +75,23 @@ bool projectNavigationMargin(const ArenaDefinition& arena, const glm::vec3& poin
 
 ArenaDefinition ArenaDefinition::fromMap(const Map& map) {
     const auto& layout = map.getArenaLayout();
-    if (map.getGameMode() != GameMode::ArenaSurvival || !layout.hasFloor)
+    if ((map.getGameMode() != GameMode::ArenaSurvival && map.getGameMode() != GameMode::Exploration) || !layout.hasFloor)
         throw std::invalid_argument("ArenaDefinition requires a validated arena_survival map");
     ArenaDefinition arena;
     arena.minXZ = layout.minXZ;
     arena.maxXZ = layout.maxXZ;
     arena.floorY = layout.floorY;
+    arena.spatialWorld=map.getSpatialWorld();
     arena.playerStart = layout.playerStart;
     arena.rifts = layout.rifts;
     arena.sentryPositions = layout.sentryPositions;
+    if(arena.spatialWorld){for(const auto& node:map.getSpatialSettings().nodes)arena.waypoints.push_back(node.position);return arena;}
     for (const auto& obstacle : layout.obstacles)
         arena.obstacles.push_back({obstacle.min, obstacle.max});
+    if(map.getGameMode()==GameMode::Exploration) {
+        for(const auto& spawn:map.getExploration().spawns) arena.waypoints.push_back(spawn.position);
+        for(const auto& point:map.getExploration().guidePoints) arena.waypoints.push_back(point);
+    }
     arena.waypoints = arena.buildNavigationPoints(.65f);
     return arena;
 }
@@ -102,6 +108,7 @@ ArenaDefinition ArenaDefinition::starryCrystal() {
 }
 
 bool ArenaDefinition::isWalkable(const glm::vec3& point, float radius) const {
+    if(spatialWorld)return spatialWorld->isWalkable(point,radius);
     if (radius < 0.0f || !std::isfinite(point.x) || !std::isfinite(point.z) ||
         !std::isfinite(radius) ||
         point.x < minXZ.x + radius || point.x > maxXZ.x - radius ||
@@ -117,6 +124,7 @@ bool ArenaDefinition::isWalkable(const glm::vec3& point, float radius) const {
 
 bool ArenaDefinition::hasClearPath(const glm::vec3& from, const glm::vec3& to,
                                   float radius) const {
+    if(spatialWorld)return spatialWorld->canTraverse(from,to,radius);
     if (!isWalkable(from, radius) || !isWalkable(to, radius)) return false;
     for (const auto& obstacle : obstacles) {
         if (segmentIntersects(from, to, obstacle, radius)) return false;
@@ -126,6 +134,7 @@ bool ArenaDefinition::hasClearPath(const glm::vec3& from, const glm::vec3& to,
 
 glm::vec3 ArenaDefinition::nextWaypoint(const glm::vec3& from,
                                        const glm::vec3& target, float radius) const {
+    if(spatialWorld)return spatialWorld->nextWaypoint(from,target,radius);
     if (!std::isfinite(radius) || radius < 0.0f) return from;
     if (hasClearPath(from, target, radius)) return target;
     glm::vec3 origin;
@@ -257,6 +266,7 @@ void ArenaDefinition::prepareNavigationEdges(float radius) const {
 }
 
 bool ArenaDefinition::hasConnectedWaypoints(float radius) const {
+    if(spatialWorld)return spatialWorld->navigationConnected();
     prepareNavigationEdges(radius);
     if (navigationPoints.empty()) return false;
     std::vector<bool> reached(navigationPoints.size(), false);

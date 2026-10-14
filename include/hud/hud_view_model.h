@@ -34,6 +34,10 @@ struct HudViewModel {
     float combatSeconds = 0.0f;
     bool cleanup = false;
     bool arenaSurvival = true;
+    bool exploration=false, observationAvailable=false, calibrated=false;
+    float observationProgress=0;
+    std::string zoneName, objective;
+    std::string mapName = "HOLLOW ORBIT";
     bool hasTransformation = true;
     float transformationStart = 45.0f, transformationDuration = 4.0f;
     int livingEnemies = 0;

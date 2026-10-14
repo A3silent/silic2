@@ -1,0 +1,26 @@
+MapRenderer: Initializing...
+Initializing map shaders...
+Loading map vertex and fragment shaders...
+Successfully loaded shaders: res/shaders/map.vert, res/shaders/map.frag
+Map shaders loaded successfully
+MapRenderer created successfully with shaders
+Successfully loaded shaders: res/shaders/environment_sky.vert, res/shaders/starry_crystal_sky.frag
+Successfully loaded shaders: res/shaders/environment_crystal.vert, res/shaders/starry_crystal_detail.frag
+Successfully loaded shaders: res/shaders/starry_crystal_particle.vert, res/shaders/starry_crystal_particle.frag
+Successfully loaded shaders: res/shaders/map.vert, res/shaders/starry_crystal_map.frag
+Loading 8 brushes for rendering...
+Brush 6 setup: 27 vertices, 126 indices
+Brush 1 setup: 4 vertices, 6 indices
+Brush 2 setup: 8 vertices, 36 indices
+Brush 3 setup: 8 vertices, 36 indices
+Brush 4 setup: 8 vertices, 36 indices
+Brush 5 setup: 8 vertices, 36 indices
+Brush 7 setup: 8 vertices, 36 indices
+Brush 8 setup: 8 vertices, 36 indices
+Updated lighting: 5 lights
+Map loaded successfully. 8 brushes ready for rendering.
+Successfully loaded shaders: res/shaders/pixel.vert, res/shaders/pixel.frag
+Successfully loaded shaders: res/shaders/character.vert, res/shaders/character.frag
+Successfully loaded shaders: res/shaders/hud_batch.vert, res/shaders/hud_batch.frag
+Successfully loaded shaders: res/shaders/enemy.vert, res/shaders/enemy.frag
+Synthetic integrated captures passed; not a human playtest

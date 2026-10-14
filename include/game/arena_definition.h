@@ -1,12 +1,14 @@
 #pragma once
 
 #include <array>
+#include <memory>
 #include <vector>
 #include <glm/glm.hpp>
 
 namespace silic2 {
 
 class Map;
+class SpatialWorld;
 
 struct ArenaObstacle {
     glm::vec3 minimum;
@@ -17,6 +19,7 @@ struct ArenaObstacle {
 struct ArenaDefinition {
     glm::vec2 minXZ{-18.0f}, maxXZ{18.0f};
     float floorY = 0.0f;
+    std::shared_ptr<const SpatialWorld> spatialWorld;
     glm::vec3 playerStart{0.0f, 0.0f, 13.0f};
     std::array<glm::vec3, 4> rifts{}; // N, E, S, W
     std::array<glm::vec3, 3> sentryPositions{};

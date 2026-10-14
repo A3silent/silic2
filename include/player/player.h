@@ -12,6 +12,9 @@ namespace silic2 {
 class Camera;
 class Map;
 
+// Key states shared by GLFW sampling and labelled synthetic acceptance.
+struct PlayerInput { bool forward=false, backward=false, left=false, right=false, jump=false, sprint=false, crouch=false, godMode=false; };
+
 // Player states
 enum class PlayerState {
     IDLE,
@@ -34,6 +37,7 @@ public:
     
     // Process input
     void processInput(GLFWwindow* window, Camera* camera, float deltaTime);
+    void processInput(const PlayerInput& input, Camera* camera, float deltaTime);
     void processMouseMovement(Camera* camera, float xoffset, float yoffset);
     
     // Get player position
@@ -143,7 +147,7 @@ private:
     glm::vec3 moveWithCollision(const glm::vec3& movement, const Map* map);
     
     // Get movement input
-    glm::vec3 getMovementInput(GLFWwindow* window, Camera* camera, float deltaTime);
+    glm::vec3 getMovementInput(const PlayerInput& input, Camera* camera, float deltaTime);
     
     // Update FOV based on sprinting state
     void updateFov(float deltaTime);

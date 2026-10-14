@@ -21,6 +21,7 @@ struct RenderableBrush {
     glm::vec3 minimum{0.f};
     glm::vec3 maximum{0.f};
     std::shared_ptr<Texture> texture;
+    int crystalTextureProfile = -1;
     
     RenderableBrush() : VAO(0), VBO(0), EBO(0), indexCount(0) {}
     ~RenderableBrush() {
@@ -52,6 +53,7 @@ public:
 
     // Arena-only, simulation-clock presentation. Safe no-ops on legacy maps.
     void setEnvironmentTime(float combatSeconds);
+    void setObservationState(float progress, bool complete);
     void setRiftWarnings(const std::array<float, 4>& progress);
     void setEnvironmentParticleCount(size_t count);
     void resetEnvironment();
@@ -69,6 +71,9 @@ public:
     // Settings
     void setWireframeMode(bool enabled) { wireframeMode = enabled; }
     void setLightingEnabled(bool enabled) { lightingEnabled = enabled; }
+    // Optional material-quality/debug switch; bits: deck, ceramic, shell, crystal.
+    // Only the explicit Crystal combat architecture consumes this setting.
+    void setCrystalTextureMask(unsigned mask) { crystalTextureMask = mask & 15u; }
 
 private:
     std::vector<std::unique_ptr<RenderableBrush>> renderableBrushes;
@@ -82,6 +87,8 @@ private:
     // Render settings
     bool wireframeMode = false;
     bool lightingEnabled = true;
+    unsigned crystalTextureMask = 15u;
+    std::array<std::shared_ptr<Texture>, 4> crystalTextures;
 
     // Lighting data
     std::vector<LightData> lightData;       // static lights from map

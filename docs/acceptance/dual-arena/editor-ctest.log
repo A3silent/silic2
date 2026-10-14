@@ -1,0 +1,14 @@
+Internal ctest changing into directory: /Users/ritzsun/Desktop/game/opengl/silic2/tools/map_editor/build
+Test project /Users/ritzsun/Desktop/game/opengl/silic2/tools/map_editor/build
+    Start 1: editor_document_roundtrip
+1/4 Test #1: editor_document_roundtrip ........   Passed    0.30 sec
+    Start 2: editor_textured_legacy
+2/4 Test #2: editor_textured_legacy ...........   Passed    0.02 sec
+    Start 3: editor_arena_v2
+3/4 Test #3: editor_arena_v2 ..................   Passed    0.03 sec
+    Start 4: editor_hollow_orbit
+4/4 Test #4: editor_hollow_orbit ..............   Passed    0.03 sec
+
+100% tests passed, 0 tests failed out of 4
+
+Total Test time (real) =   0.38 sec

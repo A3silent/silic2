@@ -34,3 +34,35 @@ imgui.ini
 # System files
 .DS_Store
 Thumbs.db
+
+# GitHub source-only delivery: keep asset files locally, never force-add them.
+# Source generators, shaders, map JSON, prompts and manifests remain tracked.
+*.[oO][bB][jJ]
+*.[mM][tT][lL]
+*.[fF][bB][xX]
+*.[gG][lL][bB]
+*.[gG][lL][tT][fF]
+*.[bB][lL][eE][nN][dD]*
+*.[pP][nN][gG]
+*.[jJ][pP][gG]
+*.[jJ][pP][eE][gG]
+*.[tT][gG][aA]
+*.[bB][mM][pP]
+*.[dD][dD][sS]
+*.[kK][tT][xX]*
+*.[hH][dD][rR]
+*.[eE][xX][rR]
+*.[tT][iI][fF]*
+*.[pP][sS][dD]
+*.[wW][eE][bB][pP]
+*.[gG][iI][fF]
+*.[pP][pP][mM]
+*.[wW][aA][vV]
+*.[mM][pP]3
+*.[oO][gG][gG]
+*.[fF][lL][aA][cC]
+*.[aA][iI][fF]*
+*.[mM]4[aA]
+*.[mM][pP]4
+*.[mM][oO][vV]
+*.[wW][eE][bB][mM]

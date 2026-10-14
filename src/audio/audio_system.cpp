@@ -13,12 +13,12 @@ namespace {
 struct CueSpec { const char* file; float volume; int priority; bool loop; };
 constexpr std::array<CueSpec, static_cast<size_t>(AudioCue::Count)> Specs{{
     {"player_shot.wav", .50f, 2, false}, {"hit.wav", .48f, 2, false},
-    {"kill.wav", .48f, 2, false}, {"player_hurt.wav", .65f, 4, false},
+    {"kill.wav", .40f, 2, false}, {"player_hurt.wav", .65f, 4, false},
     {"player_death.wav", .7f, 5, false}, {"rift_warning.wav", .80f, 4, false},
     {"sentry_charge.wav", .90f, 5, false}, {"sentry_fire.wav", .85f, 5, false},
-    {"slide.wav", .38f, 1, false}, {"transform.wav", .40f, 1, false},
-    {"ambience.wav", .20f, 0, true}, {"ui_confirm.wav", .45f, 2, false},
-    {"victory.wav", .60f, 3, false}
+    {"slide.wav", .38f, 1, false}, {"transform.wav", .22f, 1, false},
+    {"ambience.wav", .18f, 0, true}, {"ui_confirm.wav", .32f, 2, false},
+    {"victory.wav", .45f, 3, false}
 }};
 bool finite(glm::vec3 v) { return std::isfinite(v.x) && std::isfinite(v.y) && std::isfinite(v.z); }
 }

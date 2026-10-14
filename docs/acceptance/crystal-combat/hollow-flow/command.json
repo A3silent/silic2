@@ -1,0 +1,14 @@
+{
+  "command": [
+    "./silic2-release",
+    "res/maps/hollow_orbit_arena.json",
+    "--acceptance",
+    "flow",
+    "--vsync",
+    "off",
+    "--output",
+    "artifacts/acceptance/crystal-combat/hollow-flow"
+  ],
+  "exit_code": 0,
+  "binary_sha256": "7f9b7f5ccc381ff600387367b802c12bfe9aa2f5e021b5a004cd98108030a1ff"
+}

@@ -1,0 +1,222 @@
+{
+  "include/audio/audio_system.h": {
+    "before": "bb7f845ca5b3b536a03fbc81b69b87f9279bbce03ebd629dd0f594d560b2e4f5",
+    "after": "bb7f845ca5b3b536a03fbc81b69b87f9279bbce03ebd629dd0f594d560b2e4f5",
+    "unchanged": true
+  },
+  "include/character/character_presentation.h": {
+    "before": "77d66f4de24cc8d20e32844fcd07fc70f26d1f9fe048621527d75531e96cdd94",
+    "after": "77d66f4de24cc8d20e32844fcd07fc70f26d1f9fe048621527d75531e96cdd94",
+    "unchanged": true
+  },
+  "include/enemy/enemy.h": {
+    "before": "a1c678fe344a65abfd446ecba916fe47697ca3b7eb9df3c6da8aec1d1e67670a",
+    "after": "a1c678fe344a65abfd446ecba916fe47697ca3b7eb9df3c6da8aec1d1e67670a",
+    "unchanged": true
+  },
+  "include/enemy/enemy_geometry.h": {
+    "before": "20ac6dd8f7a66404d600acf1e7f39a6c6f02b81af4e23c729efab452eaed37f4",
+    "after": "20ac6dd8f7a66404d600acf1e7f39a6c6f02b81af4e23c729efab452eaed37f4",
+    "unchanged": true
+  },
+  "include/enemy/enemy_manager.h": {
+    "before": "2867d070ee9d0ec7eb432de562514bf9055efa5629e0a9f8f6e0780ad535462d",
+    "after": "2867d070ee9d0ec7eb432de562514bf9055efa5629e0a9f8f6e0780ad535462d",
+    "unchanged": true
+  },
+  "include/enemy/enemy_projectile_system.h": {
+    "before": "8c618871a558f8b1f3ab5d4841203221d448ecdd0e0b137bd06228680a9abaff",
+    "after": "8c618871a558f8b1f3ab5d4841203221d448ecdd0e0b137bd06228680a9abaff",
+    "unchanged": true
+  },
+  "include/engine/app_options.h": {
+    "before": "f678d0fed31ed5b0ad1252e5056acac081f638a7bdb1a30da8bec4205c459ab9",
+    "after": "f678d0fed31ed5b0ad1252e5056acac081f638a7bdb1a30da8bec4205c459ab9",
+    "unchanged": true
+  },
+  "include/engine/game_config.h": {
+    "before": "97e6b94be3758447c09c8a4c41a82a28be03f22bfe9841e809475b26542fade1",
+    "after": "97e6b94be3758447c09c8a4c41a82a28be03f22bfe9841e809475b26542fade1",
+    "unchanged": true
+  },
+  "include/player/weapon.h": {
+    "before": "cd870107bcad2c151ffdb8488a9437d048f09ad48a2d3e37bfbfbb3909168673",
+    "after": "cd870107bcad2c151ffdb8488a9437d048f09ad48a2d3e37bfbfbb3909168673",
+    "unchanged": true
+  },
+  "res/audio/ambience.wav": {
+    "before": "2d66ccfd4d726bfb0d6ed5a2fb852006c3d66a3fe15a50385414edba94c403fa",
+    "after": "2d66ccfd4d726bfb0d6ed5a2fb852006c3d66a3fe15a50385414edba94c403fa",
+    "unchanged": true
+  },
+  "res/audio/hit.wav": {
+    "before": "ea7d581b024e5d53f60556ec4b377b08bacb116d3e1fb0964ab356b2cb22cbee",
+    "after": "ea7d581b024e5d53f60556ec4b377b08bacb116d3e1fb0964ab356b2cb22cbee",
+    "unchanged": true
+  },
+  "res/audio/kill.wav": {
+    "before": "a9386da41d31a6ec9d11cabe7bfbb616e2571caa5c5ac24559c501bd766668c1",
+    "after": "a9386da41d31a6ec9d11cabe7bfbb616e2571caa5c5ac24559c501bd766668c1",
+    "unchanged": true
+  },
+  "res/audio/manifest.json": {
+    "before": "33db4bb690e36fc55347a71a9b724ecac746591c95f7ed11356e0252feef8025",
+    "after": "33db4bb690e36fc55347a71a9b724ecac746591c95f7ed11356e0252feef8025",
+    "unchanged": true
+  },
+  "res/audio/player_death.wav": {
+    "before": "d8d3b0883f9bf83e9371f8d4f856fa0f1ba77808c4d8e1101e75c4d4616a07f3",
+    "after": "d8d3b0883f9bf83e9371f8d4f856fa0f1ba77808c4d8e1101e75c4d4616a07f3",
+    "unchanged": true
+  },
+  "res/audio/player_hurt.wav": {
+    "before": "d4410b55648b34a8937594e75129d3370d037777ed97ab6967973f692a4c9fd3",
+    "after": "d4410b55648b34a8937594e75129d3370d037777ed97ab6967973f692a4c9fd3",
+    "unchanged": true
+  },
+  "res/audio/player_shot.wav": {
+    "before": "f87e0188db8f5fba095f958c8384d3d33d0c2dcdb793af013c5d27b3ba800a60",
+    "after": "f87e0188db8f5fba095f958c8384d3d33d0c2dcdb793af013c5d27b3ba800a60",
+    "unchanged": true
+  },
+  "res/audio/rift_warning.wav": {
+    "before": "923d7527738529622e4eb82f0bdefab9a3340608890cf8a1a2a3e02f0b03eef4",
+    "after": "923d7527738529622e4eb82f0bdefab9a3340608890cf8a1a2a3e02f0b03eef4",
+    "unchanged": true
+  },
+  "res/audio/sentry_charge.wav": {
+    "before": "4b837ea7c0103e9f44a30ef4d13d1b21e0921428e227804a0ee49dd232d2bd12",
+    "after": "4b837ea7c0103e9f44a30ef4d13d1b21e0921428e227804a0ee49dd232d2bd12",
+    "unchanged": true
+  },
+  "res/audio/sentry_fire.wav": {
+    "before": "b842c22a8cfdab5b28ca279d462868a00162bef2442fcb71d3a6d5136ea400f0",
+    "after": "b842c22a8cfdab5b28ca279d462868a00162bef2442fcb71d3a6d5136ea400f0",
+    "unchanged": true
+  },
+  "res/audio/slide.wav": {
+    "before": "16132f53b830a10a7703c7af343f43e77a580679523dce1d748c08916a4b5820",
+    "after": "16132f53b830a10a7703c7af343f43e77a580679523dce1d748c08916a4b5820",
+    "unchanged": true
+  },
+  "res/audio/transform.wav": {
+    "before": "5d0903cd72c30e89c24a6ccbe53a8b277af3632b3185dd00aad07198d335e859",
+    "after": "5d0903cd72c30e89c24a6ccbe53a8b277af3632b3185dd00aad07198d335e859",
+    "unchanged": true
+  },
+  "res/audio/ui_confirm.wav": {
+    "before": "646a551c4fee5750dba0c08f485576cf7fefdc5157bb26d1186f3ca170cdf468",
+    "after": "646a551c4fee5750dba0c08f485576cf7fefdc5157bb26d1186f3ca170cdf468",
+    "unchanged": true
+  },
+  "res/audio/victory.wav": {
+    "before": "66603a51809a023950ed3ff86f272feec2902a381b7a4d2e9e0a801d340aced9",
+    "after": "66603a51809a023950ed3ff86f272feec2902a381b7a4d2e9e0a801d340aced9",
+    "unchanged": true
+  },
+  "res/maps/hollow_orbit_arena.json": {
+    "before": "93c463276cceb97901e29de9349bb27ef189d163d90f1d291c0101b9f6f9906d",
+    "after": "93c463276cceb97901e29de9349bb27ef189d163d90f1d291c0101b9f6f9906d",
+    "unchanged": true
+  },
+  "res/shaders/character.frag": {
+    "before": "935bc5f2647bcc46dcb7096350a02a190c02e31ee93313dc09d9dbaf9c317daf",
+    "after": "935bc5f2647bcc46dcb7096350a02a190c02e31ee93313dc09d9dbaf9c317daf",
+    "unchanged": true
+  },
+  "res/shaders/environment_crystal.frag": {
+    "before": "aef71d140892c7b3b43cbed977b0119aa3cbf8b72c643365c16cb9bec665f84e",
+    "after": "aef71d140892c7b3b43cbed977b0119aa3cbf8b72c643365c16cb9bec665f84e",
+    "unchanged": true
+  },
+  "res/shaders/environment_crystal.vert": {
+    "before": "82fe0903f5d9a6ea4f52a2c99878f0facf51648cafbd336b99eb61efb360af4f",
+    "after": "82fe0903f5d9a6ea4f52a2c99878f0facf51648cafbd336b99eb61efb360af4f",
+    "unchanged": true
+  },
+  "res/shaders/environment_map.frag": {
+    "before": "1b6894edb1f102ef19b45fc6ce4ee389a11324105f1ad6839dd7322ab0c4d275",
+    "after": "1b6894edb1f102ef19b45fc6ce4ee389a11324105f1ad6839dd7322ab0c4d275",
+    "unchanged": true
+  },
+  "res/shaders/environment_particle.frag": {
+    "before": "48c5be45f443fbe6245d5bea19a7a16e3bade7aa818076d6b63bdda12cb7e1cc",
+    "after": "48c5be45f443fbe6245d5bea19a7a16e3bade7aa818076d6b63bdda12cb7e1cc",
+    "unchanged": true
+  },
+  "res/shaders/environment_particle.vert": {
+    "before": "386caa37477438b4ebd349526ce5dff1e1f0fab4465f9fa9812ef1410d54fef3",
+    "after": "386caa37477438b4ebd349526ce5dff1e1f0fab4465f9fa9812ef1410d54fef3",
+    "unchanged": true
+  },
+  "res/shaders/environment_sky.frag": {
+    "before": "67266fc639e8ac4c1ded50f28f08ca8f8567b30b0d029e391819f3346d49203f",
+    "after": "67266fc639e8ac4c1ded50f28f08ca8f8567b30b0d029e391819f3346d49203f",
+    "unchanged": true
+  },
+  "res/shaders/environment_sky.vert": {
+    "before": "03d747dfeade37bdee016f395430487f53dfd4fba2c392ec47a844880686ad53",
+    "after": "03d747dfeade37bdee016f395430487f53dfd4fba2c392ec47a844880686ad53",
+    "unchanged": true
+  },
+  "res/shaders/pixel.frag": {
+    "before": "e9e5e015faac0cbaa08cfbae8d2233411dd95c0d3e13695f2da3be67efb5ca66",
+    "after": "e9e5e015faac0cbaa08cfbae8d2233411dd95c0d3e13695f2da3be67efb5ca66",
+    "unchanged": true
+  },
+  "src/audio/audio_system.cpp": {
+    "before": "b8c5ba61b3a8f63b7ad06d4978f9890168920b252d3cb735ff23ade65e6d6078",
+    "after": "b8c5ba61b3a8f63b7ad06d4978f9890168920b252d3cb735ff23ade65e6d6078",
+    "unchanged": true
+  },
+  "src/audio/miniaudio_impl.cpp": {
+    "before": "f4792eb4be25873a884f3627607d92cd281f48ca77488c34cf95fea65aad42c8",
+    "after": "f4792eb4be25873a884f3627607d92cd281f48ca77488c34cf95fea65aad42c8",
+    "unchanged": true
+  },
+  "src/character/README.md": {
+    "before": "1a0fae8adfbe84df1bfc3fc1041dd1284b69f96f0d64dabf09414ec63ca04594",
+    "after": "1a0fae8adfbe84df1bfc3fc1041dd1284b69f96f0d64dabf09414ec63ca04594",
+    "unchanged": true
+  },
+  "src/character/character_presentation.cpp": {
+    "before": "82d05129028366da046e649e2957e4a1819c38b9d3ba4bfe6b5719fedda29fee",
+    "after": "82d05129028366da046e649e2957e4a1819c38b9d3ba4bfe6b5719fedda29fee",
+    "unchanged": true
+  },
+  "src/character/preview/geometry_check.cpp": {
+    "before": "2f75ee09eaf62083a79579017ec24b3970d9571fd4d5dd0433cd91e37379f26c",
+    "after": "2f75ee09eaf62083a79579017ec24b3970d9571fd4d5dd0433cd91e37379f26c",
+    "unchanged": true
+  },
+  "src/character/preview/preview_main.cpp": {
+    "before": "7ecfe774e73768e0698b6e73cf095a9fb332e5b6276a4a71ce5a41f39ae312f1",
+    "after": "7ecfe774e73768e0698b6e73cf095a9fb332e5b6276a4a71ce5a41f39ae312f1",
+    "unchanged": true
+  },
+  "src/enemy/enemy.cpp": {
+    "before": "ed1224039eefbb79c16f04b7296bb756acd1b14fb1210aec1b3c55ded06895df",
+    "after": "ed1224039eefbb79c16f04b7296bb756acd1b14fb1210aec1b3c55ded06895df",
+    "unchanged": true
+  },
+  "src/enemy/enemy_manager.cpp": {
+    "before": "8aa1547658d804ace07f3fb7ea95978ef3c9cc481d4e68de7e7748eae3be459e",
+    "after": "8aa1547658d804ace07f3fb7ea95978ef3c9cc481d4e68de7e7748eae3be459e",
+    "unchanged": true
+  },
+  "src/enemy/enemy_projectile_system.cpp": {
+    "before": "840af78ebde165461989a0373965c2ba63cdf3d2fa05afa7d3a8eaab40867b06",
+    "after": "840af78ebde165461989a0373965c2ba63cdf3d2fa05afa7d3a8eaab40867b06",
+    "unchanged": true
+  },
+  "src/engine/game_config.cpp": {
+    "before": "f690567fd58b02bbf035a1420c0fcd3747e93422b71cef7d1215c314b849bf9d",
+    "after": "f690567fd58b02bbf035a1420c0fcd3747e93422b71cef7d1215c314b849bf9d",
+    "unchanged": true
+  },
+  "src/player/weapon.cpp": {
+    "before": "17c8d6628718c9fa7144d734941f371070017f2cc7bd47780664e95554455fb0",
+    "after": "17c8d6628718c9fa7144d734941f371070017f2cc7bd47780664e95554455fb0",
+    "unchanged": true
+  }
+}

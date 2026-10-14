@@ -1,0 +1,118 @@
+{
+  "task": "CRYSTAL-WORLD",
+  "timestamp_utc": "2026-10-13T10:10:06.846559+00:00",
+  "commands": [
+    "make -f Makefile.map all test -j4",
+    "make -f Makefile.map BUILD=release all test horror-preview -j4",
+    "cmake -S tools/map_editor -B tools/map_editor/build",
+    "cmake --build tools/map_editor/build -j4",
+    "ctest --test-dir tools/map_editor/build --output-on-failure",
+    "./silic2-release res/maps/starry_crystal_arena.json --acceptance exploration --vsync off --output artifacts/acceptance/crystal-world/journey",
+    "./silic2-release res/maps/starry_crystal_arena.json --acceptance flow --vsync off --output artifacts/acceptance/crystal-world/exploration-flow",
+    "./silic2-release --acceptance flow --vsync off --output artifacts/acceptance/crystal-world/hollow-flow",
+    "./bin/macos/release/horror-scene-preview artifacts/acceptance/crystal-world/hollow-fixed res/maps/hollow_orbit_arena.json",
+    "./silic2-release res/maps/test_room.json --acceptance screenshots --vsync off --output artifacts/acceptance/crystal-world/legacy-smoke"
+  ],
+  "binaries": {
+    "silic2": "8cfca04c9abc1196db26ef753b73b5e376cb47321e7b95e899d309d532e3ab95",
+    "silic2-release": "9fa23baf2b78d82ddf93f83316262b9791e7b51586fc4dc26518055d4a6757bc",
+    "bin/macos/release/horror-scene-preview": "91c879b81bd0a296cc3d01db0ab17de2b33ffc7777a1d66f1a177cbd477d19c8",
+    "tools/map_editor/build/map_editor": "d9a4037411f723930f7c59ba64cd16145e544ffd72e619ab64fa864b29dc7453"
+  },
+  "map_sha256": "b2eac8415b54ad15820a26e014b86378ecbae4f04633c30676e68f5c73f184dc",
+  "source_manifest": "artifacts/acceptance/crystal-world/final-source-sha256.json",
+  "source_manifest_sha256": "3dc1d304f508e14e4eae54b562f0b6f5c879078bcf182c9599620290852e36ca",
+  "source_file_count": 602,
+  "baseline_entries": 682,
+  "baseline_difference_report": "artifacts/acceptance/crystal-world/baseline-difference.json",
+  "protected_file_count": 44,
+  "protected_all_unchanged": true,
+  "input_exception": [
+    "include/player/player.h",
+    "src/player/player.cpp"
+  ],
+  "player_diff_review": "Only sampled key states are moved through PlayerInput; movement constants/state/physics rules are unchanged. No acceptance branches in Player.",
+  "validation": {
+    "debug_tests": "passed",
+    "release_tests": "passed",
+    "editor_ctests": "5/5",
+    "flows": {
+      "exploration-flow": {
+        "passed": 10,
+        "total": 10
+      },
+      "hollow-flow": {
+        "passed": 10,
+        "total": 10
+      }
+    },
+    "hollow_fixed": "14/14 byte identical with dual-arena/hollow-integrated",
+    "legacy": "test_room actual GL screenshots smoke passed"
+  },
+  "journey": {
+    "event": "journey_end",
+    "synthetic_input": true,
+    "seconds": 66.1598,
+    "kills": 3,
+    "shots": 28,
+    "damage": 0,
+    "node": 11,
+    "capture_frames_excluded": true
+  },
+  "performance": {
+    "event": "performance",
+    "run": 1,
+    "combat_seconds": 66.159767,
+    "frames": 27803,
+    "p95_ms": 5.6850417,
+    "p99_ms": 10.749292,
+    "max_ms": 326.32675,
+    "longest_over_50ms": 1,
+    "passed": true,
+    "rss_bytes": 121176064,
+    "audio_frames": 3339840
+  },
+  "raw_csv_recomputed": {
+    "frames": 27803,
+    "p95_ms": 5.68504,
+    "p99_ms": 10.7493,
+    "max_ms": 326.327,
+    "longest_over_50ms": 1
+  },
+  "raw_frame_order_csv": "artifacts/acceptance/crystal-world/journey/frames-exploration-1.csv",
+  "raw_csv_sha256": "c45f82427d6def63e07a4f60f0991ac70bff58da28729f7a3197f36a47d51fc3",
+  "focus_auto_resume_events": 7,
+  "synthetic_boundaries": [
+    "Movement follows actual shared PlayerInput/physics/collision; no position teleport.",
+    "Combat uses ordinary Weapon fire/projectiles/hits; no invulnerability or forced enemy death.",
+    "Observation uses actual player feet, camera facing, static geometry visibility and continuous hold.",
+    "Exit completion is triggered by walking into the exit after calibration; no forced completion.",
+    "Camera aim and press states are synthetic; this is not human playtest evidence.",
+    "Failure flow injects labelled damage, not an enemy attack, to test actual HP/death/result lock/restart handling.",
+    "Nominal 20s hold at the calibrated complex view; total journey 66.16s.",
+    "Screenshot capture frames are excluded from timing; no raw timing frames were reordered or trimmed.",
+    "326.327ms peak and 7 synthetic focus resumes are retained. Their causes are unconfirmed; this is not a claim of stutter-free play."
+  ],
+  "display": {
+    "logical_window": [
+      1280,
+      720
+    ],
+    "framebuffer": [
+      2560,
+      1440
+    ],
+    "internal_scene": [
+      320,
+      200
+    ]
+  },
+  "limitations": [
+    "Human route readability/enjoyment and headphones remain unverified.",
+    "Existing exact floor-contact issue is avoided only in Crystal by authored spawn y=.03 within existing .05 map tolerance; Hollow and movement rules are unchanged.",
+    "Static planar routes only; high structures/arcs provide visual scale, not multilevel navigation."
+  ],
+  "evidence_logs": "artifacts/acceptance/crystal-world/integration-logs",
+  "contact_sheet": "artifacts/acceptance/crystal-world/journey/contact-sheet.png",
+  "gpu_status": "All VECTOR GL processes completed; no further runs scheduled."
+}

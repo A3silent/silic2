@@ -1,6 +1,8 @@
 #include <exception>
 #include <iostream>
 
+void runSpatialWorldTests();
+void runExplorationTests();
 void runSimpleJsonTests();
 void runMapTests();
 void runMapNavigationTests();
@@ -17,6 +19,8 @@ void runPlayerDamageTests();
 
 int main() {
     try {
+        runSpatialWorldTests();
+        runExplorationTests();
         runSimpleJsonTests();
         runMapTests();
         runMapNavigationTests();

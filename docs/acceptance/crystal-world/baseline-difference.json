@@ -1,0 +1,138 @@
+{
+  "AGENTS.md": {
+    "before": "07325a6622a8fc15611be719505477b9d1e43fc10d14d3e77a8e149bc78f7a0f",
+    "after": "75060163948b53901f602036df2ebf80ad93b2a52b851348fbd5314eddb620c4"
+  },
+  "Makefile.map": {
+    "before": "ab8f5b53100737c44a72a3a8d262cb4c9ef4ac6d2076627e82016293ffcf4cc1",
+    "after": "8c1ee9c87dc0c48b476c2746341284b5556a2d2c1a1e34a7bdfa38cd33bf96d6"
+  },
+  "README.md": {
+    "before": "64fd770d03aa2f4ec7d7850360cde92be1892ede303d4f9c073935b0fb29e294",
+    "after": "b0fa2ac6eba12e03e4007de5e7b80814abe03104614ac4e1617a8ad90da91a91"
+  },
+  "README_CN.md": {
+    "before": "96a8234a30b4dd349b7ecdeec0df076d940d15e0dee8f92b9f7c984e8d32fcf5",
+    "after": "3d3ab4a7a8ca03d2fb03de7df26c8de99e9095e0edaf978cffef1eaabf5da045"
+  },
+  "docs/agent-team.md": {
+    "before": "052c3ed506c5fe4e070ff3512c9a1aec00d6827083d5725f9d0b9c4912bacc90",
+    "after": "40881c8f838b93c52a5aa5a7bc1b08b4b99c87c757e01d2608005ba406e28db6"
+  },
+  "docs/architecture.md": {
+    "before": "07b6b30c01679612505fe6cc88a0fc49fba18b22256c24909df6f6231fb93baf",
+    "after": "42eeebb57ee1089adcecb49e55ab57e5ca3393cb63f332d47b2ef374639ccc37"
+  },
+  "docs/map-format.md": {
+    "before": "5b55f35eeb9c7566ee41a804f15de0af049903a4cc670bbffbd5f27e1148b796",
+    "after": "d65cea28ad6b5501021f0054ee6a0ed0346904850569923b69d36482b68b15b3"
+  },
+  "include/engine/app.h": {
+    "before": "3d0a51ba4e6bdaabffaca8b1485f6c5a6c34d93619e26eca8a917ef2caa03937",
+    "after": "c282a9e0d21ba59599d07c65fa2995876f18cf7246f1f80d66243e6b9b6e4b2e"
+  },
+  "include/engine/map.h": {
+    "before": "0a5ad5317bb622ac02654c1ab3d94243e57147c63ee39e1cb361e33573f0ae61",
+    "after": "3ca585c6189c190af13e922b46006b09cbdb4d43b264bd71da43defa089c27fa"
+  },
+  "include/engine/map_renderer.h": {
+    "before": "dcfd21ddf628a760fb13bca0ad82c9790b91bbc5aee6b759ca8528a9af12e64e",
+    "after": "9e465d3e8e2cdd27dd042283d5b3c161ce870718270e1f6644b226803b011cbc"
+  },
+  "include/environment/environment_renderer.h": {
+    "before": "167b75bbbcae16b90f2a9b8c63ad5eb58817f41fa8b25513153eddcbf7121602",
+    "after": "d699c26c22694fc066aa42377e37aaba9512088fb2d069a6f7c0495d0f3d66b1"
+  },
+  "include/environment/environment_scene.h": {
+    "before": "4d07e04a96cde5ea9e5eb4f7849796af51e56e3eb2dda596899d384f1ceaecf7",
+    "after": "6b7a25c1427beb83104e7db1945b38853867f1f8541a01b2a1dc2f0dbd51d173"
+  },
+  "include/hud/hud_view_model.h": {
+    "before": "e7dccde684efe5106045ab2be1aa5c35e1f3a24cc1a8ea26dd51159ad2a62224",
+    "after": "81f4f672f875c266e24e35e37ec6b065dab457bfc815fa18b3ab648466b1397c"
+  },
+  "include/player/player.h": {
+    "before": "5acf8ea0c1216ca211764eda56bbe2785c337a184f8e017a06cc1f56622ed93f",
+    "after": "da133f1d8d7ed8d2899e8fa4342b8f38911f0bcf3c19864f63f2198e1eb45ea7"
+  },
+  "res/maps/starry_crystal_arena.json": {
+    "before": "2bf654e11cd75566916a8cbb690faddc198aaffd4092a9de8668eda4bf604f2b",
+    "after": "b2eac8415b54ad15820a26e014b86378ecbae4f04633c30676e68f5c73f184dc"
+  },
+  "res/shaders/starry_crystal_detail.frag": {
+    "before": "945a28548c3d8393f60d71316fce0b60972988af639dd20830e6404f46e223bc",
+    "after": "f44dabbbd656e3c7746b2340409dd09a82c56cd73612e38b106cdd049e5a1852"
+  },
+  "res/shaders/starry_crystal_map.frag": {
+    "before": "3c97d0a23d50c51f2cc9e056a061fa3376aac23f3bed54c7f09e3fbcb28574d9",
+    "after": "6d2f5fa355daed2c7f4ce1759543c8eb700ee38b2c71a5a5d62e7605a7c69e52"
+  },
+  "res/shaders/starry_crystal_sky.frag": {
+    "before": "cf273d6ee2dabeaa8bf08744b7d7005ab34486aa5bc53a2ef83cf59a2ad31b6f",
+    "after": "47b89df18ee9650f9395422159665da53c9b253663eb176b8b27a55cc0dd7b8e"
+  },
+  "src/engine/app.cpp": {
+    "before": "a11415ea4d42024d12abb6d5160ea10766344c5d0d3022a19a19120be882d652",
+    "after": "5e86b860b79809f8b37fce1932f6744a1c413ffb7ea846797ff97da8a26fe401"
+  },
+  "src/engine/main.cpp": {
+    "before": "b0ea9d6417ca8706c59651a14b61fd0686cf0100935b1ff0494fa1d86fe9f6cb",
+    "after": "e8fa1ca4e79e29bf587b0d26731dce6e67cd2149a14f586b779804e9a8c9decb"
+  },
+  "src/engine/map.cpp": {
+    "before": "c8ae329cfb3b1a2fc16dfd3b1b372ca7a7541133c54429ccb18ab8483a3f544b",
+    "after": "c75c1e26026073c5c20f05040e5375f3407aec450b57f65a2441b5399a7699ec"
+  },
+  "src/engine/map_renderer.cpp": {
+    "before": "5fdda93449ee82d741d7ed608d28d5b13dd3b21d6a6aa3942c53ec2c4d1b3c4b",
+    "after": "4fadfc88eb8d839b7a11d681edab0945417c2722190fecc5171f46788640e59e"
+  },
+  "src/environment/environment_renderer.cpp": {
+    "before": "f029570f935bbf300e1b2dcfe3cb6f197b50bb68aab03c3b613e10bda0e3e8ed",
+    "after": "cf15cc6c2892c94c562b82906684a516ff6458a97e444d5b843fee1e66cfd31e"
+  },
+  "src/environment/environment_scene.cpp": {
+    "before": "103a0be7c7ce88d42430a8b5ffdd1552baffb173d2fc4d767207fc09af39e7f9",
+    "after": "6d17bdd470c8b031a9be21b1218114083cf086b49be20e2e2cd1532d8262d118"
+  },
+  "src/game/arena_definition.cpp": {
+    "before": "669ac7ac42c2958c4ee1feee97dcd04c765ecd5811d72631671c501ac08f6bea",
+    "after": "4a93503b2c7ae7f42ff1dbfa86b986b6d46b4a6c3ef5b01e4829f0cf4bbd1cbf"
+  },
+  "src/hud/bitmap_font_renderer.cpp": {
+    "before": "1c2f7af8a916f58200f10a0db0efad27974e461564d52a0eeb3bba0712e584b9",
+    "after": "746f3050348665d9034a35a213eb31c7f3015ec62f9918202a49bab6407d0df4"
+  },
+  "src/hud/hud_view_model.cpp": {
+    "before": "917b6878bf322bce64e6991bebc8571af364d9727a97a746bdab5fdc3479f582",
+    "after": "ace65a1bb1285571708f553a526f863356f658ae3a884e3c781daa7066604305"
+  },
+  "src/player/player.cpp": {
+    "before": "893b17dbda9938bda60f609cb2866fbc71f4ed78673908f1c2c5136d7735fdf2",
+    "after": "1cdc0076ea94b2a1cffe5d754958d21d8400ac443f0874cd9f00b104e0aaaae8"
+  },
+  "tests/map_navigation_test.cpp": {
+    "before": "4d49e93731a153abb6839cdb6fbbe649b8741f3cc7aad41e514a3728f80a23e8",
+    "after": "a0284d293d6b7da84e6de5ab58d247e56521e8bc911936acef5cb94781e606ef"
+  },
+  "tests/map_test.cpp": {
+    "before": "7f5c53403c97e36fb590a45a0326a523658f74a421b1e79d0aa699186576fa05",
+    "after": "95d0494556eb1d743004a90dd0f7d7a84bf4e06c04bdbce2fb90360717b5fd0e"
+  },
+  "tests/test_main.cpp": {
+    "before": "9396dbfd37aebbedcb56ed7304b108f2eb4e08640f2c9db3fdcff936615b97a5",
+    "after": "34bad0c1dd38316aac33e92c3c50a87ecbaa345835d186b500d476457184c988"
+  },
+  "tools/map_editor/CMakeLists.txt": {
+    "before": "2bec6774526d38449298d9328a48c57418ab2ab356fdb02e6a1328684ad8d0cd",
+    "after": "08893a8410a127934ad8c3a565c25b44ba00f80167ce28ed42c0fb9e99246099"
+  },
+  "tools/map_editor/src/map_editor_final.cpp": {
+    "before": "3524e8e40e42537ceb59ab91b0b6113929d9e4598a52169abe0f49d3e146e9c5",
+    "after": "1eb0dd2ab24a3c25fca7c4ef7691a7bf40f5acd2c68a6a76383a58fd4c740427"
+  },
+  "tools/map_editor/tests/editor_self_test.cpp": {
+    "before": "a5d90cdfb629580a84f9f6bb3d80afd4c794fb8d28c4e10230f6ec85c15afaca",
+    "after": "635057109a34d479fa6011a95c2635b91037a48b4f8f774a87498ceaf163eda4"
+  }
+}

@@ -1,0 +1,11 @@
+[  6%] Building CXX object CMakeFiles/silic2_map_data.dir/Users/ritzsun/Desktop/game/opengl/silic2/src/engine/map.cpp.o
+[ 53%] Built target imgui
+[ 60%] Linking CXX static library libsilic2_map_data.a
+[ 66%] Built target silic2_map_data
+[ 73%] Building CXX object CMakeFiles/editor_document.dir/src/editor_document.cpp.o
+[ 80%] Linking CXX static library libeditor_document.a
+[ 80%] Built target editor_document
+[ 86%] Building CXX object CMakeFiles/map_editor.dir/src/map_editor_final.cpp.o
+[ 93%] Building CXX object CMakeFiles/map_editor.dir/tests/editor_self_test.cpp.o
+[100%] Linking CXX executable map_editor
+[100%] Built target map_editor

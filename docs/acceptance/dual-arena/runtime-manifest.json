@@ -1,0 +1,195 @@
+[
+  {
+    "name": "hollow-flow",
+    "command": [
+      "/Users/ritzsun/Desktop/game/opengl/silic2/silic2-release",
+      "--acceptance",
+      "flow",
+      "--output",
+      "/Users/ritzsun/Desktop/game/opengl/silic2/artifacts/acceptance/dual-arena/hollow-flow"
+    ],
+    "exit_code": 0,
+    "app_binary_sha256": "4716bc6dab4fafa9b6f0f451fe7e96e7b74f5c054953d7e9b03b63cbdc8ee21d",
+    "executed_binary_sha256": "4716bc6dab4fafa9b6f0f451fe7e96e7b74f5c054953d7e9b03b63cbdc8ee21d",
+    "map_sha256": "93c463276cceb97901e29de9349bb27ef189d163d90f1d291c0101b9f6f9906d",
+    "default_entry": true,
+    "wall_seconds": 6.905443906784058,
+    "audio_available": true,
+    "flow_checks": [
+      {
+        "event": "flow_check",
+        "check": "ready_excludes_time",
+        "passed": true
+      },
+      {
+        "event": "flow_check",
+        "check": "escape_pauses",
+        "passed": true
+      },
+      {
+        "event": "flow_check",
+        "check": "pause_freezes_simulation_and_audio",
+        "passed": true
+      },
+      {
+        "event": "flow_check",
+        "check": "escape_resumes",
+        "passed": true
+      },
+      {
+        "event": "flow_check",
+        "check": "focus_callback_pauses_and_releases_cursor",
+        "passed": true
+      },
+      {
+        "event": "flow_check",
+        "check": "resume_recaptures_cursor",
+        "passed": true
+      },
+      {
+        "event": "flow_check",
+        "check": "death_actual_damage_and_source",
+        "passed": true
+      },
+      {
+        "event": "flow_check",
+        "check": "held_fire_cannot_skip_result",
+        "passed": true
+      },
+      {
+        "event": "flow_check",
+        "check": "fresh_click_same_seed_restart",
+        "passed": true
+      },
+      {
+        "event": "flow_check",
+        "check": "all_flow_stages_completed",
+        "passed": true
+      }
+    ],
+    "flow_pass": true
+  },
+  {
+    "name": "crystal-flow",
+    "command": [
+      "/Users/ritzsun/Desktop/game/opengl/silic2/silic2-release",
+      "/Users/ritzsun/Desktop/game/opengl/silic2/res/maps/starry_crystal_arena.json",
+      "--acceptance",
+      "flow",
+      "--output",
+      "/Users/ritzsun/Desktop/game/opengl/silic2/artifacts/acceptance/dual-arena/crystal-flow"
+    ],
+    "exit_code": 0,
+    "app_binary_sha256": "4716bc6dab4fafa9b6f0f451fe7e96e7b74f5c054953d7e9b03b63cbdc8ee21d",
+    "executed_binary_sha256": "4716bc6dab4fafa9b6f0f451fe7e96e7b74f5c054953d7e9b03b63cbdc8ee21d",
+    "map_sha256": "2bf654e11cd75566916a8cbb690faddc198aaffd4092a9de8668eda4bf604f2b",
+    "default_entry": false,
+    "wall_seconds": 5.730618000030518,
+    "audio_available": true,
+    "flow_checks": [
+      {
+        "event": "flow_check",
+        "check": "ready_excludes_time",
+        "passed": true
+      },
+      {
+        "event": "flow_check",
+        "check": "escape_pauses",
+        "passed": true
+      },
+      {
+        "event": "flow_check",
+        "check": "pause_freezes_simulation_and_audio",
+        "passed": true
+      },
+      {
+        "event": "flow_check",
+        "check": "escape_resumes",
+        "passed": true
+      },
+      {
+        "event": "flow_check",
+        "check": "focus_callback_pauses_and_releases_cursor",
+        "passed": true
+      },
+      {
+        "event": "flow_check",
+        "check": "resume_recaptures_cursor",
+        "passed": true
+      },
+      {
+        "event": "flow_check",
+        "check": "death_actual_damage_and_source",
+        "passed": true
+      },
+      {
+        "event": "flow_check",
+        "check": "held_fire_cannot_skip_result",
+        "passed": true
+      },
+      {
+        "event": "flow_check",
+        "check": "fresh_click_same_seed_restart",
+        "passed": true
+      },
+      {
+        "event": "flow_check",
+        "check": "all_flow_stages_completed",
+        "passed": true
+      }
+    ],
+    "flow_pass": true
+  },
+  {
+    "name": "legacy",
+    "command": [
+      "/Users/ritzsun/Desktop/game/opengl/silic2/silic2-release",
+      "/Users/ritzsun/Desktop/game/opengl/silic2/res/maps/test_room.json",
+      "--acceptance",
+      "screenshots",
+      "--output",
+      "/Users/ritzsun/Desktop/game/opengl/silic2/artifacts/acceptance/dual-arena/legacy"
+    ],
+    "exit_code": 0,
+    "app_binary_sha256": "4716bc6dab4fafa9b6f0f451fe7e96e7b74f5c054953d7e9b03b63cbdc8ee21d",
+    "executed_binary_sha256": "4716bc6dab4fafa9b6f0f451fe7e96e7b74f5c054953d7e9b03b63cbdc8ee21d",
+    "map_sha256": "ec0ba630d335bc1fa05a195404e867b57d3eb265476128c8b53343eabd39fe7d",
+    "default_entry": false,
+    "wall_seconds": 5.423443078994751,
+    "audio_available": true
+  },
+  {
+    "name": "hollow-integrated",
+    "command": [
+      "/Users/ritzsun/Desktop/game/opengl/silic2/bin/macos/release/horror-scene-preview",
+      "/Users/ritzsun/Desktop/game/opengl/silic2/artifacts/acceptance/dual-arena/hollow-integrated",
+      "/Users/ritzsun/Desktop/game/opengl/silic2/res/maps/hollow_orbit_arena.json"
+    ],
+    "exit_code": 0,
+    "app_binary_sha256": "4716bc6dab4fafa9b6f0f451fe7e96e7b74f5c054953d7e9b03b63cbdc8ee21d",
+    "executed_binary_sha256": "7c14d61bc12eec9d0a372c530c34fc03589d33961664be437dbfae34e0c0d2ee",
+    "map_sha256": "93c463276cceb97901e29de9349bb27ef189d163d90f1d291c0101b9f6f9906d",
+    "default_entry": false,
+    "wall_seconds": 0.9313628673553467,
+    "synthetic_scene": true,
+    "captures": 14,
+    "capture_pass": true
+  },
+  {
+    "name": "crystal-integrated",
+    "command": [
+      "/Users/ritzsun/Desktop/game/opengl/silic2/bin/macos/release/horror-scene-preview",
+      "/Users/ritzsun/Desktop/game/opengl/silic2/artifacts/acceptance/dual-arena/crystal-integrated",
+      "/Users/ritzsun/Desktop/game/opengl/silic2/res/maps/starry_crystal_arena.json"
+    ],
+    "exit_code": 0,
+    "app_binary_sha256": "4716bc6dab4fafa9b6f0f451fe7e96e7b74f5c054953d7e9b03b63cbdc8ee21d",
+    "executed_binary_sha256": "7c14d61bc12eec9d0a372c530c34fc03589d33961664be437dbfae34e0c0d2ee",
+    "map_sha256": "2bf654e11cd75566916a8cbb690faddc198aaffd4092a9de8668eda4bf604f2b",
+    "default_entry": false,
+    "wall_seconds": 0.6342959403991699,
+    "synthetic_scene": true,
+    "captures": 14,
+    "capture_pass": true
+  }
+]

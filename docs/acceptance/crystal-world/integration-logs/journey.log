@@ -1,0 +1,75 @@
+OpenGL 4.1 Metal - 89.4
+ACCEPTANCE synthetic input: exploration (not a human playtest)
+MapRenderer: Initializing...
+Initializing map shaders...
+Loading map vertex and fragment shaders...
+Successfully loaded shaders: res/shaders/map.vert, res/shaders/map.frag
+Map shaders loaded successfully
+MapRenderer created successfully with shaders
+Successfully loaded shaders: res/shaders/pixel.vert, res/shaders/pixel.frag
+Successfully loaded shaders: res/shaders/bullet.vert, res/shaders/bullet.frag
+Successfully loaded shaders: res/shaders/glow.vert, res/shaders/glow.frag
+Successfully loaded shaders: res/shaders/enemy.vert, res/shaders/enemy.frag
+Successfully loaded shaders: res/shaders/hud_batch.vert, res/shaders/hud_batch.frag
+Successfully loaded shaders: res/shaders/character.vert, res/shaders/character.frag
+Successfully loaded shaders: res/shaders/enemy.vert, res/shaders/enemy.frag
+MapRenderer: Initializing...
+Initializing map shaders...
+Loading map vertex and fragment shaders...
+Successfully loaded shaders: res/shaders/map.vert, res/shaders/map.frag
+Map shaders loaded successfully
+MapRenderer created successfully with shaders
+Successfully loaded shaders: res/shaders/environment_sky.vert, res/shaders/starry_crystal_sky.frag
+Successfully loaded shaders: res/shaders/environment_crystal.vert, res/shaders/starry_crystal_detail.frag
+Successfully loaded shaders: res/shaders/starry_crystal_particle.vert, res/shaders/starry_crystal_particle.frag
+Successfully loaded shaders: res/shaders/map.vert, res/shaders/starry_crystal_map.frag
+Loading 19 brushes for rendering...
+Brush 1 setup: 4 vertices, 6 indices
+Brush 2 setup: 8 vertices, 36 indices
+Brush 3 setup: 8 vertices, 36 indices
+Brush 4 setup: 8 vertices, 36 indices
+Brush 5 setup: 8 vertices, 36 indices
+Brush 6 setup: 8 vertices, 36 indices
+Brush 7 setup: 8 vertices, 36 indices
+Brush 8 setup: 8 vertices, 36 indices
+Brush 9 setup: 8 vertices, 36 indices
+Brush 10 setup: 8 vertices, 36 indices
+Brush 11 setup: 8 vertices, 36 indices
+Brush 12 setup: 8 vertices, 36 indices
+Brush 13 setup: 8 vertices, 36 indices
+Brush 14 setup: 8 vertices, 36 indices
+Brush 15 setup: 8 vertices, 36 indices
+Brush 16 setup: 8 vertices, 36 indices
+Brush 17 setup: 8 vertices, 36 indices
+Brush 18 setup: 8 vertices, 36 indices
+Brush 19 setup: 8 vertices, 36 indices
+Updated lighting: 6 lights
+Map loaded successfully. 19 brushes ready for rendering.
+Ground particle system initialized with 6 floor spawn points
+Screenshot: artifacts/acceptance/crystal-world/journey/route-node-0-scene.ppm
+Screenshot: artifacts/acceptance/crystal-world/journey/route-node-0.ppm
+Screenshot: artifacts/acceptance/crystal-world/journey/route-node-1-scene.ppm
+Screenshot: artifacts/acceptance/crystal-world/journey/route-node-1.ppm
+Screenshot: artifacts/acceptance/crystal-world/journey/route-node-2-scene.ppm
+Screenshot: artifacts/acceptance/crystal-world/journey/route-node-2.ppm
+Screenshot: artifacts/acceptance/crystal-world/journey/route-node-3-scene.ppm
+Screenshot: artifacts/acceptance/crystal-world/journey/route-node-3.ppm
+Screenshot: artifacts/acceptance/crystal-world/journey/route-node-4-scene.ppm
+Screenshot: artifacts/acceptance/crystal-world/journey/route-node-4.ppm
+Screenshot: artifacts/acceptance/crystal-world/journey/route-node-5-scene.ppm
+Screenshot: artifacts/acceptance/crystal-world/journey/route-node-5.ppm
+Screenshot: artifacts/acceptance/crystal-world/journey/route-node-6-scene.ppm
+Screenshot: artifacts/acceptance/crystal-world/journey/route-node-6.ppm
+Screenshot: artifacts/acceptance/crystal-world/journey/route-node-7-scene.ppm
+Screenshot: artifacts/acceptance/crystal-world/journey/route-node-7.ppm
+Screenshot: artifacts/acceptance/crystal-world/journey/route-node-8-scene.ppm
+Screenshot: artifacts/acceptance/crystal-world/journey/route-node-8.ppm
+Screenshot: artifacts/acceptance/crystal-world/journey/star-calibrated-scene.ppm
+Screenshot: artifacts/acceptance/crystal-world/journey/star-calibrated.ppm
+Screenshot: artifacts/acceptance/crystal-world/journey/route-node-9-scene.ppm
+Screenshot: artifacts/acceptance/crystal-world/journey/route-node-9.ppm
+Screenshot: artifacts/acceptance/crystal-world/journey/route-node-10-scene.ppm
+Screenshot: artifacts/acceptance/crystal-world/journey/route-node-10.ppm
+{"event":"run_end","content_version":"crystal-observatory-v1","synthetic_input":true,"acceptance_mode":"exploration","seed":42,"run_index":1,"reason":"completed","run_time":66.160,"room_time":66.160,"kills":3,"shots_fired":28,"shots_hit":18,"hostile_shots":0,"hostile_hits":0,"accuracy":0.643,"damage_events":0,"blocked_damage_events":0,"damage_taken":0.000,"distance":109.122,"sliding_time":0.000,"rooms_cleared":1,"last_damage_source":"unknown","fatal_source":"unknown","kills_by_type":{"unknown":0,"chaser":3,"sentry":0},"damage_by_source":{"enemy_contact":0.000,"enemy_projectile":0.000,"environment":0.000,"self_damage":0.000,"unknown":0.000},"spawn_delays":0,"spawn_cancellations":0,"spawn_delays_by_reason":{},"spawn_cancellations_by_reason":{}}
+Screenshot: artifacts/acceptance/crystal-world/journey/journey-complete-scene.ppm
+Screenshot: artifacts/acceptance/crystal-world/journey/journey-complete.ppm

@@ -7,6 +7,11 @@ ATLAS coordinated the six-role team under the user's explicit request
 to implement this complete milestone. Earlier phase documents remain
 reference material and do not expand this accepted scope.
 
+The user's 2026-10-08 [cosmic horror art revision](cosmic-horror-art-pass.md)
+updates the shared creature/audio direction and adds a default horror environment.
+The later dual-map decision retains the original crystal environment separately.
+Gameplay and playtest gates remain.
+
 ## Intent and limits
 
 Game motto: 在异变空间中高速移动、主动瞄准，通过短场战斗获得改变打法的武器能力。

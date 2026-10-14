@@ -17,7 +17,8 @@ std::vector<EnemyProjectileHit> EnemyProjectileSystem::update(float dt,const Map
         const auto end=shot.position+shot.direction*SPEED*std::min(dt,shot.remainingLife);
         float nearest=2;
         bool hitPlayer=false;
-        if(map) for(const auto& brush:map->getBrushes()) {
+        if(map && map->getSpatialWorld()) { auto hit=map->getSpatialWorld()->raycast(shot.position,end,RADIUS);if(hit.hit)nearest=hit.fraction; }
+        else if(map) for(const auto& brush:map->getBrushes()) {
             if(brush.vertices.empty()) continue;
             auto box=enemyGeometry::bounds(brush);
             box.min-=glm::vec3(RADIUS); box.max+=glm::vec3(RADIUS);

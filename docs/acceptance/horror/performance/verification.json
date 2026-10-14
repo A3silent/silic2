@@ -1,0 +1,61 @@
+{
+  "exit_code": 0,
+  "binary_sha256": "13b456d30394ccf9c3321a52487e8624bdd36e1ad353c1236fbba3f51dfd4f07",
+  "assets_unchanged": true,
+  "csv_recomputed": true,
+  "command": "./silic2-release --vsync off --width 1280 --height 720 --acceptance performance --output artifacts/acceptance/horror/performance-final",
+  "configuration": {
+    "event": "configuration",
+    "logical_width": 1280,
+    "logical_height": 720,
+    "framebuffer_width": 2560,
+    "framebuffer_height": 1440,
+    "internal_width": 320,
+    "internal_height": 200,
+    "vsync": false,
+    "audio_available": true,
+    "synthetic_input": true
+  },
+  "focus_resume_events": 5,
+  "runs": [
+    {
+      "event": "performance",
+      "run": 1,
+      "combat_seconds": 90.001625,
+      "frames": 40942,
+      "p95_ms": 6.67825,
+      "p99_ms": 10.6925,
+      "max_ms": 279.66542,
+      "longest_over_50ms": 2,
+      "passed": true,
+      "rss_bytes": 130580480,
+      "audio_frames": 4434240
+    },
+    {
+      "event": "performance",
+      "run": 2,
+      "combat_seconds": 90.000763,
+      "frames": 42433,
+      "p95_ms": 6.3695417,
+      "p99_ms": 8.146375,
+      "max_ms": 302.80662,
+      "longest_over_50ms": 2,
+      "passed": true,
+      "rss_bytes": 138461184,
+      "audio_frames": 4373280
+    },
+    {
+      "event": "performance",
+      "run": 3,
+      "combat_seconds": 90.002823,
+      "frames": 41239,
+      "p95_ms": 6.651125,
+      "p99_ms": 8.487375,
+      "max_ms": 138.96929,
+      "longest_over_50ms": 1,
+      "passed": true,
+      "rss_bytes": 143491072,
+      "audio_frames": 4326240
+    }
+  ]
+}

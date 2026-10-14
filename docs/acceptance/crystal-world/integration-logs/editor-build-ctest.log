@@ -1,0 +1,24 @@
+[  6%] Building CXX object CMakeFiles/silic2_map_data.dir/Users/ritzsun/Desktop/game/opengl/silic2/src/engine/map.cpp.o
+[ 53%] Built target imgui
+[ 60%] Linking CXX static library libsilic2_map_data.a
+[ 66%] Built target silic2_map_data
+[ 80%] Built target editor_document
+[ 86%] Building CXX object CMakeFiles/map_editor.dir/src/map_editor_final.cpp.o
+[ 93%] Linking CXX executable map_editor
+[100%] Built target map_editor
+Internal ctest changing into directory: /Users/ritzsun/Desktop/game/opengl/silic2/tools/map_editor/build
+Test project /Users/ritzsun/Desktop/game/opengl/silic2/tools/map_editor/build
+    Start 1: editor_document_roundtrip
+1/5 Test #1: editor_document_roundtrip ........   Passed    0.31 sec
+    Start 2: editor_textured_legacy
+2/5 Test #2: editor_textured_legacy ...........   Passed    0.02 sec
+    Start 3: editor_arena_v2
+3/5 Test #3: editor_arena_v2 ..................   Passed    0.02 sec
+    Start 4: editor_hollow_orbit
+4/5 Test #4: editor_hollow_orbit ..............   Passed    0.02 sec
+    Start 5: editor_exploration
+5/5 Test #5: editor_exploration ...............   Passed    0.01 sec
+
+100% tests passed, 0 tests failed out of 5
+
+Total Test time (real) =   0.39 sec

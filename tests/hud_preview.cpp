@@ -33,15 +33,19 @@ int main(int argc,char** argv) {
         HudEnemy enemy;enemy.worldXZ={5,-7};enemy.healthAnchor={0.4f,0.4f};
         enemy.hp=3;enemy.maxHp=6;enemy.inView=true;enemy.unobstructed=true;enemy.secondsSinceDamage=0.5f;
         model.enemies={enemy};model.hitAge=0.05f;model.damageAge=0.1f;model.damageDirectionRadians=1.1f;
-        const HudPhase phases[]={HudPhase::Ready,HudPhase::Playing,HudPhase::Paused,HudPhase::Won,HudPhase::Dead};
-        const char* names[]={"ready","playing","paused","won","dead"};
+        const HudPhase phases[]={HudPhase::Ready,HudPhase::Playing,HudPhase::Paused,HudPhase::Won,HudPhase::Dead,HudPhase::Playing,HudPhase::Playing,HudPhase::Ready};
+        const char* names[]={"ready","playing","paused","won","dead","low-hp","kill","legacy-ready"};
         for(auto size:{glm::ivec2(1280,720),glm::ivec2(800,600)}) {
             glfwSetWindowSize(window,size.x,size.y);glfwPollEvents();
             int lw,lh,fw,fh;glfwGetWindowSize(window,&lw,&lh);glfwGetFramebufferSize(window,&fw,&fh);
             std::cout<<"logical "<<lw<<'x'<<lh<<" framebuffer "<<fw<<'x'<<fh<<'\n';
-            for(int i=0;i<5;++i) {
+            for(int i=0;i<8;++i) {
                 model.phase=phases[i];model.audioStatus=i==4?HudAudioStatus::Unavailable:HudAudioStatus::Available;model.fatalSource="ENEMY_PROJECTILE";
                 model.resultLockRemaining=i==4?0.6f:0;
+                model.hp=i==5?20.0f:65.0f;
+                model.killAge=i==6?0.05f:1000.0f;
+                model.arenaSurvival=i!=7;
+                model.hasTransformation=i!=7;
                 glViewport(0,0,fw,fh);glClearColor(0.12f,0.16f,0.25f,1);glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
                 glViewport(3,4,111,112);glEnable(GL_DEPTH_TEST);glEnable(GL_CULL_FACE);
                 glEnable(GL_SCISSOR_TEST);glScissor(0,0,7,7);glDisable(GL_BLEND);

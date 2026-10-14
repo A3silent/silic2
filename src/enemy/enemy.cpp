@@ -22,6 +22,10 @@ AABB Enemy::getAABB() const {
 
 bool Enemy::isTouchingPlayer(const glm::vec3& playerPos) const {
     if (isDead() || type==EnemyType::Sentry) return false;
+    if(arenaDefinition && arenaDefinition->spatialWorld) {
+        if(std::abs(position.y-playerPos.y)>1.4f)return false;
+        if(arenaDefinition->spatialWorld->raycast(position+glm::vec3(0,.9f,0),playerPos+glm::vec3(0,.9f,0)).hit)return false;
+    }
     float dx = position.x - playerPos.x;
     float dz = position.z - playerPos.z;
     return std::sqrt(dx * dx + dz * dz) < TOUCH_RANGE;
@@ -105,6 +109,14 @@ void Enemy::takeDamage(int amount) {
 
 void Enemy::applyGravityAndGround(float deltaTime, const Map* map) {
     const float halfWidth=getAABB().getSize().x*0.5f;
+    if(map && map->getSpatialWorld()) {
+        auto world=map->getSpatialWorld();auto ground=world->support(position,.08f,.12f,halfWidth);
+        onGround=ground.hit && position.y>=ground.height-.06f && position.y-ground.height<=.12f;
+        if(onGround){position.y=ground.height+.015f;velocityY=0;return;}
+        velocityY=std::max(velocityY+GRAVITY*deltaTime,MAX_FALL);
+        auto move=world->moveActor(position,{0,velocityY*deltaTime,0},halfWidth,getAABB().getSize().y,false);
+        position=move.position;onGround=move.grounded;if(onGround||move.ceiling)velocityY=0;return;
+    }
     onGround = checkGroundBelow(map);
 
     if (onGround) {
@@ -186,7 +198,14 @@ bool Enemy::checkGroundBelow(const Map* map) const {
 void Enemy::moveTowardPlayer(float deltaTime, const glm::vec3& playerPos, const Map* map) {
     glm::vec3 target=playerPos;
     if(arenaEnabled && arenaDefinition) {
-        target=arenaDefinition->nextWaypoint(position,playerPos,HALF_W+0.04f);
+        if(arenaDefinition->spatialWorld) {
+            navigationRefresh-=deltaTime;
+            if(navigationRefresh<=0 || glm::length(glm::vec2(position.x-navigationTarget.x,position.z-navigationTarget.z))<.3f) {
+                navigationTarget=arenaDefinition->nextWaypoint(position,playerPos,HALF_W+0.04f);
+                navigationRefresh=.18f+float(id%6)*.02f;
+            }
+            target=navigationTarget;
+        } else target=arenaDefinition->nextWaypoint(position,playerPos,HALF_W+0.04f);
     }
     glm::vec3 toPlayer(target.x-position.x,0,target.z-position.z);
     float dist=glm::length(toPlayer);
@@ -196,6 +215,10 @@ void Enemy::moveTowardPlayer(float deltaTime, const glm::vec3& playerPos, const 
     if(glm::length(velocity)>MOVE_SPEED) velocity=glm::normalize(velocity)*MOVE_SPEED;
     glm::vec3 desired=velocity*std::min(deltaTime,dist/MOVE_SPEED);
 
+    if(map && map->getSpatialWorld()) {
+        auto move=map->getSpatialWorld()->moveActor(position,desired,HALF_W,BOX_HEIGHT,onGround);
+        position=move.position;onGround=move.grounded;return;
+    }
     glm::vec3 actual = resolveHorizontalCollision(desired, map);
     position.x += actual.x;
     position.z += actual.z;

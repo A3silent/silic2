@@ -1,0 +1,13 @@
+HYBRID FRAME 14 models 24 objects 1 dirty 1 error 
+GL FRAME 14 logical 1440x900 framebuffer 2880x1800
+HYBRID FRAME 18 models 24 objects 1 dirty 1 error 
+HYBRID FRAME 22 models 24 objects 1 dirty 1 error 
+GL FRAME 22 logical 1440x900 framebuffer 2880x1800
+HYBRID FRAME 26 models 25 objects 1 dirty 1 error 
+HYBRID FRAME 30 models 24 objects 1 dirty 1 error 
+HYBRID FRAME 34 models 25 objects 1 dirty 1 error 
+HYBRID FRAME 41 models 25 objects 2 dirty 1 error 
+GL FRAME 41 logical 1440x900 framebuffer 2880x1800
+HYBRID FRAME 46 models 25 objects 1 dirty 1 error 
+HYBRID FRAME 50 models 25 objects 2 dirty 1 error 
+HYBRID UI: Save As UI failed: /Users/ritzsun/Desktop/game/opengl/silic2/res/maps/starry_crystal_arena.json/tmp/silic2-crystal-editor-acceptance/gui-attempt-1/external/.edited.json.saving-2998560891473291.json: cannot create temporary file

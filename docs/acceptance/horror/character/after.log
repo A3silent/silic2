@@ -1,0 +1,2 @@
+Successfully loaded shaders: res/shaders/character.vert, res/shaders/character.frag
+GL preview, state restoration, bounded effects, pause, expiry and 50 presentation resets passed

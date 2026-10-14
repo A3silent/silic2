@@ -1,0 +1,89 @@
+MapRenderer: Initializing...
+Initializing map shaders...
+Loading map vertex and fragment shaders...
+Successfully loaded shaders: res/shaders/map.vert, res/shaders/map.frag
+Map shaders loaded successfully
+MapRenderer created successfully with shaders
+Successfully loaded shaders: res/shaders/environment_sky.vert, res/shaders/starry_crystal_sky.frag
+Successfully loaded shaders: res/shaders/environment_crystal.vert, res/shaders/starry_crystal_detail.frag
+Successfully loaded shaders: res/shaders/starry_crystal_particle.vert, res/shaders/starry_crystal_particle.frag
+Successfully loaded shaders: res/shaders/map.vert, res/shaders/starry_crystal_map.frag
+Loaded texture: res/texture/crystal_combat/metal_deck-64.png (64x64, 3 channels)
+Loaded texture: res/texture/crystal_combat/mineral_ceramic-64.png (64x64, 3 channels)
+Loaded texture: res/texture/crystal_combat/dark_shell-64.png (64x64, 3 channels)
+Loaded texture: res/texture/crystal_combat/crystal_cleavage-64.png (64x64, 3 channels)
+Loading 24 brushes for rendering...
+Brush 1 setup: 4 vertices, 6 indices
+Brush 10 setup: 108 vertices, 108 indices
+Brush 11 setup: 108 vertices, 108 indices
+Brush 12 setup: 108 vertices, 108 indices
+Brush 13 setup: 108 vertices, 108 indices
+Brush 14 setup: 108 vertices, 108 indices
+Brush 15 setup: 108 vertices, 108 indices
+Brush 16 setup: 36 vertices, 36 indices
+Brush 17 setup: 36 vertices, 36 indices
+Brush 18 setup: 156 vertices, 156 indices
+Brush 19 setup: 156 vertices, 156 indices
+Brush 20 setup: 156 vertices, 156 indices
+Brush 21 setup: 156 vertices, 156 indices
+Brush 22 setup: 156 vertices, 156 indices
+Brush 23 setup: 156 vertices, 156 indices
+Brush 24 setup: 156 vertices, 156 indices
+Brush 25 setup: 156 vertices, 156 indices
+Brush 26 setup: 204 vertices, 204 indices
+Brush 27 setup: 252 vertices, 252 indices
+Brush 28 setup: 36 vertices, 36 indices
+Brush 29 setup: 36 vertices, 36 indices
+Brush 30 setup: 36 vertices, 36 indices
+Brush 31 setup: 36 vertices, 36 indices
+Brush 32 setup: 36 vertices, 36 indices
+Updated lighting: 5 lights
+Map loaded successfully. 24 brushes ready for rendering.
+Successfully loaded shaders: res/shaders/pixel.vert, res/shaders/pixel.frag
+Successfully loaded shaders: res/shaders/environment_sky.vert, res/shaders/environment_sky.frag
+Successfully loaded shaders: res/shaders/environment_crystal.vert, res/shaders/environment_crystal.frag
+Successfully loaded shaders: res/shaders/environment_particle.vert, res/shaders/environment_particle.frag
+Successfully loaded shaders: res/shaders/map.vert, res/shaders/environment_map.frag
+Loading 8 brushes for rendering...
+Brush 6 setup: 27 vertices, 126 indices
+Brush 1 setup: 4 vertices, 6 indices
+Brush 2 setup: 8 vertices, 36 indices
+Brush 3 setup: 8 vertices, 36 indices
+Brush 4 setup: 8 vertices, 36 indices
+Brush 5 setup: 8 vertices, 36 indices
+Brush 7 setup: 8 vertices, 36 indices
+Brush 8 setup: 8 vertices, 36 indices
+Updated lighting: 5 lights
+Map loaded successfully. 8 brushes ready for rendering.
+Successfully loaded shaders: res/shaders/environment_sky.vert, res/shaders/starry_crystal_sky.frag
+Successfully loaded shaders: res/shaders/environment_crystal.vert, res/shaders/starry_crystal_detail.frag
+Successfully loaded shaders: res/shaders/starry_crystal_particle.vert, res/shaders/starry_crystal_particle.frag
+Successfully loaded shaders: res/shaders/map.vert, res/shaders/starry_crystal_map.frag
+Loading 24 brushes for rendering...
+Brush 1 setup: 4 vertices, 6 indices
+Brush 10 setup: 108 vertices, 108 indices
+Brush 11 setup: 108 vertices, 108 indices
+Brush 12 setup: 108 vertices, 108 indices
+Brush 13 setup: 108 vertices, 108 indices
+Brush 14 setup: 108 vertices, 108 indices
+Brush 15 setup: 108 vertices, 108 indices
+Brush 16 setup: 36 vertices, 36 indices
+Brush 17 setup: 36 vertices, 36 indices
+Brush 18 setup: 156 vertices, 156 indices
+Brush 19 setup: 156 vertices, 156 indices
+Brush 20 setup: 156 vertices, 156 indices
+Brush 21 setup: 156 vertices, 156 indices
+Brush 22 setup: 156 vertices, 156 indices
+Brush 23 setup: 156 vertices, 156 indices
+Brush 24 setup: 156 vertices, 156 indices
+Brush 25 setup: 156 vertices, 156 indices
+Brush 26 setup: 204 vertices, 204 indices
+Brush 27 setup: 252 vertices, 252 indices
+Brush 28 setup: 36 vertices, 36 indices
+Brush 29 setup: 36 vertices, 36 indices
+Brush 30 setup: 36 vertices, 36 indices
+Brush 31 setup: 36 vertices, 36 indices
+Brush 32 setup: 36 vertices, 36 indices
+Updated lighting: 5 lights
+Map loaded successfully. 24 brushes ready for rendering.
+PASS actual GL combat regions, timed transformation, frozen/reset pixels, retired observation no-op, cross-theme return, immutable Map. models=23 brushes=24 detailVertices=1152 detailVBO=32256 internal=320x200 output=1280x720

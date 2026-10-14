@@ -1,0 +1,9 @@
+{
+  "exit_code": 0,
+  "synthetic_scene": true,
+  "human_playtest": false,
+  "preview_binary_sha256": "f591d155b3fc496b8f40a0cf2d6edcf280cd23b8c3d88400d286ffa3004c5a6d",
+  "captures": 14,
+  "gl_errors": 0,
+  "frozen_pixels_equal": true
+}

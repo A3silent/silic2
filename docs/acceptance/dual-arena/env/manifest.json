@@ -1,0 +1,33 @@
+{
+  "referenceCommit": "ed76aeefe97a2171323047eba24388edd25051d9",
+  "shaderRestoration": "5 files byte-identical",
+  "pixelComparisons": "14 of 14 byte-identical",
+  "cpuTests": [
+    "dual_scene_test",
+    "scene_math_test",
+    "map_scene_test"
+  ],
+  "GPUReleased": true,
+  "sha256": {
+    "include/environment/environment_scene.h": "4d07e04a96cde5ea9e5eb4f7849796af51e56e3eb2dda596899d384f1ceaecf7",
+    "res/maps/hollow_orbit_arena.json": "93c463276cceb97901e29de9349bb27ef189d163d90f1d291c0101b9f6f9906d",
+    "res/maps/starry_crystal_arena.json": "2bf654e11cd75566916a8cbb690faddc198aaffd4092a9de8668eda4bf604f2b",
+    "res/shaders/environment_crystal.frag": "aef71d140892c7b3b43cbed977b0119aa3cbf8b72c643365c16cb9bec665f84e",
+    "res/shaders/environment_crystal.vert": "82fe0903f5d9a6ea4f52a2c99878f0facf51648cafbd336b99eb61efb360af4f",
+    "res/shaders/environment_map.frag": "1b6894edb1f102ef19b45fc6ce4ee389a11324105f1ad6839dd7322ab0c4d275",
+    "res/shaders/environment_particle.frag": "48c5be45f443fbe6245d5bea19a7a16e3bade7aa818076d6b63bdda12cb7e1cc",
+    "res/shaders/environment_particle.vert": "386caa37477438b4ebd349526ce5dff1e1f0fab4465f9fa9812ef1410d54fef3",
+    "res/shaders/environment_sky.frag": "67266fc639e8ac4c1ded50f28f08ca8f8567b30b0d029e391819f3346d49203f",
+    "res/shaders/environment_sky.vert": "03d747dfeade37bdee016f395430487f53dfd4fba2c392ec47a844880686ad53",
+    "res/shaders/starry_crystal_detail.frag": "945a28548c3d8393f60d71316fce0b60972988af639dd20830e6404f46e223bc",
+    "res/shaders/starry_crystal_map.frag": "3c97d0a23d50c51f2cc9e056a061fa3376aac23f3bed54c7f09e3fbcb28574d9",
+    "res/shaders/starry_crystal_particle.frag": "390e6643e86a4d7a80c08aa7aceb3c0d25463fbe40646f67edd6184723d49125",
+    "res/shaders/starry_crystal_particle.vert": "ba60be6e697dec5fe79f9fbfb15fa27b3aaf2f26a44b609b07a04bcd3fe85cc8",
+    "res/shaders/starry_crystal_sky.frag": "cf273d6ee2dabeaa8bf08744b7d7005ab34486aa5bc53a2ef83cf59a2ad31b6f",
+    "src/engine/map_renderer.cpp": "5fdda93449ee82d741d7ed608d28d5b13dd3b21d6a6aa3942c53ec2c4d1b3c4b",
+    "src/environment/environment_renderer.cpp": "f029570f935bbf300e1b2dcfe3cb6f197b50bb68aab03c3b613e10bda0e3e8ed",
+    "src/environment/environment_scene.cpp": "103a0be7c7ce88d42430a8b5ffdd1552baffb173d2fc4d767207fc09af39e7f9",
+    "src/environment/validation/dual_scene_test.cpp": "07d03db555922d3513d62f2039138ae8f9be89eae8656db08fb792504dd9d96f",
+    "src/environment/validation/horror_preview.cpp": "8b2716f4ec520b7bcef1e4c45b7202c58e9dc3331645f392e209e27fa66bf19f"
+  }
+}

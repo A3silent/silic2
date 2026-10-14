@@ -1,0 +1,5 @@
+make: Nothing to be done for `all'.
+./bin/macos/release/silic2-tests
+make: Nothing to be done for `horror-preview'.
+Audio offline tests passed (headphone/runtime acceptance pending).
+All Silic2 tests passed.

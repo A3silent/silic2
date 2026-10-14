@@ -1,0 +1,775 @@
+{
+  "schemaVersion": 2,
+  "version": "1.0",
+  "gameMode": "exploration",
+  "environmentPreset": "starry_crystal",
+  "contentVersion": "crystal-observatory-v1",
+  "worldSettings": {
+    "gravity": -9.8,
+    "ambientLight": [
+      0.32,
+      0.36,
+      0.48
+    ],
+    "backgroundColor": [
+      0.008,
+      0.014,
+      0.036
+    ]
+  },
+  "environment": {
+    "transformationStart": 45,
+    "transformationDuration": 4,
+    "particleCount": 128
+  },
+  "arena": {
+    "floorBrushId": 1
+  },
+  "geometry": {
+    "brushes": [],
+    "objects": [
+      {
+        "id": 1,
+        "name": "Observatory continuous floor",
+        "shape": "plane",
+        "position": [
+          0,
+          0,
+          0
+        ],
+        "size": [
+          48,
+          0,
+          48
+        ],
+        "material": "observatory_salt",
+        "color": [
+          0.62,
+          0.73,
+          0.65
+        ],
+        "type": "floor"
+      },
+      {
+        "id": 2,
+        "name": "Court north horizon",
+        "shape": "box",
+        "position": [
+          -13.5,
+          2,
+          -24.5
+        ],
+        "size": [
+          23,
+          4,
+          1
+        ],
+        "material": "observatory_ink",
+        "color": [
+          0.12,
+          0.19,
+          0.35
+        ],
+        "type": "wall"
+      },
+      {
+        "id": 3,
+        "name": "South enclosure",
+        "shape": "box",
+        "position": [
+          0.0,
+          3.5,
+          24.5
+        ],
+        "size": [
+          50,
+          7,
+          1
+        ],
+        "material": "observatory_brown",
+        "color": [
+          0.24,
+          0.16,
+          0.12
+        ],
+        "type": "wall"
+      },
+      {
+        "id": 4,
+        "name": "West enclosure",
+        "shape": "box",
+        "position": [
+          -24.5,
+          4.5,
+          0.0
+        ],
+        "size": [
+          1,
+          9,
+          48
+        ],
+        "material": "observatory_brown",
+        "color": [
+          0.24,
+          0.16,
+          0.12
+        ],
+        "type": "wall"
+      },
+      {
+        "id": 5,
+        "name": "East enclosure",
+        "shape": "box",
+        "position": [
+          24.5,
+          5.5,
+          0.0
+        ],
+        "size": [
+          1,
+          11,
+          48
+        ],
+        "material": "observatory_ivory",
+        "color": [
+          0.77,
+          0.74,
+          0.62
+        ],
+        "type": "wall"
+      },
+      {
+        "id": 6,
+        "name": "Entry west baffle",
+        "shape": "box",
+        "position": [
+          -22.5,
+          2.5,
+          15.5
+        ],
+        "size": [
+          1,
+          5,
+          17
+        ],
+        "material": "observatory_brown",
+        "color": [
+          0.24,
+          0.16,
+          0.12
+        ],
+        "type": "wall"
+      },
+      {
+        "id": 7,
+        "name": "Entry east baffle",
+        "shape": "box",
+        "position": [
+          -13.0,
+          3.0,
+          15.0
+        ],
+        "size": [
+          2,
+          6,
+          18
+        ],
+        "material": "observatory_brown",
+        "color": [
+          0.24,
+          0.16,
+          0.12
+        ],
+        "type": "wall"
+      },
+      {
+        "id": 8,
+        "name": "Entry low ceiling",
+        "shape": "box",
+        "position": [
+          -18.0,
+          3.25,
+          18.0
+        ],
+        "size": [
+          8,
+          0.5,
+          12
+        ],
+        "material": "observatory_brown",
+        "color": [
+          0.24,
+          0.16,
+          0.12
+        ],
+        "type": "wall"
+      },
+      {
+        "id": 9,
+        "name": "Entry bent view",
+        "shape": "box",
+        "position": [
+          -20.75,
+          1.5,
+          10.0
+        ],
+        "size": [
+          2.5,
+          3,
+          2
+        ],
+        "material": "observatory_brown",
+        "color": [
+          0.24,
+          0.16,
+          0.12
+        ],
+        "type": "wall"
+      },
+      {
+        "id": 10,
+        "name": "Salt court west cover",
+        "shape": "box",
+        "position": [
+          -18.5,
+          0.55,
+          -15.5
+        ],
+        "size": [
+          3,
+          1.1,
+          3
+        ],
+        "material": "observatory_salt",
+        "color": [
+          0.62,
+          0.73,
+          0.65
+        ],
+        "type": "wall"
+      },
+      {
+        "id": 11,
+        "name": "Salt court east cover",
+        "shape": "box",
+        "position": [
+          -10.5,
+          0.55,
+          -2.0
+        ],
+        "size": [
+          3,
+          1.1,
+          4
+        ],
+        "material": "observatory_salt",
+        "color": [
+          0.62,
+          0.73,
+          0.65
+        ],
+        "type": "wall"
+      },
+      {
+        "id": 12,
+        "name": "Court gallery divider",
+        "shape": "box",
+        "position": [
+          -2.0,
+          4.0,
+          -4.5
+        ],
+        "size": [
+          2,
+          8,
+          11
+        ],
+        "material": "observatory_ink",
+        "color": [
+          0.12,
+          0.19,
+          0.35
+        ],
+        "type": "wall"
+      },
+      {
+        "id": 13,
+        "name": "Gallery page one",
+        "shape": "box",
+        "position": [
+          5.0,
+          3.5,
+          -9.5
+        ],
+        "size": [
+          2,
+          7,
+          7
+        ],
+        "material": "observatory_ink",
+        "color": [
+          0.12,
+          0.19,
+          0.35
+        ],
+        "type": "wall"
+      },
+      {
+        "id": 14,
+        "name": "Gallery page two",
+        "shape": "box",
+        "position": [
+          11.0,
+          4.5,
+          -21.0
+        ],
+        "size": [
+          2,
+          9,
+          6
+        ],
+        "material": "observatory_ink",
+        "color": [
+          0.12,
+          0.19,
+          0.35
+        ],
+        "type": "wall"
+      },
+      {
+        "id": 15,
+        "name": "Gallery page three",
+        "shape": "box",
+        "position": [
+          15.0,
+          3.0,
+          -8.0
+        ],
+        "size": [
+          2,
+          6,
+          6
+        ],
+        "material": "observatory_ink",
+        "color": [
+          0.12,
+          0.19,
+          0.35
+        ],
+        "type": "wall"
+      },
+      {
+        "id": 16,
+        "name": "Exit left pier",
+        "shape": "box",
+        "position": [
+          -3.5,
+          2.5,
+          20.5
+        ],
+        "size": [
+          1,
+          5,
+          5
+        ],
+        "material": "observatory_ivory",
+        "color": [
+          0.77,
+          0.74,
+          0.62
+        ],
+        "type": "wall"
+      },
+      {
+        "id": 17,
+        "name": "Exit right pier",
+        "shape": "box",
+        "position": [
+          3.5,
+          2.5,
+          20.5
+        ],
+        "size": [
+          1,
+          5,
+          5
+        ],
+        "material": "observatory_ivory",
+        "color": [
+          0.77,
+          0.74,
+          0.62
+        ],
+        "type": "wall"
+      },
+      {
+        "id": 18,
+        "name": "Exit lintel",
+        "shape": "box",
+        "position": [
+          0.0,
+          5.0,
+          20.5
+        ],
+        "size": [
+          8,
+          1.0,
+          5
+        ],
+        "material": "observatory_ivory",
+        "color": [
+          0.77,
+          0.74,
+          0.62
+        ],
+        "type": "wall"
+      },
+      {
+        "id": 19,
+        "name": "Gallery north enclosure",
+        "shape": "box",
+        "position": [
+          11.5,
+          5,
+          -24.5
+        ],
+        "size": [
+          27,
+          10,
+          1
+        ],
+        "material": "observatory_ink",
+        "color": [
+          0.12,
+          0.19,
+          0.35
+        ],
+        "type": "wall"
+      }
+    ]
+  },
+  "entities": [
+    {
+      "type": "player_start",
+      "name": "Observatory arrival",
+      "position": [
+        -18,
+        0.03,
+        19
+      ],
+      "rotation": [
+        0,
+        -90,
+        0
+      ]
+    }
+  ],
+  "lights": [
+    {
+      "type": "point",
+      "position": [
+        -18,
+        2,
+        15
+      ],
+      "color": [
+        0.65,
+        0.3,
+        0.13
+      ],
+      "intensity": 0.8,
+      "range": 9
+    },
+    {
+      "type": "point",
+      "position": [
+        -13,
+        6,
+        -10
+      ],
+      "color": [
+        0.6,
+        0.9,
+        0.78
+      ],
+      "intensity": 1.2,
+      "range": 20
+    },
+    {
+      "type": "point",
+      "position": [
+        10,
+        6,
+        -16
+      ],
+      "color": [
+        0.25,
+        0.42,
+        0.8
+      ],
+      "intensity": 0.85,
+      "range": 18
+    },
+    {
+      "type": "point",
+      "position": [
+        18,
+        3,
+        3
+      ],
+      "color": [
+        0.8,
+        0.85,
+        0.65
+      ],
+      "intensity": 0.7,
+      "range": 9
+    },
+    {
+      "type": "point",
+      "position": [
+        0,
+        9,
+        3
+      ],
+      "color": [
+        0.45,
+        0.2,
+        0.7
+      ],
+      "intensity": 1,
+      "range": 18
+    },
+    {
+      "type": "point",
+      "position": [
+        0,
+        3,
+        20
+      ],
+      "color": [
+        0.85,
+        0.8,
+        0.5
+      ],
+      "intensity": 0.8,
+      "range": 9
+    }
+  ],
+  "exploration": {
+    "zones": [
+      {
+        "id": "entry",
+        "name": "LIGHT BAFFLE",
+        "min": [
+          -23,
+          -0.2,
+          6
+        ],
+        "max": [
+          -13,
+          3,
+          23
+        ]
+      },
+      {
+        "id": "court",
+        "name": "SALT MIRROR COURT",
+        "min": [
+          -23,
+          -0.2,
+          -23
+        ],
+        "max": [
+          -3,
+          3,
+          5
+        ]
+      },
+      {
+        "id": "gallery",
+        "name": "BROKEN PAGE GALLERY",
+        "min": [
+          2,
+          -0.2,
+          -23
+        ],
+        "max": [
+          23,
+          3,
+          -5
+        ]
+      },
+      {
+        "id": "observation",
+        "name": "CALIBRATION WINDOW",
+        "min": [
+          12,
+          -0.2,
+          -5
+        ],
+        "max": [
+          23,
+          3,
+          9
+        ]
+      },
+      {
+        "id": "well",
+        "name": "SUSPENDED STAR WELL",
+        "min": [
+          -8,
+          -0.2,
+          -4
+        ],
+        "max": [
+          11,
+          3,
+          17
+        ]
+      }
+    ],
+    "encounterZone": "court",
+    "spawns": [
+      {
+        "type": "chaser",
+        "position": [
+          -18,
+          0,
+          -20
+        ]
+      },
+      {
+        "type": "chaser",
+        "position": [
+          -6,
+          0,
+          -18
+        ]
+      },
+      {
+        "type": "chaser",
+        "position": [
+          -6,
+          0,
+          -4
+        ]
+      }
+    ],
+    "observation": {
+      "min": [
+        17.15,
+        -0.2,
+        2.15
+      ],
+      "max": [
+        18.85,
+        0.5,
+        3.85
+      ]
+    },
+    "observerPosition": [
+      18,
+      0,
+      3
+    ],
+    "observerEyeHeight": 1.6,
+    "target": [
+      0,
+      9,
+      3
+    ],
+    "holdSeconds": 2.5,
+    "angleDegrees": 6,
+    "fragmentDepths": [
+      0.35,
+      0.65,
+      1
+    ],
+    "ringRadius": 2.5,
+    "landmarkPosition": [
+      0,
+      10,
+      3
+    ],
+    "landmarkScale": [
+      5,
+      9,
+      5
+    ],
+    "guidePoints": [
+      [
+        -18,
+        0,
+        19
+      ],
+      [
+        -18,
+        0,
+        7
+      ],
+      [
+        -16,
+        0,
+        -6
+      ],
+      [
+        -8,
+        0,
+        -12
+      ],
+      [
+        2,
+        0,
+        -16
+      ],
+      [
+        14,
+        0,
+        -16
+      ],
+      [
+        18,
+        0,
+        -16
+      ],
+      [
+        18,
+        0,
+        -8
+      ],
+      [
+        18,
+        0,
+        3
+      ],
+      [
+        6,
+        0,
+        5
+      ],
+      [
+        0,
+        0,
+        12
+      ],
+      [
+        0,
+        0,
+        20
+      ]
+    ],
+    "exit": {
+      "min": [
+        -2,
+        -0.2,
+        18
+      ],
+      "max": [
+        2,
+        2,
+        22
+      ]
+    }
+  }
+}

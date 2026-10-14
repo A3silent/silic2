@@ -19,7 +19,7 @@ J read(const std::string &path) {
 void legacyAndMigration() {
     Map map;
     for (const auto *file : {"complex_base", "kailiang_room", "simple_corridor", "test_room",
-                             "textured_room", "starry_crystal_arena"}) {
+                             "textured_room", "hollow_orbit_arena", "starry_crystal_arena"}) {
         const std::string path = std::string("res/maps/") + file + ".json";
         require(map.loadFromFile(path), "load existing map " + path + ": " + map.getLastError());
         const auto snapshot = map.toJson().toString();
@@ -27,7 +27,7 @@ void legacyAndMigration() {
         require(map.loadFromFile(path) && map.getBrushes().size() == count,
                 "repeat load replaces scene, never accumulates");
         Map roundtrip;
-        require(roundtrip.loadFromJson(J::parse(snapshot)), "roundtrip parses");
+        require(roundtrip.loadFromJson(J::parse(snapshot),map.getAssetBaseDirectory()), "roundtrip parses");
         require(roundtrip.toJson().toString() == snapshot, "complete map roundtrip stable");
     }
     Map old;
@@ -36,6 +36,7 @@ void legacyAndMigration() {
     require(old.getGameMode() == GameMode::ArenaSurvival && old.getSchemaVersion() == 2,
             "v1 recognized through content version and anchors");
     const auto &a = old.getArenaLayout();
+    require(map.loadFromFile("tests/fixtures/starry_crystal_arena_v2.json"),"published v2 survival fixture");
     const auto &b = map.getArenaLayout();
     require(a.minXZ == b.minXZ && a.maxXZ == b.maxXZ && a.floorY == b.floorY &&
                 a.playerStart == b.playerStart && a.rifts == b.rifts &&
@@ -55,9 +56,26 @@ void legacyAndMigration() {
     require(!old.loadFromJson(missing) && old.getLastError().find("anchor") != std::string::npos,
             "incomplete v1 anchors fail explicitly");
 }
+void dualPresets() {
+    Map crystal,horror;
+    require(crystal.loadFromFile("tests/fixtures/starry_crystal_arena_v2.json"),"load separate crystal arena");
+    require(horror.loadFromFile("res/maps/hollow_orbit_arena.json"),"load preserved horror arena");
+    require(crystal.getEnvironmentPreset()==EnvironmentPreset::StarryCrystal && horror.getEnvironmentPreset()==EnvironmentPreset::HollowOrbit,"presets remain distinct");
+    require(std::string(crystal.getDisplayName())=="STARRY CRYSTAL" && std::string(horror.getDisplayName())=="HOLLOW ORBIT","map identity follows environment");
+    require(horror.getContentVersion()=="hollow-orbit-v1" && crystal.getContentVersion()=="starry-crystal-arena-v2","separate content identity survives restoration");
+    require(horror.getArenaLayout().rifts==crystal.getArenaLayout().rifts && horror.getArenaLayout().sentryPositions==crystal.getArenaLayout().sentryPositions,"both maps preserve shared gameplay anchors");
+    for(const auto* input:{&crystal,&horror}) {
+        Map roundtrip;
+        require(roundtrip.loadFromJson(SimpleJson::parse(input->toJson().toString())),"dual preset JSON roundtrip");
+        require(roundtrip.getEnvironmentPreset()==input->getEnvironmentPreset(),"roundtrip never downgrades preset");
+        auto env=roundtrip.getEnvironment();env.preset=input==&crystal?EnvironmentPreset::HollowOrbit:EnvironmentPreset::StarryCrystal;
+        require(roundtrip.setEnvironment(env) && roundtrip.getEnvironmentPreset()==env.preset,"editor can switch either preset");
+        require(roundtrip.getGameMode()==GameMode::ArenaSurvival && roundtrip.getArenaLayout().rifts==input->getArenaLayout().rifts,"environment change preserves gameplay/layout");
+    }
+}
 void transactionsAndStrictness() {
     Map m;
-    require(m.loadFromFile("res/maps/starry_crystal_arena.json"), "sample");
+    require(m.loadFromFile("tests/fixtures/starry_crystal_arena_v2.json"), "sample");
     const auto original = m.toJson().toString();
     auto rejects = [&](J bad) {
         require(!m.loadFromJson(bad), "invalid document rejected");
@@ -65,7 +83,7 @@ void transactionsAndStrictness() {
         require(m.toJson().toString() == original, "failure preserves whole prior scene");
     };
     J bad = m.toJson();
-    bad["schemaVersion"] = J(3.0);
+    bad["schemaVersion"] = J(4.0);
     rejects(bad);
     bad = m.toJson();
     bad["worldSettings"]["gravity"] = J("fast");
@@ -125,7 +143,7 @@ void transactionsAndStrictness() {
             "incomplete arena switch rejected atomically");
 }
 void roundtripAndDerived() {
-    auto d = read("res/maps/starry_crystal_arena.json");
+    auto d = read("tests/fixtures/starry_crystal_arena_v2.json");
     d["author"] = J("山 / 🌌");
     d["worldSettings"]["extension"] = J(true);
     d["geometry"]["extension"] = J("retain");
@@ -180,6 +198,7 @@ void roundtripAndDerived() {
 } // namespace
 void runMapTests() {
     legacyAndMigration();
+    dualPresets();
     transactionsAndStrictness();
     roundtripAndDerived();
 }

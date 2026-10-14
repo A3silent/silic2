@@ -1,0 +1,12 @@
+{
+  "content_version": "silic2-audio-v2-cosmic-horror",
+  "device_opened": false,
+  "warning_checks": [
+    {"cue": "rift_warning", "distance": 15, "right_over_left_db": 8.184},
+    {"cue": "sentry_charge", "distance": 15, "right_over_left_db": 11.9602}
+  ],
+  "preview_seconds": 10,
+  "preview_peak": 0.285208,
+  "preview_rms": 0.0251285,
+  "loaded_frames": 936240
+}

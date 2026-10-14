@@ -233,6 +233,7 @@ static bool segmentHitsAABB(const glm::vec3& start, const glm::vec3& end,
 
 bool Weapon::checkBulletCollision(const Bullet& bullet, const Map* map) {
     if (!map || bullet.lifetime <= 0.02f) return false;
+    if(auto world=map->getSpatialWorld())return world->raycast(bullet.prevPosition,bullet.position).hit;
 
     for (const auto& brush : map->getBrushes()) {
         if (brush.vertices.empty()) continue;

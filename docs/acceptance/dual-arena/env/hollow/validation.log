@@ -1,0 +1,77 @@
+MapRenderer: Initializing...
+Initializing map shaders...
+Loading map vertex and fragment shaders...
+Successfully loaded shaders: res/shaders/map.vert, res/shaders/map.frag
+Map shaders loaded successfully
+MapRenderer created successfully with shaders
+Successfully loaded shaders: res/shaders/environment_sky.vert, res/shaders/environment_sky.frag
+Successfully loaded shaders: res/shaders/environment_crystal.vert, res/shaders/environment_crystal.frag
+Successfully loaded shaders: res/shaders/environment_particle.vert, res/shaders/environment_particle.frag
+Successfully loaded shaders: res/shaders/map.vert, res/shaders/environment_map.frag
+Loading 8 brushes for rendering...
+Brush 6 setup: 27 vertices, 126 indices
+Brush 1 setup: 4 vertices, 6 indices
+Brush 2 setup: 8 vertices, 36 indices
+Brush 3 setup: 8 vertices, 36 indices
+Brush 4 setup: 8 vertices, 36 indices
+Brush 5 setup: 8 vertices, 36 indices
+Brush 7 setup: 8 vertices, 36 indices
+Brush 8 setup: 8 vertices, 36 indices
+Updated lighting: 5 lights
+Map loaded successfully. 8 brushes ready for rendering.
+Successfully loaded shaders: res/shaders/pixel.vert, res/shaders/pixel.frag
+Loading 6 brushes for rendering...
+Brush 1 setup: 4 vertices, 6 indices
+Brush 2 setup: 4 vertices, 6 indices
+Brush 3 setup: 4 vertices, 6 indices
+Brush 4 setup: 4 vertices, 6 indices
+Brush 5 setup: 4 vertices, 6 indices
+Brush 6 setup: 4 vertices, 6 indices
+Updated lighting: 3 lights
+Map loaded successfully. 6 brushes ready for rendering.
+Successfully loaded shaders: res/shaders/environment_sky.vert, res/shaders/environment_sky.frag
+Successfully loaded shaders: res/shaders/environment_crystal.vert, res/shaders/environment_crystal.frag
+Successfully loaded shaders: res/shaders/environment_particle.vert, res/shaders/environment_particle.frag
+Successfully loaded shaders: res/shaders/map.vert, res/shaders/environment_map.frag
+Loading 8 brushes for rendering...
+Brush 6 setup: 27 vertices, 126 indices
+Brush 1 setup: 4 vertices, 6 indices
+Brush 2 setup: 8 vertices, 36 indices
+Brush 3 setup: 8 vertices, 36 indices
+Brush 4 setup: 8 vertices, 36 indices
+Brush 5 setup: 8 vertices, 36 indices
+Brush 7 setup: 8 vertices, 36 indices
+Brush 8 setup: 8 vertices, 36 indices
+Updated lighting: 5 lights
+Map loaded successfully. 8 brushes ready for rendering.
+Successfully loaded shaders: res/shaders/environment_sky.vert, res/shaders/starry_crystal_sky.frag
+Successfully loaded shaders: res/shaders/environment_crystal.vert, res/shaders/starry_crystal_detail.frag
+Successfully loaded shaders: res/shaders/starry_crystal_particle.vert, res/shaders/starry_crystal_particle.frag
+Successfully loaded shaders: res/shaders/map.vert, res/shaders/starry_crystal_map.frag
+Loading 8 brushes for rendering...
+Brush 6 setup: 27 vertices, 126 indices
+Brush 1 setup: 4 vertices, 6 indices
+Brush 2 setup: 8 vertices, 36 indices
+Brush 3 setup: 8 vertices, 36 indices
+Brush 4 setup: 8 vertices, 36 indices
+Brush 5 setup: 8 vertices, 36 indices
+Brush 7 setup: 8 vertices, 36 indices
+Brush 8 setup: 8 vertices, 36 indices
+Updated lighting: 5 lights
+Map loaded successfully. 8 brushes ready for rendering.
+Successfully loaded shaders: res/shaders/environment_sky.vert, res/shaders/environment_sky.frag
+Successfully loaded shaders: res/shaders/environment_crystal.vert, res/shaders/environment_crystal.frag
+Successfully loaded shaders: res/shaders/environment_particle.vert, res/shaders/environment_particle.frag
+Successfully loaded shaders: res/shaders/map.vert, res/shaders/environment_map.frag
+Loading 8 brushes for rendering...
+Brush 6 setup: 27 vertices, 126 indices
+Brush 1 setup: 4 vertices, 6 indices
+Brush 2 setup: 8 vertices, 36 indices
+Brush 3 setup: 8 vertices, 36 indices
+Brush 4 setup: 8 vertices, 36 indices
+Brush 5 setup: 8 vertices, 36 indices
+Brush 7 setup: 8 vertices, 36 indices
+Brush 8 setup: 8 vertices, 36 indices
+Updated lighting: 5 lights
+Map loaded successfully. 8 brushes ready for rendering.
+PASS actual GL, frozen/reset pixels, unchanged map, legacy and cross-theme reload. Environment vertices=5832 triangles=1944 internal=320x200 output=1280x720 phase times=0,47,49

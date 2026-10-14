@@ -1,0 +1,174 @@
+{
+  "task": "CRYSTAL-SPACE",
+  "synthetic_validation": true,
+  "map_sha256": "001ac8d47a498c5e3262b34d97269c4c9a0e5dea44574b9f7a3581d9910e50ac",
+  "binaries": {
+    "silic2": "c6d2264bb4c6938f32330e0b5c7d872f21e74ee790e36b7ae946342e835492f3",
+    "silic2-release": "7f9b7f5ccc381ff600387367b802c12bfe9aa2f5e021b5a004cd98108030a1ff",
+    "bin/macos/release/horror-scene-preview": "b8862feeb9f635bb0927d076d3dc99926f3a6810d61919e5f913abf2b863382a",
+    "bin/macos/release/spatial-combat-probe": "d6286fe27c448a3588d099df32dc037aa3fe602511214eeb71549004a4678369",
+    "bin/macos/release/silic2-tests": "d4765e698dd9a2fd8bba1a4cfd5a7510ba91a4b8ac352e2faa5ebf6c2ff5d77c",
+    "bin/macos/debug/silic2-tests": "5c0a210a7a85d950018ecbf4cc5d2dbfe37d362ccd6e76996db538c99b3fae25"
+  },
+  "combat_runs": [
+    {
+      "directory": "combat-attempt-1",
+      "end": {
+        "event": "spatial_combat_end",
+        "passed": true,
+        "reason": "generation_and_cleanup_complete",
+        "synthetic_input": true,
+        "seconds": 113.455,
+        "route_laps": 2,
+        "route_node": 31,
+        "kills": 35,
+        "shots": 786,
+        "damage": 0,
+        "distance": 567.277,
+        "first_fire_seconds": 1.34619,
+        "longest_no_visible_with_living_seconds": 22.0021,
+        "remaining_enemies": 0
+      },
+      "reported_performance": {
+        "event": "performance",
+        "run": 1,
+        "combat_seconds": 113.45514,
+        "frames": 41643,
+        "p95_ms": 6.1661667,
+        "p99_ms": 11.871,
+        "max_ms": 400.26958,
+        "longest_over_50ms": 2,
+        "passed": true,
+        "rss_bytes": 105005056,
+        "audio_frames": 5618880
+      },
+      "independent_csv": {
+        "frames": 41643,
+        "p95_ms": 6.16617,
+        "p99_ms": 11.871,
+        "max_ms": 400.27,
+        "longest_over_50ms": 2
+      },
+      "complete_frames": 41659,
+      "capture_frames": 9,
+      "all_frames_max_ms": 400.257,
+      "binary_sha256": null,
+      "binary_note": "Not separately captured; later changes only acceptance harness cleanup navigation, gap diagnostics and screenshot selection. Map and gameplay/spatial implementations were unchanged."
+    },
+    {
+      "directory": "combat-attempt-2",
+      "end": {
+        "event": "spatial_combat_end",
+        "passed": true,
+        "reason": "generation_and_cleanup_complete",
+        "synthetic_input": true,
+        "seconds": 91.4203,
+        "route_laps": 2,
+        "route_node": 2,
+        "kills": 35,
+        "shots": 782,
+        "damage": 0,
+        "distance": 457.103,
+        "first_fire_seconds": 1.33145,
+        "longest_no_visible_with_living_seconds": 7.44176,
+        "generation_gap_seconds": 7.44176,
+        "cleanup_gap_seconds": 0.520482,
+        "remaining_enemies": 0
+      },
+      "reported_performance": {
+        "event": "performance",
+        "run": 1,
+        "combat_seconds": 91.420265,
+        "frames": 36652,
+        "p95_ms": 6.411125,
+        "p99_ms": 11.01925,
+        "max_ms": 404.59442,
+        "longest_over_50ms": 2,
+        "passed": true,
+        "rss_bytes": 115228672,
+        "audio_frames": 4542240
+      },
+      "independent_csv": {
+        "frames": 36652,
+        "p95_ms": 6.41112,
+        "p99_ms": 11.0192,
+        "max_ms": 404.594,
+        "longest_over_50ms": 2
+      },
+      "complete_frames": 36670,
+      "capture_frames": 10,
+      "all_frames_max_ms": 404.588,
+      "binary_sha256": "7f9b7f5ccc381ff600387367b802c12bfe9aa2f5e021b5a004cd98108030a1ff",
+      "binary_note": "Final binary verified after run."
+    }
+  ],
+  "checks": {
+    "debug_all_tests": "passed",
+    "release_all_tests": "passed",
+    "spatial_final_probe": "PROBE_FAILURES 0",
+    "hollow_fixed_views": {
+      "count": 14,
+      "all_byte_equal": true
+    },
+    "crystal_flow": {
+      "passed": 10,
+      "total": 10
+    },
+    "hollow_flow": {
+      "passed": 10,
+      "total": 10
+    },
+    "legacy_smoke_exit_code": 0,
+    "protected_files_unchanged": 35,
+    "git_diff_check": "passed"
+  },
+  "commands": [
+    "make -f Makefile.map BUILD=debug all test -j4",
+    "make -f Makefile.map BUILD=release all test spatial-probe -j4",
+    "./bin/macos/release/spatial-combat-probe artifacts/acceptance/crystal-combat/cpu-final",
+    "./silic2-release res/maps/starry_crystal_arena.json --acceptance spatial-combat --vsync off --output artifacts/acceptance/crystal-combat/combat-attempt-2",
+    "./bin/macos/release/horror-scene-preview artifacts/acceptance/crystal-combat/hollow-fixed res/maps/hollow_orbit_arena.json",
+    [
+      "./silic2-release",
+      "res/maps/starry_crystal_arena.json",
+      "--acceptance",
+      "flow",
+      "--vsync",
+      "off",
+      "--output",
+      "artifacts/acceptance/crystal-combat/crystal-flow"
+    ],
+    [
+      "./silic2-release",
+      "res/maps/hollow_orbit_arena.json",
+      "--acceptance",
+      "flow",
+      "--vsync",
+      "off",
+      "--output",
+      "artifacts/acceptance/crystal-combat/hollow-flow"
+    ],
+    [
+      "./silic2-release",
+      "res/maps/test_room.json",
+      "--acceptance",
+      "screenshots",
+      "--vsync",
+      "off",
+      "--output",
+      "artifacts/acceptance/crystal-combat/legacy"
+    ]
+  ],
+  "notes": [
+    "Both gameplay runs use ordinary PlayerInput and ordinary weapon fire; no invulnerability, teleport, forced kills or forced completion.",
+    "First run repeats full patrol after 90s; second uses supported navigation to approach remaining enemies after 90s. This changes synthetic input only.",
+    "Retain first and second performance samples, including 400.270ms and 404.594ms peaks. Cause not localized. Some long frames occurred with no living enemies; do not attribute all spikes to pathfinding.",
+    "Official performance series excludes screenshot readback/write and refocus frames; frames-complete.csv retains every frame with classification flags.",
+    "First run longest live-enemy invisibility gap was22.002s; exact final enemy identity was not logged. Second run records gap enemy type/position and separate generation/cleanup intervals.",
+    "CPU-first 18-enemy probe has severe path-query stalls; shared reverse target path cache and early blocked-segment rejection reduce repeated query work. Preserve cpu-first and cpu-cached alongside cpu-final.",
+    "Extra lower-engagement capture may show enemy killed during that update; do not treat it as isolated target readability proof. First-run node28 shows near lower Chaser silhouette.",
+    "Actual human fun/readability and headphone evaluation remain pending; this is synthetic movement and shooting on actual GL/audio.",
+    "Editor and art evidence delivered by PRISM and NEBULA; their manifests remain separately owned.",
+    "No commit or push."
+  ]
+}

@@ -1,0 +1,63 @@
+{
+  "auditor": "ATLAS",
+  "matched_captures": 14,
+  "same_pixels": true,
+  "comparisons": {
+    "env/hollow/phase-mid.ppm": {
+      "matched_baseline": "artifacts/acceptance/horror/env/phase-mid.ppm",
+      "sha256": "cc672982c22590a9d55fceb7865d07a758c10c167173f5bca4ef53494c302abd"
+    },
+    "env/hollow/phase-before.ppm": {
+      "matched_baseline": "artifacts/acceptance/horror/env/phase-before.ppm",
+      "sha256": "fb422637df2dc14879e4eafaa533c2b34108ef673a41b7e1fb814d8d0d9f0dac"
+    },
+    "env/hollow/phase-after.ppm": {
+      "matched_baseline": "artifacts/acceptance/horror/env/phase-after.ppm",
+      "sha256": "6b6b8d87e891317a6d709635d383ce013cff965bd96c47d508e0df69a39a2685"
+    },
+    "env/hollow/spawn-before.ppm": {
+      "matched_baseline": "artifacts/acceptance/horror/env/spawn-before.ppm",
+      "sha256": "7a1e774d5c3e1e1fd335b10cd5f1271e00fef22134601b296f2c7c828f084eee"
+    },
+    "env/hollow/rift-warning.ppm": {
+      "matched_baseline": "artifacts/acceptance/horror/env/rift-warning.ppm",
+      "sha256": "24793c147829846d06776015eb9b6811a20166f2d274c73b20783682c2a840c8"
+    },
+    "env/hollow/layout.ppm": {
+      "matched_baseline": "artifacts/acceptance/horror/env/layout.ppm",
+      "sha256": "487d9394709ae863b7a09d6ec36be43f7e96138d5f4ae053193e6f033abae549"
+    },
+    "env/hollow/spawn-after.ppm": {
+      "matched_baseline": "artifacts/acceptance/horror/env/spawn-after.ppm",
+      "sha256": "960e3d808a424000baaba2cee845de529fa218ce24405fca29d91c5b4b122d9a"
+    },
+    "env/crystal/phase-mid.ppm": {
+      "matched_baseline": "artifacts/acceptance/horror/env/baseline/phase-mid.ppm",
+      "sha256": "265c9ad7040b3cdca6dac0e343c498e8a7f5ca063ae7997a28508e52f5c83b6c"
+    },
+    "env/crystal/phase-before.ppm": {
+      "matched_baseline": "artifacts/acceptance/horror/env/baseline/phase-before.ppm",
+      "sha256": "1698fe93b02924b6786de32788fde5fe48162815ea38bed1b40a6dcba8b587eb"
+    },
+    "env/crystal/phase-after.ppm": {
+      "matched_baseline": "artifacts/acceptance/horror/env/baseline/phase-after.ppm",
+      "sha256": "7e377a4d56dead04664926fa67d3ed4946bb28507336913302b8a227cb844523"
+    },
+    "env/crystal/spawn-before.ppm": {
+      "matched_baseline": "artifacts/acceptance/horror/env/baseline/spawn-before.ppm",
+      "sha256": "4b7a320da5c08d7e2969fe1eee41aebd92d83ccd9591b27592795602ea016602"
+    },
+    "env/crystal/rift-warning.ppm": {
+      "matched_baseline": "artifacts/acceptance/horror/env/baseline/rift-warning.ppm",
+      "sha256": "2fadc59cb535baf0614b7010c8efab1289a65a3652094e3a57db5b741c198fc5"
+    },
+    "env/crystal/layout.ppm": {
+      "matched_baseline": "artifacts/acceptance/horror/env/baseline/layout.ppm",
+      "sha256": "3e14abe10cff4f8981c453e3799cb27b4072cc6c1294340666fef7c03620a8f4"
+    },
+    "env/crystal/spawn-after.ppm": {
+      "matched_baseline": "artifacts/acceptance/horror/env/baseline/spawn-after.ppm",
+      "sha256": "b8401f65658a69a0c9b328b757923fcf40a036e3225c2462f35c1878aececa75"
+    }
+  }
+}

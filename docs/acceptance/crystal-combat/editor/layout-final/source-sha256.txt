@@ -1,0 +1,2 @@
+c79a79f375bcbf436b4f3f19ef099508b4b13f7d9164324db25282932e186eb2  tools/map_editor/build/map_editor
+001ac8d47a498c5e3262b34d97269c4c9a0e5dea44574b9f7a3581d9910e50ac  res/maps/starry_crystal_arena.json

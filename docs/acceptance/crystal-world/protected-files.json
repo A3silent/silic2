@@ -1,0 +1,192 @@
+[
+  {
+    "path": "include/audio/audio_system.h",
+    "sha256": "bb7f845ca5b3b536a03fbc81b69b87f9279bbce03ebd629dd0f594d560b2e4f5",
+    "unchanged": true
+  },
+  {
+    "path": "include/character/character_presentation.h",
+    "sha256": "77d66f4de24cc8d20e32844fcd07fc70f26d1f9fe048621527d75531e96cdd94",
+    "unchanged": true
+  },
+  {
+    "path": "include/enemy/enemy.h",
+    "sha256": "a1c678fe344a65abfd446ecba916fe47697ca3b7eb9df3c6da8aec1d1e67670a",
+    "unchanged": true
+  },
+  {
+    "path": "include/enemy/enemy_geometry.h",
+    "sha256": "20ac6dd8f7a66404d600acf1e7f39a6c6f02b81af4e23c729efab452eaed37f4",
+    "unchanged": true
+  },
+  {
+    "path": "include/enemy/enemy_manager.h",
+    "sha256": "2867d070ee9d0ec7eb432de562514bf9055efa5629e0a9f8f6e0780ad535462d",
+    "unchanged": true
+  },
+  {
+    "path": "include/enemy/enemy_projectile_system.h",
+    "sha256": "8c618871a558f8b1f3ab5d4841203221d448ecdd0e0b137bd06228680a9abaff",
+    "unchanged": true
+  },
+  {
+    "path": "res/audio/ambience.wav",
+    "sha256": "2d66ccfd4d726bfb0d6ed5a2fb852006c3d66a3fe15a50385414edba94c403fa",
+    "unchanged": true
+  },
+  {
+    "path": "res/audio/hit.wav",
+    "sha256": "ea7d581b024e5d53f60556ec4b377b08bacb116d3e1fb0964ab356b2cb22cbee",
+    "unchanged": true
+  },
+  {
+    "path": "res/audio/kill.wav",
+    "sha256": "a9386da41d31a6ec9d11cabe7bfbb616e2571caa5c5ac24559c501bd766668c1",
+    "unchanged": true
+  },
+  {
+    "path": "res/audio/manifest.json",
+    "sha256": "33db4bb690e36fc55347a71a9b724ecac746591c95f7ed11356e0252feef8025",
+    "unchanged": true
+  },
+  {
+    "path": "res/audio/player_death.wav",
+    "sha256": "d8d3b0883f9bf83e9371f8d4f856fa0f1ba77808c4d8e1101e75c4d4616a07f3",
+    "unchanged": true
+  },
+  {
+    "path": "res/audio/player_hurt.wav",
+    "sha256": "d4410b55648b34a8937594e75129d3370d037777ed97ab6967973f692a4c9fd3",
+    "unchanged": true
+  },
+  {
+    "path": "res/audio/player_shot.wav",
+    "sha256": "f87e0188db8f5fba095f958c8384d3d33d0c2dcdb793af013c5d27b3ba800a60",
+    "unchanged": true
+  },
+  {
+    "path": "res/audio/rift_warning.wav",
+    "sha256": "923d7527738529622e4eb82f0bdefab9a3340608890cf8a1a2a3e02f0b03eef4",
+    "unchanged": true
+  },
+  {
+    "path": "res/audio/sentry_charge.wav",
+    "sha256": "4b837ea7c0103e9f44a30ef4d13d1b21e0921428e227804a0ee49dd232d2bd12",
+    "unchanged": true
+  },
+  {
+    "path": "res/audio/sentry_fire.wav",
+    "sha256": "b842c22a8cfdab5b28ca279d462868a00162bef2442fcb71d3a6d5136ea400f0",
+    "unchanged": true
+  },
+  {
+    "path": "res/audio/slide.wav",
+    "sha256": "16132f53b830a10a7703c7af343f43e77a580679523dce1d748c08916a4b5820",
+    "unchanged": true
+  },
+  {
+    "path": "res/audio/transform.wav",
+    "sha256": "5d0903cd72c30e89c24a6ccbe53a8b277af3632b3185dd00aad07198d335e859",
+    "unchanged": true
+  },
+  {
+    "path": "res/audio/ui_confirm.wav",
+    "sha256": "646a551c4fee5750dba0c08f485576cf7fefdc5157bb26d1186f3ca170cdf468",
+    "unchanged": true
+  },
+  {
+    "path": "res/audio/victory.wav",
+    "sha256": "66603a51809a023950ed3ff86f272feec2902a381b7a4d2e9e0a801d340aced9",
+    "unchanged": true
+  },
+  {
+    "path": "res/maps/hollow_orbit_arena.json",
+    "sha256": "93c463276cceb97901e29de9349bb27ef189d163d90f1d291c0101b9f6f9906d",
+    "unchanged": true
+  },
+  {
+    "path": "res/shaders/environment_crystal.frag",
+    "sha256": "aef71d140892c7b3b43cbed977b0119aa3cbf8b72c643365c16cb9bec665f84e",
+    "unchanged": true
+  },
+  {
+    "path": "res/shaders/environment_crystal.vert",
+    "sha256": "82fe0903f5d9a6ea4f52a2c99878f0facf51648cafbd336b99eb61efb360af4f",
+    "unchanged": true
+  },
+  {
+    "path": "res/shaders/environment_map.frag",
+    "sha256": "1b6894edb1f102ef19b45fc6ce4ee389a11324105f1ad6839dd7322ab0c4d275",
+    "unchanged": true
+  },
+  {
+    "path": "res/shaders/environment_particle.frag",
+    "sha256": "48c5be45f443fbe6245d5bea19a7a16e3bade7aa818076d6b63bdda12cb7e1cc",
+    "unchanged": true
+  },
+  {
+    "path": "res/shaders/environment_particle.vert",
+    "sha256": "386caa37477438b4ebd349526ce5dff1e1f0fab4465f9fa9812ef1410d54fef3",
+    "unchanged": true
+  },
+  {
+    "path": "res/shaders/environment_sky.frag",
+    "sha256": "67266fc639e8ac4c1ded50f28f08ca8f8567b30b0d029e391819f3346d49203f",
+    "unchanged": true
+  },
+  {
+    "path": "res/shaders/environment_sky.vert",
+    "sha256": "03d747dfeade37bdee016f395430487f53dfd4fba2c392ec47a844880686ad53",
+    "unchanged": true
+  },
+  {
+    "path": "res/shaders/pixel.frag",
+    "sha256": "e9e5e015faac0cbaa08cfbae8d2233411dd95c0d3e13695f2da3be67efb5ca66",
+    "unchanged": true
+  },
+  {
+    "path": "src/audio/audio_system.cpp",
+    "sha256": "b8c5ba61b3a8f63b7ad06d4978f9890168920b252d3cb735ff23ade65e6d6078",
+    "unchanged": true
+  },
+  {
+    "path": "src/audio/miniaudio_impl.cpp",
+    "sha256": "f4792eb4be25873a884f3627607d92cd281f48ca77488c34cf95fea65aad42c8",
+    "unchanged": true
+  },
+  {
+    "path": "src/character/README.md",
+    "sha256": "1a0fae8adfbe84df1bfc3fc1041dd1284b69f96f0d64dabf09414ec63ca04594",
+    "unchanged": true
+  },
+  {
+    "path": "src/character/character_presentation.cpp",
+    "sha256": "82d05129028366da046e649e2957e4a1819c38b9d3ba4bfe6b5719fedda29fee",
+    "unchanged": true
+  },
+  {
+    "path": "src/character/preview/geometry_check.cpp",
+    "sha256": "2f75ee09eaf62083a79579017ec24b3970d9571fd4d5dd0433cd91e37379f26c",
+    "unchanged": true
+  },
+  {
+    "path": "src/character/preview/preview_main.cpp",
+    "sha256": "7ecfe774e73768e0698b6e73cf095a9fb332e5b6276a4a71ce5a41f39ae312f1",
+    "unchanged": true
+  },
+  {
+    "path": "src/enemy/enemy.cpp",
+    "sha256": "ed1224039eefbb79c16f04b7296bb756acd1b14fb1210aec1b3c55ded06895df",
+    "unchanged": true
+  },
+  {
+    "path": "src/enemy/enemy_manager.cpp",
+    "sha256": "8aa1547658d804ace07f3fb7ea95978ef3c9cc481d4e68de7e7748eae3be459e",
+    "unchanged": true
+  },
+  {
+    "path": "src/enemy/enemy_projectile_system.cpp",
+    "sha256": "840af78ebde165461989a0373965c2ba63cdf3d2fa05afa7d3a8eaab40867b06",
+    "unchanged": true
+  }
+]

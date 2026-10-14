@@ -17,6 +17,11 @@ struct EnvironmentRift {
     glm::mat4 worldToLocal{1.f};
 };
 
+struct EnvironmentRegion {
+    glm::vec2 minimum{0.f}, maximum{0.f};
+    int material = 0; // entry, salt court, ink gallery, observation, well
+};
+
 struct EnvironmentScene {
     EnvironmentSettings settings;
     bool hasFloor = false;
@@ -24,7 +29,25 @@ struct EnvironmentScene {
     glm::vec2 maximumXZ{0.f};
     float floorY = 0.f;
     std::array<EnvironmentRift, 4> rifts;
+    bool observatory = false;
+    bool combatWorld = false;
+    glm::vec3 observerEye{0.f}, focalPoint{0.f};
+    glm::vec3 landmarkPosition{0.f}, landmarkScale{1.f};
+    std::array<float,3> fragmentDepths{{.35f,.65f,1.f}};
+    float ringRadius = 2.5f;
+    std::vector<EnvironmentRegion> regions;
+    std::vector<glm::vec3> guidePoints;
+    glm::vec3 exitCenter{0.f};
 };
+
+struct EnvironmentShaderPaths {
+    const char* mapFragment;
+    const char* skyFragment;
+    const char* detailFragment;
+    const char* particleVertex;
+    const char* particleFragment;
+};
+EnvironmentShaderPaths environmentShaderPaths(EnvironmentPreset preset);
 
 EnvironmentScene deriveEnvironmentScene(const Map& map);
 // Pure helpers shared by the GL renderer and CPU verification.

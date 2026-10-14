@@ -21,7 +21,7 @@ int main(int argc,char** argv) {
             auto value=[&](){if(++i>=argc) throw std::invalid_argument("Missing value for "+arg); return std::string(argv[i]);};
             if(arg=="--help") {
                 std::cout << "Silic2 [map.json] [--seed N] [--vsync on|off] [--width N] [--height N]\n"
-                    "  --acceptance restarts|performance|stress|screenshots|flow --output DIRECTORY [--restart-cycles 50..1000]\n"
+                    "  --acceptance restarts|performance|stress|screenshots|flow|exploration|spatial-combat --output DIRECTORY [--restart-cycles 50..1000]\n"
                     "Acceptance modes use explicit synthetic input; ordinary gameplay is unchanged.\n";
                 return 0;
             } else if(arg=="--seed") {
@@ -31,7 +31,7 @@ int main(int argc,char** argv) {
                 auto v=value(); if(v!="on"&&v!="off") throw std::invalid_argument("--vsync expects on|off"); options.vsync=v=="on";
             } else if(arg=="--acceptance") {
                 options.acceptance=value();
-                if(options.acceptance!="restarts"&&options.acceptance!="performance"&&options.acceptance!="stress"&&options.acceptance!="screenshots"&&options.acceptance!="flow")
+                if(options.acceptance!="restarts"&&options.acceptance!="performance"&&options.acceptance!="stress"&&options.acceptance!="screenshots"&&options.acceptance!="flow"&&options.acceptance!="exploration"&&options.acceptance!="spatial-combat")
                     throw std::invalid_argument("Unknown acceptance mode");
             } else if(arg=="--restart-cycles") {
                 auto n=unsignedValue(value());if(n<50||n>1000)throw std::invalid_argument("restart cycles must be 50..1000");options.restartCycles=static_cast<int>(n);
