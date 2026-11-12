@@ -10,7 +10,7 @@ namespace silic2 {
 
 Weapon::Weapon()
     : bulletVAO(0), bulletVBO(0), glowVAO(0), glowVBO(0),
-      fireCooldown(0.0f), fireRate(0.06f), bulletLightingEnabled(false) {
+      fireCooldown(0.0f), fireRate(0.03f), bulletLightingEnabled(false) {
 }
 
 Weapon::~Weapon() {
@@ -374,6 +374,8 @@ void Weapon::render(const glm::mat4& view, const glm::mat4& projection) {
         rotation[2] = glm::vec4(-forward, 0.0f);
         
         model = model * rotation;
+        // The base mesh is 0.3m long; stretch only its local flight axis.
+        model = glm::scale(model, glm::vec3(1.0f, 1.0f, bullet.length / 0.3f));
         if(bullet.cameraCentered) {
             const float depth=-(view*glm::vec4(bullet.position,1)).z;
             if(depth<=.1f)continue;

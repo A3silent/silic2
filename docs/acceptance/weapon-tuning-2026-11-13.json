@@ -1,0 +1,95 @@
+{
+  "task": "PUBLISH-ACCEPT",
+  "date": "2026-11-13",
+  "branch": "macos-port",
+  "source_only": true,
+  "parameters": {
+    "sight": {
+      "frame_beam_width": 0.0163,
+      "energy_stripe_width": 0.00432,
+      "core_stripe_width": 0.00145
+    },
+    "weapon": {
+      "bullet_color": [
+        1,
+        0.025,
+        0.04
+      ],
+      "bullet_visual_length": 0.75,
+      "bullet_speed": 195,
+      "fire_interval": 0.03
+    }
+  },
+  "source_hashes": {
+    "src/character/procedural_rifle.cpp": "016675f0f103e596d3c54a896a4ff2309220972d98fa12b5446b8a75d0c42396",
+    "include/player/weapon.h": "d52742f6962bd66ac346f692619a9642a2473f775e723df528bcc6776c95ee0b",
+    "src/player/weapon.cpp": "32ac08321708f1afb3b1dbe2f918e9312326d0528f2f3e76fea8a00d6df0c3e9"
+  },
+  "builds": {
+    "debug": {
+      "command": "make -f Makefile.map BUILD=debug -j4 all procedural-rifle-check ads-check",
+      "exit_code": 0,
+      "ads_cpu": "passed",
+      "procedural_rifle_cpu": "passed"
+    },
+    "release": {
+      "command": "make -f Makefile.map BUILD=release -j4 all procedural-rifle-check ads-check",
+      "exit_code": 0,
+      "ads_cpu": "passed",
+      "procedural_rifle_cpu": "passed"
+    }
+  },
+  "actual_app": {
+    "command": "./silic2-release res/maps/starry_crystal_arena.json --acceptance rifle-ads --output artifacts/acceptance/publish-2026-11-13/app-retry1 --width 1280 --height 720 --vsync on",
+    "exit_code": 0,
+    "checks": 17,
+    "passed": 17,
+    "configuration": {
+      "event": "configuration",
+      "logical_width": 1280,
+      "logical_height": 720,
+      "framebuffer_width": 2560,
+      "framebuffer_height": 1440,
+      "internal_width": 480,
+      "internal_height": 300,
+      "vsync": true,
+      "audio_available": true,
+      "synthetic_input": true
+    },
+    "evidence": "app-retry1/rifle-ads.jsonl",
+    "screenshots": [
+      "app-retry1/hip.png",
+      "app-retry1/ads.png",
+      "app-retry1/ads-moving-fire.png"
+    ]
+  },
+  "initial_attempt": {
+    "path": "app/rifle-ads.jsonl",
+    "exit_code": 0,
+    "checks_completed": 11,
+    "passed_recorded_checks": 11,
+    "status": "incomplete and excluded from acceptance",
+    "details": "Normal quit at run_time1.623 after pause/release stage; no GL/assertion error logged; cause not established. Same-source/same-binary retry required."
+  },
+  "reused_checks": {
+    "cadence_source_exact": true,
+    "red_bullet_header_exact": true,
+    "red_render_cpp_exact_except_previously_tested_cadence_change": true,
+    "cadence_record": "artifacts/acceptance/double-fire-rate/summary.json",
+    "red_render_record": "artifacts/acceptance/red-long-bullets/verify/render-comparison.json"
+  },
+  "source_audit": {
+    "checked": 609,
+    "changed_during_verification": [],
+    "evidence": "source-before.json"
+  },
+  "atlas_verification": {
+    "final_source_and_binary_hashes_match": true,
+    "raw_app_checks_passed": 17,
+    "final_ads_scene_reviewed": true
+  },
+  "limitations": [
+    "Actual App route uses synthetic input in a hidden GL window; not human playtesting or OS focus-event delivery verification.",
+    "No full normal suite repeat,performance benchmark,API call or Git write;ATLAS owns commit/push."
+  ]
+}

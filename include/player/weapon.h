@@ -29,12 +29,12 @@ struct Bullet {
     float speed;
     glm::vec3 color;
     float intensity;
-    float length;  // Bullet length
+    float length;  // Visual length in meters; collision remains a swept point.
 
     Bullet(const glm::vec3& pos, const glm::vec3& dir, float spd = 50.0f)
         : position(pos), prevPosition(pos), direction(glm::normalize(dir)),
           lifetime(0.0f), maxLifetime(3.0f), speed(spd),
-          color(0.5f, 0.8f, 1.0f), intensity(2.0f), length(0.3f) {  // Sky blue color
+          color(1.0f, 0.025f, 0.04f), intensity(2.0f), length(0.75f) {  // Red emissive tracer
         velocity = direction * speed;
     }
 

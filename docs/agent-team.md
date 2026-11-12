@@ -519,3 +519,72 @@ SIGHT-WIDTH已完成并关闭写入：瞄具投影宽34.03395→45.94584px（×1
 本次本地版本收录当前森林/巨构/导入、camera lean、ADS和程序步枪源码及验收记录；
 模型/贴图/音频/构建产物留本地，未推送远端。无关面试笔记保持未跟踪。
 精简证据：docs/acceptance/sight-width-2026-11-12.json；人工试玩边界继续保留。
+
+## 瞄具边框加厚（2026-11-12）
+
+用户以实机圈图要求框条更厚；ATLAS按侧边/底边框条厚度约增加30%处理，红色嵌线
+随框条同比加厚，保留上轮横向加宽35%的框架中线与红点。此次先交付工作区可审阅修改。
+
+| 任务 | 唯一执行入口 | 独占文件 / 验收 |
+| --- | --- | --- |
+| SIGHT-THICK-ART | KINETIC临时sight_width_art续作 | 本轮artifacts候选源码/补丁；加厚框条，实际hip/ADS/recoil图与现有GL检查；正式源码由ATLAS应用补丁以在当前聊天展示 |
+| SIGHT-THICK-VERIFY | VECTOR临时sight_width_verify续作 | 只写本轮artifacts验证工具/记录；Debug/Release、CPU与正式App验证，不改生产文件 |
+| SIGHT-THICK-ACCEPT | ATLAS | src/character/procedural_rifle.cpp仅应用KINETIC补丁、docs与保护基线；审图、完整源码diff展示 |
+
+CPU可并行，实际GL先KINETIC、再VECTOR串行。保留全部既有工作；不运行性能基准或API。
+证据目录：artifacts/acceptance/crimson-frame-thickness/。只运行与几何改动相关的既有检查。
+
+SIGHT-THICK完成，源码和GPU冻结/释放：只调整三处宽度参数；几何7/7、Debug/Release
+构建与程序枪/ADS CPU检查、正式App17/17通过。ATLAS审阅加厚前后细节及正式ADS图。
+本轮1050文件基线只有程序枪源码和两份交付文档变化；当前工作区完整diff另存
+artifacts/acceptance/crimson-frame-thickness/changes.patch，并请求在当前聊天显示审阅面板。
+本轮修改保留未提交，既有eadd26b提交完整；不把聊天的文件编辑摘要当作完整Git变更列表。
+
+## 红色长弹体（2026-11-13）
+
+用户要求玩家子弹改为红色，可见弹体长度约为当前2.5倍。当前基础网格长0.3m，
+Bullet.length原字段尚未驱动渲染；本轮将默认可见长度设为0.75m并接入渲染Z缩放。
+弹体/现有光晕使用红色；不调整速度195、射速、伤害、碰撞、生命周期或敌方弹体。
+保留上一轮尚未提交的加厚瞄具和所有现有修改。
+
+| 任务 | 唯一执行入口 | 独占文件 / 验收 |
+| --- | --- | --- |
+| RED-BULLET-INTEGRATE | VECTOR临时sight_width_verify续作 | 本轮artifacts候选补丁/验证工具；共享Weapon默认颜色/视觉长度和渲染接入方案；实际渲染与ADS行为检查 |
+| RED-BULLET-ACCEPT | ATLAS | include/player/weapon.h、src/player/weapon.cpp仅应用VECTOR补丁；团队记录与保护基线、实际图和完整diff |
+
+VECTOR提供候选后ATLAS在当前聊天应用，以展示全部源码变化。GPU独占交VECTOR；
+只做相关CPU/GL及Debug/Release检查，不重复完整性能基准、不调用API、不提交推送。
+证据目录：artifacts/acceptance/red-long-bullets/。
+
+RED-BULLET完成，GPU释放：实际Weapon渲染16/16、Debug/Release构建与ADS CPU、
+正式App17/17通过。弹体本地轴长×2.5、横向粗细不变；侧视投影75→187.5px。
+颜色/现有光晕为红色，底层网格和光晕大小不变。ATLAS审阅实际侧视/斜视对照，
+核对1050文件基线只有Weapon两文件和本团队记录变化，上一轮瞄具加厚完整保留。
+本轮未提交、未推送；无需追加依赖或素材。
+
+## 射速翻倍（2026-11-13）
+
+用户要求射速提升一倍。本轮将玩家主武器射击间隔0.06s减为0.03s；保留红色长弹体、
+加厚瞄具及已有未提交修改。FIRE-RATE由VECTOR临时sight_width_verify负责一行候选补丁
+及本轮artifacts验证；ATLAS唯一写src/player/weapon.cpp应用补丁、维护本记录。
+验证Debug/Release、既有ADS CPU、实际Weapon连续hip/ADS发射间隔和reset；不重复整套
+视觉/性能检查，不提交推送。证据目录：artifacts/acceptance/double-fire-rate/。
+
+FIRE-RATE完成：源码唯一变化为射击间隔0.06→0.03s。Debug/Release构建、ADS CPU、
+实际Weapon腰射/开镜的0.6s半开区间对照均由10发变20发，边界/同帧拦截/reset检查通过。
+保留既有逐帧冷却方式，不声明任意帧率下都精确翻倍；1050文件基线其余1048文件不变。
+
+## 上传当前版本（2026-11-13）
+
+用户要求上传一版，授权提交并推送origin/macos-port。收录上次本地eadd26b及当前
+加厚瞄具、红色0.75m弹体和0.03s射击间隔。检测到瞄具之后还有本地参数调整：
+框条0.0163、红嵌线0.00432、亮芯0.00145，原样保留，按本轮源码重新验证。
+PUBLISH-VERIFY由VECTOR临时sight_width_verify唯一负责构建/CPU/实际App检查，只写
+artifacts/acceptance/publish-2026-11-13/；ATLAS负责文档、文件筛选、提交和普通推送。
+沿用源码交付规则，素材/构建产物和无关面试笔记不纳入本次提交。
+
+PUBLISH验收完成：最终源码Debug/Release构建、程序枪/ADS CPU通过；正式App同版本
+复验17/17通过。首次仅11项便正常退出的未完成记录保留，不计入通过，原因未确定。
+609份源码/配置在验证期间哈希保持；ATLAS复核最终ADS图、源码与二进制hash。
+正式精简记录：docs/acceptance/weapon-tuning-2026-11-13.json。提交仅包含本轮5份已有
+源码/文档及新验收记录；上次本地eadd26b随同普通推送发布，不改写历史。

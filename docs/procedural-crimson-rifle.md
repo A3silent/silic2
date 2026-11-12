@@ -140,6 +140,21 @@ platforms remain untested in this pass. No performance benchmark was run.
 
 ## Tuning
 
+Screenshot follow-up: the side and bottom sight rails are now 30% thicker, with
+matching 30% wider red Energy/Core insets. The previous widened frame centerlines,
+depth, mounting support, tip geometry, centered dot and gun body are preserved.
+The production change is three width parameters in `sight()`. Actual generated
+geometry checks pass7/7; matched hip/ADS/recoil previews retain the centered dot
+and continuous energy lines. Evidence: `artifacts/acceptance/crimson-frame-thickness/`.
+
+The 2026-11-13 upload snapshot preserves the subsequent local sight tuning:
+housing width0.0163, Energy inset width0.00432 and Core width0.00145 before the
+existing assembly transforms. The 30% figures above describe the earlier iteration.
+Player projectiles now use red emission, a0.75m visual length (2.5times the0.3m
+base mesh) and a0.03-second firing interval. Bullet width, speed195, damage and
+swept collision are retained. The interval is half the previous0.06seconds;
+the existing per-frame firing/cooldown sampling is unchanged.
+
 - Shapes and material palette:`src/character/procedural_rifle.cpp`.
 - Facet shading and red bounce:`res/shaders/character_imported.frag`.
 - Local halo radius/strength:`res/shaders/character_overlay.frag`.

@@ -118,14 +118,14 @@ void sight(Builder& b) {
     std::array<size_t,Count> first;for(size_t i=0;i<Count;++i)first[i]=b.parts[i].mesh.vertices.size();
     const float z=.08f, bottom=.066f;
     const std::array<glm::vec3,4> rim={glm::vec3(-.049f,.130f,z),glm::vec3(-.031f,bottom,z),glm::vec3(.031f,bottom,z),glm::vec3(.049f,.130f,z)};
-    for(size_t i=1;i<rim.size();++i)b.beam(rim[i-1],rim[i],.011f,.033f,Optic);
+    for(size_t i=1;i<rim.size();++i)b.beam(rim[i-1],rim[i],.0163f,.033f,Optic);
     b.beam({-.027f,.054f,z},{.027f,.054f,z},.014f,.053f,Armor);
     b.beam({0,.027f,z},{0,.052f,z},.032f,.035f,Optic);
     // Rear-facing red inset; narrow, with a low-bloom region around the dot.
     std::vector<glm::vec3> red;
     for(const auto p:rim)red.push_back(p+glm::vec3(0,0,.0172f));
-    b.ribbon(red,.0034f,{0,0,1},Energy);
-    b.ribbon(red,.0010f,{0,0,1},Core);
+    b.ribbon(red,.00432f,{0,0,1},Energy);
+    b.ribbon(red,.00145f,{0,0,1},Core);
     // Tiny split bevels at the two tips preserve the pointed silhouette.
     for(int sign:{-1,1})b.tri({sign*.042f,.130f,z+.018f},{sign*.051f,.140f,z+.005f},{sign*.056f,.126f,z+.010f},Edge);
     // Keep the established eyeline and complete gun pose. Only the original
