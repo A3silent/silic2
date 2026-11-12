@@ -208,6 +208,7 @@ const char* Map::getDisplayName() const {
     if(gameMode==GameMode::Exploration) return "CRYSTAL OBSERVATORY";
     switch(environment.preset) {
     case EnvironmentPreset::HollowOrbit: return "HOLLOW ORBIT";
+    case EnvironmentPreset::ForestCrystal: return "FOREST CRYSTAL";
     case EnvironmentPreset::StarryCrystal: return "STARRY CRYSTAL";
     case EnvironmentPreset::None: return gameMode==GameMode::ArenaSurvival ? "ARENA" : "MAP";
     }
@@ -268,6 +269,8 @@ void Map::parseDocument(const J &d) {
         environment.preset = EnvironmentPreset::StarryCrystal;
     else if (preset == "hollow_orbit")
         environment.preset = EnvironmentPreset::HollowOrbit;
+    else if (preset == "forest_crystal")
+        environment.preset = EnvironmentPreset::ForestCrystal;
     else if (preset != "none")
         fail("environmentPreset", "unsupported value " + preset);
     contentVersion = str(d, "contentVersion", "legacy", "map");
@@ -275,6 +278,10 @@ void Map::parseDocument(const J &d) {
         const auto &w = d["worldSettings"];
         object(w, "worldSettings");
         worldSettings.gravity = num(w, "gravity", -9.8, "worldSettings");
+        worldSettings.farPlane = num(w, "farPlane", 0, "worldSettings");
+        if (worldSettings.farPlane != 0 &&
+            (worldSettings.farPlane < 10 || worldSettings.farPlane > 2000))
+            fail("worldSettings.farPlane", "expected 0 (global default) or 10..2000 metres");
         worldSettings.ambientLight =
             vec(w, "ambientLight", worldSettings.ambientLight, "worldSettings");
         worldSettings.backgroundColor =
@@ -454,7 +461,7 @@ void Map::parseDocument(const J &d) {
         if(!spatialSettings.enabled)fail("geometry.models","requires spatial triangles");const auto& list=d["geometry"]["models"];array(list,"geometry.models");
         for(size_t i=0;i<list.size();++i){const auto& j=list[i];object(j,"model");ModelInstance m;m.source=j;m.id=integer(j["id"],"model.id",0,UINT32_MAX);m.name=str(j,"name","","model");m.asset=str(j,"asset","","model");
             if(m.asset.empty()||!j.hasKey("collisionAsset"))fail("model","asset and explicit collisionAsset required");m.collisionAsset=str(j,"collisionAsset","","model");
-            m.position=vec(j,"position",glm::vec3(0),"model");m.rotation=vec(j,"rotation",glm::vec3(0),"model");m.scale=vec(j,"scale",glm::vec3(1),"model");m.material=str(j,"material","default","model");m.color=vec(j,"color",glm::vec3(.8f),"model");
+            m.position=vec(j,"position",glm::vec3(0),"model");m.rotation=vec(j,"rotation",glm::vec3(0),"model");m.scale=vec(j,"scale",glm::vec3(1),"model");m.material=str(j,"material","default","model");m.texture=str(j,"texture","","model");m.color=vec(j,"color",glm::vec3(.8f),"model");
             spatial(m.position,"model.position");spatial(m.rotation,"model.rotation");spatial(m.scale,"model.scale");if(m.scale.x<=0||m.scale.y<=0||m.scale.z<=0)fail("model.scale","positive components required");models.push_back(m);
         }
     }
@@ -555,7 +562,7 @@ void Map::rebuild() {
     brushes = legacyBrushes;collisionBrushes=legacyBrushes;
     for (const auto &o : objects) {auto b=compile(o);brushes.push_back(b);if(o.collision)collisionBrushes.push_back(b);}
     for(const auto& m:models) {
-        auto compileAsset=[&](const std::string& path) {auto mesh=loadStaticObj((std::filesystem::path(assetBaseDirectory)/path).lexically_normal().string());Brush b;b.id=m.id;b.material=m.material;b.color=m.color;b.vertices=std::move(mesh.vertices);b.faces=std::move(mesh.faces);b.texCoords=std::move(mesh.texCoords);auto transform=staticTransform(m.position,m.rotation,m.scale);
+        auto compileAsset=[&](const std::string& path) {auto mesh=loadStaticObj((std::filesystem::path(assetBaseDirectory)/path).lexically_normal().string());Brush b;b.id=m.id;b.material=m.material;b.color=m.color;if(!m.texture.empty())b.texture=(std::filesystem::path(assetBaseDirectory)/m.texture).lexically_normal().string();b.vertices=std::move(mesh.vertices);b.faces=std::move(mesh.faces);b.texCoords=std::move(mesh.texCoords);auto transform=staticTransform(m.position,m.rotation,m.scale);
             for(auto& v:b.vertices){v=glm::vec3(transform*glm::vec4(v,1));spatial(v,"model.transformedVertex");}return b;};
         brushes.push_back(compileAsset(m.asset));if(!m.collisionAsset.empty())collisionBrushes.push_back(m.collisionAsset==m.asset?brushes.back():compileAsset(m.collisionAsset));
     }
@@ -723,10 +730,13 @@ J Map::toJson() const {
     d["gameMode"] = J(gameMode == GameMode::ArenaSurvival ? "arena_survival" : gameMode == GameMode::Exploration ? "exploration" : "legacy");
     d["environmentPreset"] =
         J(environment.preset == EnvironmentPreset::StarryCrystal ? "starry_crystal" :
-          environment.preset == EnvironmentPreset::HollowOrbit ? "hollow_orbit" : "none");
+          environment.preset == EnvironmentPreset::HollowOrbit ? "hollow_orbit" :
+          environment.preset == EnvironmentPreset::ForestCrystal ? "forest_crystal" : "none");
     d["contentVersion"] = J(contentVersion);
     J w = original(d["worldSettings"]);
     w["gravity"] = J(double(worldSettings.gravity));
+    if (worldSettings.farPlane != 0 || w.hasKey("farPlane"))
+        w["farPlane"] = J(double(worldSettings.farPlane));
     w["ambientLight"] = jvec(worldSettings.ambientLight);
     w["backgroundColor"] = jvec(worldSettings.backgroundColor);
     d["worldSettings"] = w;
@@ -777,7 +787,7 @@ J Map::toJson() const {
     }
     g["brushes"] = bs;
     g["objects"] = os;
-    if(!models.empty()) {J list=J::array();for(const auto& m:models){J j=original(m.source);j["id"]=J(double(m.id));j["name"]=J(m.name);j["asset"]=J(m.asset);j["collisionAsset"]=J(m.collisionAsset);j["position"]=jvec(m.position);j["rotation"]=jvec(m.rotation);j["scale"]=jvec(m.scale);j["material"]=J(m.material);j["color"]=jvec(m.color);list.push_back(j);}g["models"]=list;}
+    if(!models.empty()) {J list=J::array();for(const auto& m:models){J j=original(m.source);j["id"]=J(double(m.id));j["name"]=J(m.name);j["asset"]=J(m.asset);j["collisionAsset"]=J(m.collisionAsset);j["position"]=jvec(m.position);j["rotation"]=jvec(m.rotation);j["scale"]=jvec(m.scale);j["material"]=J(m.material);if(!m.texture.empty() || j.hasKey("texture"))j["texture"]=J(m.texture);j["color"]=jvec(m.color);list.push_back(j);}g["models"]=list;}
     d["geometry"] = g;
     J es = J::array();
     for (const auto &e : entities) {
@@ -851,7 +861,7 @@ bool Map::saveToFile(const std::string &path) const {
         if (!f)
             fail(path, "cannot create temporary file");
         J saved=toJson();
-        if(!models.empty())for(size_t i=0;i<models.size();++i)for(const char* key:{"asset","collisionAsset"}) {
+        if(!models.empty())for(size_t i=0;i<models.size();++i)for(const char* key:{"asset","collisionAsset","texture"}) {
             const auto resource=saved["geometry"]["models"][i].getString(key);if(resource.empty())continue;
             auto absolute=std::filesystem::absolute(std::filesystem::path(assetBaseDirectory)/resource);
             saved["geometry"]["models"][i][key]=J(std::filesystem::relative(absolute,std::filesystem::absolute(path).parent_path()).generic_string());

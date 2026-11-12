@@ -50,6 +50,9 @@ public:
 
     // Render the current map
     void render(const glm::mat4& view, const glm::mat4& projection);
+    // Draw after opaque world/actors, before additive FX and first-person/HUD.
+    // Forest spire only: nearest surface alpha composition, not refraction.
+    void renderTranslucent(const glm::mat4& view, const glm::mat4& projection);
 
     // Arena-only, simulation-clock presentation. Safe no-ops on legacy maps.
     void setEnvironmentTime(float combatSeconds);
@@ -76,9 +79,22 @@ public:
     void setCrystalTextureMask(unsigned mask) { crystalTextureMask = mask & 15u; }
 
 private:
+    struct TreeInstance {
+        glm::mat4 transform;
+        glm::vec3 minimum, maximum;
+    };
+    struct TreeBatch {
+        RenderableBrush mesh;
+        std::vector<TreeInstance> instances;
+        std::vector<glm::mat4> visibleTransforms;
+        GLuint instanceVBO = 0;
+        ~TreeBatch() { if(instanceVBO) glDeleteBuffers(1, &instanceVBO); }
+    };
+    std::vector<std::unique_ptr<TreeBatch>> treeBatches;
     std::vector<std::unique_ptr<RenderableBrush>> renderableBrushes;
     std::unique_ptr<Shader> mapShader;
     std::unique_ptr<Shader> arenaShader;
+    std::unique_ptr<Shader> forestCrystalShader;
     std::unique_ptr<EnvironmentRenderer> environment;
 
     // Current map data
@@ -88,6 +104,7 @@ private:
     bool wireframeMode = false;
     bool lightingEnabled = true;
     unsigned crystalTextureMask = 15u;
+    GLuint forestNeutralTexture = 0;
     std::array<std::shared_ptr<Texture>, 4> crystalTextures;
 
     // Lighting data
@@ -98,7 +115,8 @@ private:
     void initShaders();
     void setupBrushGeometry(const Brush& brush, RenderableBrush& renderable);
     void updateLighting();
-    void renderBrush(const RenderableBrush& brush, const glm::mat4& model, Shader& shader);
+    void renderBrush(const RenderableBrush& brush, const glm::mat4& model, Shader& shader, GLsizei instances = 0);
+    void renderTrees(const glm::mat4& viewProjection, Shader& shader);
 };
 
 } // namespace silic2

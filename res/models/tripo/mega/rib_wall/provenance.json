@@ -1,0 +1,28 @@
+{
+  "source": "alien_skeleton/parts/torso-derived.obj",
+  "source_sha256": "f7e51224861b2d14c7a9a0c96882bfab24ac30f2bf6c5800f90e551a1391ab53",
+  "x_min_source_cut": 3.0,
+  "height": 11,
+  "uniform_scale": 1.301157373806223,
+  "rotation_z": 0,
+  "rotation_y": 0,
+  "floor_pivot": [
+    9.207407183511958,
+    10.429629051530227,
+    1.914814763876913
+  ],
+  "visual_triangles": 1354,
+  "bounds": {
+    "min": [
+      -5.255555428620426,
+      0.0,
+      -8.474073853214657
+    ],
+    "max": [
+      5.255555428620424,
+      11.0,
+      8.474073853214657
+    ]
+  },
+  "visual_sha256": "f513228802d2f04dd2d85a92e9342cc51a98c79970410c36d1cb8ebedc458f05"
+}

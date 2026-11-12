@@ -2,12 +2,15 @@
 
 #include <array>
 #include <memory>
+#include <string>
 #include <vector>
 #include <glm/glm.hpp>
 #include "game/gameplay_types.h"
 
 namespace silic2 {
 class Shader;
+class ImportedWeapon;
+struct WeaponAsset;
 
 // Read-only visual snapshot. position is the feet; heading is a world direction.
 // Timers/progress are supplied by gameplay, never advanced by the renderer.
@@ -30,6 +33,7 @@ struct FirstPersonView {
     bool sliding = false;
     glm::vec3 feet{0.0f};
     glm::vec3 forward{0.0f, 0.0f, -1.0f};
+    float aimBlend = 0.0f; // gameplay-owned smooth ADS state, 0 hip .. 1 sighted
 };
 
 enum class CharacterEffect { Impact, Death, SentryFire };
@@ -43,7 +47,7 @@ public:
     CharacterPresentation(const CharacterPresentation&) = delete;
     CharacterPresentation& operator=(const CharacterPresentation&) = delete;
 
-    bool init();
+    bool init(const std::string& weaponConfigPath = "res/config/weapon_presentation.json");
     void shutdown();
     void reset();
     void update(float dt, const FirstPersonView& player);
@@ -65,6 +69,7 @@ private:
         float age = 0.0f, duration = 0.0f, size = 0.0f;
     };
     std::unique_ptr<Shader> shader;
+    std::unique_ptr<ImportedWeapon> importedWeapon;
     unsigned int vao = 0, vbo = 0;
     std::vector<Vertex> vertices;
     std::array<Shard, EffectCapacity> shards{};

@@ -1,0 +1,19 @@
+{
+  "source_visual": "parts/part-000.obj",
+  "source_visual_sha256": "1b2beb3e0e78430b206e782ea7454ff2a550e94b3d527349131b52c47f3ed70e",
+  "collision_sha256": "b94720623e34194aa0dbbc16be6049dd44c55a752e613aa5659e3be7924ced21",
+  "collision_triangles": 4120,
+  "closed_components": 1,
+  "component_signed_volumes_m3": [
+    6163.38489529361
+  ],
+  "all_edges_have_two_incident_faces": true,
+  "adjacent_edge_directions_opposed": true,
+  "removed_attached_flap_faces": 4,
+  "split_coincident_seam_contacts": 3,
+  "source_face_count_before_repair": 4065,
+  "source_coordinate_rounding_m": 1e-06,
+  "t_junction_collinearity_tolerance_m": 2e-05,
+  "method": "Deduplicate reverse visual faces, weld positions at1e-6m, split genuine collinear T-junctions on original facet planes, remove4 thin attached flaps, split3 coincident edge contacts topologically via paired midpoints, propagate consistent orientation then positive signed volume. No convex fill, no triangle thickening, no raised floor cap. Whole original mineral silhouette retained.",
+  "limitations": "Three genuine geometric seam contacts remain position-coincident but are topologically separated; no claim of globally self-intersection-free generated source. Runtime near-base actor/ray checks required. Trees have separate reports."
+}

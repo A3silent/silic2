@@ -1,0 +1,91 @@
+{
+  "format": "silic2-static-model",
+  "schemaVersion": 1,
+  "source": {
+    "file": "model.glb",
+    "sha256": "98e8ce222b16c16c03096d0aa39079c0389288c6012f4d1408bb7d3c82d499ca",
+    "bytes": 1086384,
+    "producer": "tripo-api",
+    "taskId": "9483a0cd-145a-4823-9f80-f3d2455a8ae8",
+    "promptFile": "prompt.en.txt",
+    "promptSha256": "c414b06c90666c60b106465ab31794e09987fd18458555ad87b919765f172ed7"
+  },
+  "normalization": {
+    "rotationDegreesXYZ": [
+      0.0,
+      180.0,
+      0.0
+    ],
+    "scale": 0.8516634050880626,
+    "pivot": "center",
+    "sourcePivotAfterRotation": [
+      6.938893903907228e-18,
+      1.4901161193847656e-08,
+      0.0
+    ],
+    "sourceBounds": {
+      "min": [
+        -0.0576171875,
+        -0.1455077975988388,
+        -0.4990234375
+      ],
+      "max": [
+        0.0576171875,
+        0.1455078274011612,
+        0.4990234375
+      ]
+    },
+    "coordinates": "right-handed +Y up; caller chooses forward using rotation",
+    "uvConvention": "OBJ bottom-left; GLB V flipped for vertically-flipped engine texture loader"
+  },
+  "bounds": {
+    "min": [
+      -0.049070450097847364,
+      -0.12392367906066536,
+      -0.425
+    ],
+    "max": [
+      0.049070450097847364,
+      0.12392367906066536,
+      0.425
+    ]
+  },
+  "parts": [
+    {
+      "baseColorFactor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "baseColorTexture": "textures/basecolor-000.jpg",
+      "doubleSided": true,
+      "obj": "parts/part-000.obj",
+      "bounds": {
+        "min": [
+          -0.049070450097847364,
+          -0.12392367906066536,
+          -0.425
+        ],
+        "max": [
+          0.049070450097847364,
+          0.12392367906066536,
+          0.425
+        ]
+      },
+      "sourceNode": 0,
+      "sourceMesh": 0,
+      "textureSha256": "8ad040eafb28778ae4cbe01279b8f8a21a1b07af0df82b56e0d8bbdcbc0b4956",
+      "vertices": 33066,
+      "triangles": 11022,
+      "sha256": "4f730a164ba07fbeadd6c0da56760f6a0dcfec489ca3a605851d619a4a6e1ca0"
+    }
+  ],
+  "warnings": [
+    "Double-sided primitives were expanded with reversed faces/normals; triangle budget includes both sides.",
+    "Silic2 uses its own lighting/nearest texture filtering, not glTF PBR; base-color factors are retained.",
+    "Visual mesh is not an approved collision proxy; author collision separately and validate routes before placement."
+  ],
+  "triangles": 11022,
+  "vertices": 33066
+}

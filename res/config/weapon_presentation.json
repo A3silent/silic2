@@ -1,0 +1,7 @@
+{
+  "schemaVersion": 1,
+  "enabled": true,
+  "source": "procedural",
+  "design": "crimson_carapace",
+  "note": "Original CPU-generated faceted black/red rifle, six separated gills, curved magazine, split muzzle and open reflex yoke. No mesh, texture, hand, import manifest or model-service dependency. Legacy imported rifles require explicit source=imported plus the old fit fields."
+}

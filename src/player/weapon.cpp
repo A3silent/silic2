@@ -162,7 +162,7 @@ WeaponUpdateResult Weapon::update(float deltaTime, const Map* map, EnemyManager*
 
         // Check collision with enemies using swept segment (prevents tunneling)
         bool hitEnemy = false;
-        if (!hitWall && enemies && it->lifetime > 0.02f) {
+        if (!hitWall && enemies && (it->cameraCentered || it->lifetime > 0.02f)) {
             const auto hitResult =
                 enemies->checkBulletHit(it->prevPosition, it->position, 1);
             hitEnemy = hitResult.hit;
@@ -232,7 +232,7 @@ static bool segmentHitsAABB(const glm::vec3& start, const glm::vec3& end,
 }
 
 bool Weapon::checkBulletCollision(const Bullet& bullet, const Map* map) {
-    if (!map || bullet.lifetime <= 0.02f) return false;
+    if (!map || (!bullet.cameraCentered && bullet.lifetime <= 0.02f)) return false;
     if(auto world=map->getSpatialWorld())return world->raycast(bullet.prevPosition,bullet.position).hit;
 
     for (const auto& brush : map->getBrushes()) {
@@ -254,7 +254,7 @@ void Weapon::createImpactLight(const glm::vec3& position, const glm::vec3& color
 
 }
 
-bool Weapon::fire(const Camera& camera) {
+bool Weapon::fire(const Camera& camera, bool centeredAim) {
     if (fireCooldown > 0.0f) {
         return false;
     }
@@ -276,8 +276,12 @@ bool Weapon::fire(const Camera& camera) {
     glm::vec3 aimPoint = cameraPos + cameraFront * 100.0f;
     glm::vec3 bulletDirection = glm::normalize(aimPoint - bulletStartPos);
     
+    // ADS has no lateral muzzle parallax and starts at the eye, so even a wall
+    // closer than the old .3m muzzle offset remains in the swept collision path.
+    if(centeredAim) { bulletStartPos=cameraPos;bulletDirection=cameraFront; }
     // Create new bullet
-    bullets.emplace_back(bulletStartPos, bulletDirection, 65.0f);
+    bullets.emplace_back(bulletStartPos, bulletDirection, 195.0f);
+    bullets.back().cameraCentered = centeredAim;
     
     // Reset cooldown time
     fireCooldown = fireRate;
@@ -295,6 +299,8 @@ void Weapon::render(const glm::mat4& view, const glm::mat4& projection) {
         return;
     }
     
+    GLint viewport[4];glGetIntegerv(GL_VIEWPORT,viewport);
+    const float projectionPixels=.5f*viewport[3]*std::abs(projection[1][1]);
     // First render glow (behind bullets, using blending)
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE); // Additive blending
@@ -308,6 +314,14 @@ void Weapon::render(const glm::mat4& view, const glm::mat4& projection) {
     
     // Render glow for each bullet
     for (const auto& bullet : bullets) {
+        float glowSize=.8f;
+        if(bullet.cameraCentered) {
+            const float depth=-(view*glm::vec4(bullet.position,1)).z;
+            if(depth<=.1f)continue;
+            // A centered .8m billboard can fill the reflex sight. Limit only ADS
+            // glow to 3 internal pixels; distant glow naturally reaches its old size.
+            glowSize=std::min(glowSize,3.f*depth/std::max(projectionPixels,1.f));
+        }
         glm::mat4 model = glm::mat4(1.0f);
         model = glm::translate(model, bullet.position);
         
@@ -315,9 +329,9 @@ void Weapon::render(const glm::mat4& view, const glm::mat4& projection) {
         glm::vec3 cameraRight = glm::vec3(view[0][0], view[1][0], view[2][0]);
         glm::vec3 cameraUp = glm::vec3(view[0][1], view[1][1], view[2][1]);
         
-        model[0] = glm::vec4(cameraRight * 0.8f, 0.0f); // Glow size
-        model[1] = glm::vec4(cameraUp * 0.8f, 0.0f);
-        model[2] = glm::vec4(0.0f, 0.0f, 0.8f, 0.0f);
+        model[0] = glm::vec4(cameraRight * glowSize, 0.0f); // Glow size
+        model[1] = glm::vec4(cameraUp * glowSize, 0.0f);
+        model[2] = glm::vec4(0.0f, 0.0f, glowSize, 0.0f);
         
         glowShader->setMat4("model", model);
         glowShader->setVec3("glowColor", bullet.color);
@@ -360,6 +374,12 @@ void Weapon::render(const glm::mat4& view, const glm::mat4& projection) {
         rotation[2] = glm::vec4(-forward, 0.0f);
         
         model = model * rotation;
+        if(bullet.cameraCentered) {
+            const float depth=-(view*glm::vec4(bullet.position,1)).z;
+            if(depth<=.1f)continue;
+            const float widthScale=std::min(1.f,2.f*depth/std::max(.04f*projectionPixels,.001f));
+            model=glm::scale(model,glm::vec3(widthScale,widthScale,1.f));
+        }
         
         // Set shader parameters
         bulletShader->setMat4("model", model);

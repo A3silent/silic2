@@ -42,11 +42,17 @@ int runHybridSelfTests(const std::string& directory) {
         auto oldPosition=d.selectedPosition();d.transform(oldPosition+glm::vec3(1,0,0),d.selectedSize());check(near(d.selectedSize(),{6,3,12}),"nudge resized rotated ramp");
         check(d.addModel(asset,asset,{-4,0,-4}),"model import failed: "+d.error());
         check(d.selection().kind==ObjectKind::Model,"import did not select model");
+        const auto texture=fs::absolute(directory+"/assets/base-color.png").string();
+        // This checks metadata/path behavior only; no fake image is decoded or
+        // installed into game resources. Real asset image decoding is a GL gate.
+        check(d.editSelected("Imported model appearance",[&](SimpleJson& j){j["material"]=SimpleJson("imported_static");j["texture"]=SimpleJson(texture);j["color"]=SimpleJson::parse("[0.5,0.6,0.7]");}),"model texture/material edit failed");
+        check(d.map().getBrushes().back().texture==texture,"model base color not passed to compiled brush");
         check(d.editSelected("Rotate model",[](SimpleJson& j){j["rotation"]=SimpleJson::parse("[10,35,0]");}),"model rotation failed");
         d.transform({-3.8f,1.2f,-4},{1.3f,.8f,1.6f},1);
         check(near(d.selectedPosition(),{-4,1,-4}) && near(d.selectedSize(),{1.3f,.8f,1.6f}),"position/scale snapping incorrect");
         const auto modelJson=d.selectedJson().toString();const auto modelBounds=d.selectedBounds();const auto count=d.map().toJson()["geometry"]["models"].size();
         d.duplicate(1);check(d.map().toJson()["geometry"]["models"].size()==count+1,"model duplicate rejected");
+        check(d.selectedJson().getString("texture")==texture && d.selectedJson().getString("material")=="imported_static","model clone lost texture/material");
         check(d.undo() && d.selectedJson().toString()==modelJson,"model undo lost transform or selection");
         check(d.redo() && d.map().toJson()["geometry"]["models"].size()==count+1,"model redo lost clone");check(d.undo(),"restore model");
         const auto valid=d.map().toJson().toString();const auto revision=d.revision();
@@ -57,6 +63,8 @@ int runHybridSelfTests(const std::string& directory) {
         EditorDocument reopened;check(reopened.load(savePath),"external reopen failed: "+reopened.error());reopened.select({ObjectKind::Model,0});
         check(near(reopened.selectedBounds().min,modelBounds.min) && near(reopened.selectedBounds().max,modelBounds.max),"external save transformed model");
         check(!fs::path(reopened.selectedJson().getString("asset")).is_absolute(),"shared save did not make asset relative to destination");
+        check(!fs::path(reopened.selectedJson().getString("texture")).is_absolute(),"model texture was not rebased on Save As");
+        check(reopened.map().getBrushes().back().texture==texture && reopened.selectedJson().getString("material")=="imported_static","external reopen lost compiled texture/material");
         reopened.transform(reopened.selectedPosition()+glm::vec3(1,0,0),reopened.selectedSize());check(reopened.dirty(),"edit after external reopen lost asset base");
         check(reopened.undo() && !reopened.dirty() && reopened.redo(),"external loaded model history failed");
         reopened.addNavNode({-2,0,0});const auto first=reopened.selectedJson().getNumber("id");reopened.addNavNode({0,0,2});const auto second=reopened.selectedJson().getNumber("id");
@@ -66,7 +74,7 @@ int runHybridSelfTests(const std::string& directory) {
         check(reopened.undo() && reopened.map().toJson()["spatial"]["navigation"]["links"].size()==1,"node undo lost links");
         check(reopened.save(directory+"/external/second-save.json"),reopened.error());Map shared;check(shared.loadFromFile(directory+"/external/second-save.json"),"second external save lost resources");
         check(shared.getSchemaVersion()==3 && !shared.getCollisionBrushes().empty(),"hybrid data lost after shared reload");
-        std::cout<<"EDITOR HYBRID SELF-TEST PASS: ramp/local transform/world bounds, OBJ import/TRS/clone, invalid asset/scale transaction, external Save As/reopen/edit, node/link/history\n";return 0;
+        std::cout<<"EDITOR HYBRID SELF-TEST PASS: ramp/local transform/world bounds, OBJ import/TRS/clone, texture/material/history/rebase, invalid asset/scale transaction, external Save As/reopen/edit, node/link/history\n";return 0;
     }catch(const std::exception& e){std::cerr<<"EDITOR HYBRID SELF-TEST FAIL: "<<e.what()<<'\n';return 1;}
 }
 int runEditorSelfTests(const std::string& fixture,const std::string& directory) {
@@ -98,10 +106,11 @@ int runEditorSelfTests(const std::string& fixture,const std::string& directory) 
             check(d.undo() && !d.dirty() && d.map().toJson().toString()==original,"full-map undo changed original");
             check(d.redo(),"full-map redo failed");
             check(d.save(directory+"/full-crystal.json"),d.error());Map shared;check(shared.loadFromFile(directory+"/full-crystal.json"),shared.getLastError());
-            auto sameMeshes=[&](const auto& a,const auto& b){check(a.size()==b.size(),"compiled mesh count changed");for(size_t i=0;i<a.size();++i)check(a[i].id==b[i].id && a[i].vertices==b[i].vertices && a[i].faces==b[i].faces,"compiled mesh changed after external full-map save");};
+            auto sameMeshes=[&](const auto& a,const auto& b){check(a.size()==b.size(),"compiled mesh count changed");for(size_t i=0;i<a.size();++i)check(a[i].id==b[i].id && a[i].vertices==b[i].vertices && a[i].faces==b[i].faces && a[i].texCoords==b[i].texCoords && a[i].texture==b[i].texture && a[i].material==b[i].material && a[i].color==b[i].color,"compiled mesh/appearance changed after external full-map save");};
             sameMeshes(d.map().getBrushes(),shared.getBrushes());sameMeshes(d.map().getCollisionBrushes(),shared.getCollisionBrushes());
             check(shared.getSpatialSettings().nodes.size()==d.map().getSpatialSettings().nodes.size() && shared.getSpatialSettings().links.size()==d.map().getSpatialSettings().links.size(),"full-map navigation changed");
             check(shared.getGameMode()==d.map().getGameMode(),"full-map mode changed");
+            check(shared.getEnvironmentPreset()==d.map().getEnvironmentPreset() && shared.getWorldSettings().farPlane==d.map().getWorldSettings().farPlane,"full-map environment or viewing distance changed");
             std::cout<<"EDITOR FULL CRYSTAL PASS: "<<shared.getModels().size()<<" models, "<<shared.getSpatialSettings().nodes.size()<<" nodes; transform/history/external save preserves every visual and collision vertex\n";return 0;
         }
         if(d.map().getGameMode()==GameMode::ArenaSurvival){

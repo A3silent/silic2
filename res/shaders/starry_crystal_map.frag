@@ -112,6 +112,15 @@ vec3 combatTexture(vec3 n){
 }
 vec3 combatSurface(vec3 n,vec3 illumination){
     vec3 base=objectColor;
+    if(materialKind==15){
+        // Imported props retain their authored UV layout and base-color factor.
+        // A missing texture leaves the instance color as the opaque fallback.
+        if(useTexture)base*=texture(texture1,TexCoord).rgb;
+        float facing=.55+.45*max(dot(n,normalize(vec3(-.35,.8,.4))),0.);
+        vec3 result=base*(vec3(.65)*facing+illumination*.40);
+        result*=mix(vec3(.92,1.02,1.04),vec3(1.10,.82,1.17),phase);
+        return clamp(result,0.,.82);
+    }
     float upward=max(n.y,0.0);
     vec2 uv=abs(n.y)>.65?FragPos.xz:abs(n.x)>.5?FragPos.zy:FragPos.xy;
     float strata=abs(fract((uv.y+floor(uv.x*.18)*.23)*.18)-.5);

@@ -32,6 +32,7 @@ struct HudViewModel {
     HudPhase phase = HudPhase::Ready;
     float hp = 100.0f, maxHp = 100.0f;
     float combatSeconds = 0.0f;
+    float crosshairOpacity = 1.0f; // ADS fades ordinary reticle only; hit feedback remains.
     bool cleanup = false;
     bool arenaSurvival = true;
     bool exploration=false, observationAvailable=false, calibrated=false;

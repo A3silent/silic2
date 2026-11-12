@@ -31,6 +31,7 @@ struct EnvironmentScene {
     std::array<EnvironmentRift, 4> rifts;
     bool observatory = false;
     bool combatWorld = false;
+    bool forestWorld = false;
     glm::vec3 observerEye{0.f}, focalPoint{0.f};
     glm::vec3 landmarkPosition{0.f}, landmarkScale{1.f};
     std::array<float,3> fragmentDepths{{.35f,.65f,1.f}};

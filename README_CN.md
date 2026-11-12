@@ -7,16 +7,14 @@
 90 秒停止生成敌人，清场获胜；第 45 秒开始一次四秒视听异变。
 本阶段验证移动、主动瞄准、威胁识别和短局节奏，武器能力奖励留到下一里程碑。
 
-Crystal 现为五区连通的立体战斗地图：受晶体侵入的轨道巨构，包含中央裂环庭、
-桥下晶壳沟谷、上层弧道、倾柱侧庭和天空侧廊。宽坡连接上下层，桥下可以真实
-通行；曲面和斜撑使用可复用模型及三角形碰撞。沿用 90 秒敌潮＋清场，不再有
-观察对齐解谜。小地图保持完整显示，异变只改变表现。
-两张地图共用当前敌人、武器和音效；Hollow Orbit 仍是默认入口。
-范围见[确认方案](plan/crystal-combat-world.md)，验证见
-[立体地图验收](docs/crystal-combat-acceptance.md)，格式见
-[空间结构合同](docs/crystal-spatial-contract.md)。
-Crystal 已接入四类原创64×64表面贴图，素材、提示词和前后对照见
-[贴图改造记录](docs/crystal-texture-pass.md)。
+Crystal 现为森林巨晶竞技场：约 200 米宽的林间空地、140 米中央晶柱、264 株松树、
+地面符文与云雾巨眼。沿用 90 秒敌潮＋清场；上一版巨构地图保留为
+`res/maps/crystal_megastructure_arena.json`。范围见[森林方案](plan/forest-crystal-arena.md)，
+验证与限制见[交付记录](docs/forest-crystal-arena.md)。Hollow Orbit 仍是默认入口。
+
+两图共用黑红程序步枪 Crimson Carapace：连续发光能量槽、开放镜框与中央红点，
+按住右键开镜。当前瞄具在上一版缩小后的基础上横向加宽 35%，高度及红点中心保持。
+默认武器不依赖外部模型或贴图，详见[程序步枪记录](docs/procedural-crimson-rifle.md)。
 
 当前美术改造见[太空恐怖验收记录](docs/cosmic-horror-acceptance.md)，
 原样片测试与人类试玩待办见[验收记录](docs/sample-acceptance.md)，范围以
@@ -29,7 +27,7 @@ GitHub 只交付源码、地图 JSON、shader、生成脚本、资源清单、�
 历史验收文档中的图片链接及资源哈希对应本地完整版本，源码克隆不包含这些媒体文件。
 已有远端历史不在本次交付中重写，因此历史提交仍可能包含早期资源。
 
-新克隆仓库先在根目录生成 Crystal 必需模型及音频，再构建、运行或测试：
+新克隆仓库先在根目录生成原 Crystal 几何及音频，再构建、运行或测试：
 
 ```bash
 python3 tools/environment/generate_crystal_combat.py
@@ -38,6 +36,10 @@ python3 tools/audio/generate.py
 
 四张 AI 贴图不由脚本重建；需从本地资源备份补入 `res/texture/crystal_combat/`，
 缺失时 Crystal 使用程序化材质回退。其他旧图引用的贴图也需自行补齐。
+森林和归档巨构地图还需要本地备份中的 `res/models/tripo/` 模型、贴图、碰撞资源，
+以及 `res/models/forest_arena/` 生成几何；以上命令无法重建导入素材。恢复说明见
+[森林资源记录](res/models/tripo/forest/README.md)和[布局生成器](res/models/forest_arena/README.md)。
+默认程序步枪无需外部模型或贴图。
 资源文件已加入 `.gitignore`，后续提交不要使用 `git add -f` 纳入它们。
 
 ## 构建与启动
@@ -55,8 +57,11 @@ make -f Makefile.map -j8
 make -f Makefile.map BUILD=release -j8
 ./silic2-release --seed 42
 
-# Crystal：五区连通、真实坡道与上下层战斗
+# 森林巨晶竞技场（需要本地素材包）
 ./silic2-release res/maps/starry_crystal_arena.json --seed 42
+
+# 上一版 Crystal 巨构地图
+./silic2-release res/maps/crystal_megastructure_arena.json --seed 42
 
 # 太空恐怖竞技场（也是默认地图）
 ./silic2-release res/maps/hollow_orbit_arena.json --seed 42
@@ -69,7 +74,7 @@ make -f Makefile.map BUILD=release test
 ```
 
 Windows 可执行文件带 `.exe`。默认地图是 `res/maps/hollow_orbit_arena.json`，
-默认 seed 为 42，VSync 开启。场景分辨率 320×200，HUD 在后处理之后按逻辑
+默认 seed 为 42，VSync 开启。场景分辨率 480×300，HUD 在后处理之后按逻辑
 窗口尺寸布局、在 Retina framebuffer 绘制。可用 `--width 800 --height 600`
 调整启动尺寸，`--vsync off` 关闭垂直同步，`--help` 查看命令。
 
@@ -80,6 +85,7 @@ Windows 可执行文件带 `.exe`。默认地图是 `res/maps/hollow_orbit_arena
 | READY 开始 | Enter |
 | 移动 / 瞄准 | WASD / 鼠标 |
 | 开火 | 按住左键 |
+| 红点开镜 | 按住右键 |
 | 切换奔跑 | Shift |
 | 蹲下 / 滑铲 | Ctrl |
 | 跳跃 | Space |

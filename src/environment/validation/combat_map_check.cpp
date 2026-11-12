@@ -7,7 +7,7 @@
 int main(){
  auto start=std::chrono::steady_clock::now();
  silic2::Map map;
- if(!map.loadFromFile("res/maps/starry_crystal_arena.json")){std::cerr<<map.getLastError()<<"\n";return 1;}
+ if(!map.loadFromFile("res/maps/crystal_megastructure_arena.json")){std::cerr<<map.getLastError()<<"\n";return 1;}
  for(const auto& d:map.getSpatialDiagnostics())std::cout<<"DIAGNOSTIC "<<d<<"\n";
  const auto& spatial=map.getSpatialSettings();const auto world=map.getSpatialWorld();
  if(!world)return 2;

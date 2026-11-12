@@ -65,7 +65,7 @@ App::App(const AppOptions& config):options(config) {
         runController=std::make_unique<RunController>(options.seed);
         currentMap=std::make_unique<Map>(); mapRenderer=std::make_unique<MapRenderer>();
         pixelRenderer=std::make_unique<PixelRenderer>();
-        if(!pixelRenderer->init(320,200)) throw std::runtime_error("Pixel framebuffer initialization failed");
+        if(!pixelRenderer->init(gc.render.pixelWidth,gc.render.pixelHeight)) throw std::runtime_error("Pixel framebuffer initialization failed");
         camera=std::make_unique<Camera>(); player=std::make_unique<Player>();
         weapon=std::make_unique<Weapon>();weapon->init();
         groundParticles=createEnhancedGroundParticleSystem(2000,GroundParticleSystem::GParticleMode::FIRE);
@@ -86,10 +86,13 @@ App::App(const AppOptions& config):options(config) {
         glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,6*sizeof(float),nullptr);glEnableVertexAttribArray(0);
         glVertexAttribPointer(1,3,GL_FLOAT,GL_FALSE,6*sizeof(float),reinterpret_cast<void*>(3*sizeof(float)));glEnableVertexAttribArray(1);glBindVertexArray(0);
         glfwSetWindowUserPointer(window,this);glfwSetFramebufferSizeCallback(window,framebufferSizeCallback);
-        glfwSetCursorPosCallback(window,mouseCallback);glfwSetScrollCallback(window,scrollCallback);glfwSetWindowFocusCallback(window,focusCallback);
+        glfwSetCursorPosCallback(window,mouseCallback);glfwSetScrollCallback(window,scrollCallback);
+        // This hidden synthetic route invokes focusCallback explicitly; OS focus
+        // delivery is covered by ordinary gameplay, not this deterministic harness.
+        if(options.acceptance!="rifle-ads")glfwSetWindowFocusCallback(window,focusCallback);
         setState(GameState::READY);
         int fw,fh;glfwGetFramebufferSize(window,&fw,&fh);
-        if(acceptanceLog) acceptanceLog<<"{\"event\":\"configuration\",\"logical_width\":"<<options.width<<",\"logical_height\":"<<options.height<<",\"framebuffer_width\":"<<fw<<",\"framebuffer_height\":"<<fh<<",\"internal_width\":320,\"internal_height\":200,\"vsync\":"<<(options.vsync?"true":"false")<<",\"audio_available\":"<<(audio->available()?"true":"false")<<",\"synthetic_input\":true}\n";
+        if(acceptanceLog) acceptanceLog<<"{\"event\":\"configuration\",\"logical_width\":"<<options.width<<",\"logical_height\":"<<options.height<<",\"framebuffer_width\":"<<fw<<",\"framebuffer_height\":"<<fh<<",\"internal_width\":"<<pixelRenderer->getPixelWidth()<<",\"internal_height\":"<<pixelRenderer->getPixelHeight()<<",\"vsync\":"<<(options.vsync?"true":"false")<<",\"audio_available\":"<<(audio->available()?"true":"false")<<",\"synthetic_input\":true}\n";
     }catch(...){cleanup();throw;}
 }
 App::~App(){cleanup();}
@@ -99,6 +102,7 @@ bool App::initWindow(){
 #ifdef __APPLE__
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT,GL_TRUE);
 #endif
+    if(options.acceptance=="rifle-ads")glfwWindowHint(GLFW_VISIBLE,GL_FALSE);
     window=glfwCreateWindow(options.width,options.height,"SILIC2",nullptr,nullptr);
     if(!window)return false;
     glfwMakeContextCurrent(window);glfwSwapInterval(options.vsync?1:0);return true;
@@ -156,9 +160,12 @@ bool App::loadMap(const std::string& path){
 
 void App::setState(GameState next){
     gameState=next;stateTimer=0;camera->setFirstMouse(true);
+    if(next!=GameState::PLAYING && next!=GameState::PAUSED) {
+        aim.reset();aimHeld=false;updateFirstPerson(0);
+    }
     glfwSetInputMode(window,GLFW_CURSOR,next==GameState::PLAYING?GLFW_CURSOR_DISABLED:GLFW_CURSOR_NORMAL);
     audio->setPaused(next==GameState::PAUSED||next==GameState::READY);
-    if(next==GameState::PLAYING) refocused=true;
+    if(next==GameState::PLAYING) { refocused=true;camera->syncMovementLeanPosition(player->getPosition()); }
 }
 void App::run(){
     std::ofstream completeFrames;
@@ -176,7 +183,7 @@ void App::run(){
         const bool measuring=gameState==GameState::PLAYING&&!refocused;
         // Synthetic flow inputs and assertions share a bounded frame clock.
         // GPU readback / screenshot I/O must not skip an input's press window.
-        if(options.acceptance=="flow")flowPlaybackSeconds+=deltaTime;
+        if(options.acceptance=="flow"||options.acceptance=="camera-lean"||options.acceptance=="rifle-ads")flowPlaybackSeconds+=deltaTime;
         frameCaptured=false;refocused=false;processInput();
         if(!options.acceptance.empty())updateAcceptance(deltaTime);
         update(deltaTime);render();
@@ -206,11 +213,13 @@ void App::processInput(){
     if(enter&&!enterWasPressed&&gameState==GameState::READY){setState(GameState::PLAYING);audio->play(AudioCue::UiConfirm,{},0,false);}
     if((gameState==GameState::ROOM_CLEARED||gameState==GameState::PLAYER_DEAD)&&stateTimer>=1&&((r&&!rWasPressed)||(left&&!leftMouseWasPressed)))restartCurrentRun();
     escWasPressed=esc;enterWasPressed=enter;rWasPressed=r;leftMouseWasPressed=left;
+    if(gameState==GameState::PLAYING && options.acceptance!="rifle-ads")
+        aimHeld=glfwGetMouseButton(window,GLFW_MOUSE_BUTTON_RIGHT)==GLFW_PRESS;
     if(gameState==GameState::PLAYING&&(options.acceptance.empty()||options.acceptance=="flow")){
         player->processInput(window,camera.get(),deltaTime);if(left)firePrimary();
     }
 }
-void App::firePrimary(){if(weapon->fire(*camera)){runController->stats().recordShot();characters->onPrimaryShot();audio->play(AudioCue::PlayerShot,{},0,false);}}
+void App::firePrimary(){if(weapon->fire(*camera,aimHeld || aim.blend()>0)){runController->stats().recordShot();characters->onPrimaryShot();audio->play(AudioCue::PlayerShot,{},0,false);}}
 void App::update(float dt){
     if(gameState!=GameState::PAUSED)stateTimer+=dt;
     if(gameState==GameState::PLAYING){runController->tick(dt,true);updatePlaying(dt);}
@@ -233,11 +242,13 @@ void App::applyDamage(float amount,DamageSource source,const glm::vec3& origin,b
     if(player->isDead())runController->stats().recordFatalSource(source);
 }
 void App::updatePlaying(float dt){
+    aim.update(aimHeld,dt);
     hitAge+=dt;killAge+=dt;damageAge+=dt;
     player->update(dt,currentMap.get());
     auto pos=player->getPosition();const auto movement=pos-previousPlayerPosition;
     runController->stats().recordMovement(glm::length(glm::vec2(movement.x,movement.z)),player->getState()==PlayerState::SLIDING?MovementState::Sliding:MovementState::Other,dt);
     previousPlayerPosition=pos;camera->setPosition(player->getEyePosition()+player->getCameraOffset());camera->update();
+    camera->updateMovementLean(pos,dt);
     const auto result=weapon->update(dt,currentMap.get(),enemyManager.get());
     for(int i=0;i<result.hits;++i){runController->stats().recordHit();hitAge=0;audio->play(AudioCue::Hit,{},0,false);}
     for(auto type:result.killedEnemyTypes){runController->stats().recordKill(type);killAge=0;audio->play(AudioCue::Kill,{},0,false);}
@@ -282,11 +293,15 @@ void App::updatePlaying(float dt){
     if(!player->isDead())for(const auto& hit:hostileProjectiles->update(dt,currentMap.get(),player->getAABB())){runController->stats().recordHostileHit();applyDamage(hit.damage,DamageSource::EnemyProjectile,hit.origin);if(player->isDead())break;}
     const float time=runController->stats().snapshot().runTime;
     if(!exploration&&currentMap->getEnvironmentPreset()!=EnvironmentPreset::None&&!transformationPlayed&&time>=currentMap->getEnvironment().transformationStart){audio->play(AudioCue::Transform,{},0,false);transformationPlayed=true;}
-    FirstPersonView fp;fp.speed=glm::length(glm::vec2(player->getVelocity().x,player->getVelocity().z));fp.feet=pos;fp.forward=camera->getFront();fp.grounded=player->isOnGround();fp.sliding=player->getState()==PlayerState::SLIDING;
-    if(fp.sliding&&!wasSliding)audio->play(AudioCue::Slide,{},0,false);wasSliding=fp.sliding;characters->update(dt,fp);
+    updateFirstPerson(dt);
     if(!arena&&!exploration)groundParticles->update(dt);
     if(player->isDead())finishCurrentRun(RoomResult::PlayerDied,RunEndReason::PlayerDied);
     else if((arena&&director->complete(enemyManager->getLiveCount()))||(!arena&&!exploration&&enemyManager->hasSpawnedEnemies()&&enemyManager->allEnemiesDead()))finishCurrentRun(RoomResult::Cleared,RunEndReason::Completed);
+}
+void App::updateFirstPerson(float dt){
+    const auto pos=player->getPosition();
+    FirstPersonView fp;fp.aimBlend=aim.blend();fp.speed=glm::length(glm::vec2(player->getVelocity().x,player->getVelocity().z));fp.feet=pos;fp.forward=camera->getFront();fp.grounded=player->isOnGround();fp.sliding=player->getState()==PlayerState::SLIDING;
+    if(dt>0 && fp.sliding&&!wasSliding)audio->play(AudioCue::Slide,{},0,false);wasSliding=fp.sliding;characters->update(dt,fp);
 }
 void App::finishCurrentRun(RoomResult room,RunEndReason reason){
     if(!runController->state().active)return;
@@ -300,6 +315,7 @@ glm::vec3 App::getPlayerStartPosition()const{auto* start=currentMap->getPlayerSt
 void App::resetRuntimeState(){
     runController->stats().setExecutionContext(!options.acceptance.empty(),options.acceptance);
     runController->stats().setContentVersion(currentMap->getContentVersion());
+    aim.reset();aimHeld=false;
     audio->reset();hostileProjectiles->clear();enemyManager->clear();weapon->reset();characters->reset();groundParticles->reset();mapRenderer->resetEnvironment();
     if(exploration)exploration->reset();
     director->reset(runController->state().seed);player->respawn(getPlayerStartPosition());previousPlayerPosition=player->getPosition();
@@ -309,6 +325,7 @@ void App::resetRuntimeState(){
         camera->setDirection({std::cos(yaw)*std::cos(pitch),std::sin(pitch),std::sin(yaw)*std::cos(pitch)});
     }
     camera->setPosition(player->getEyePosition());
+    camera->resetMovementLean(player->getPosition());
     if(!arena&&!exploration)enemyManager->spawnFromMap(*currentMap);
     contactDamageActive=false;transformationPlayed=false;wasSliding=false;hitAge=killAge=damageAge=1000;damageDirection=0;
     if(options.acceptance=="restarts")logReset();
@@ -330,6 +347,7 @@ HudViewModel App::makeHud(const glm::mat4& view,const glm::mat4& projection)cons
     switch(gameState){case GameState::READY:vm.phase=HudPhase::Ready;break;case GameState::PLAYING:vm.phase=HudPhase::Playing;break;case GameState::PAUSED:vm.phase=HudPhase::Paused;break;case GameState::ROOM_CLEARED:vm.phase=HudPhase::Won;break;case GameState::PLAYER_DEAD:vm.phase=HudPhase::Dead;break;}
     vm.hp=player->getHp();vm.maxHp=player->getMaxHp();vm.combatSeconds=s.runTime;vm.cleanup=arena&&director->generationFinished();vm.livingEnemies=static_cast<int>(enemyManager->getLiveCount());
     vm.resultLockRemaining=std::max(0.f,1-stateTimer);vm.kills=s.kills;vm.shotsFired=s.shotsFired;vm.shotsHit=s.shotsHit;vm.actualHpLoss=s.damageTaken;vm.fatalSource=toString(s.fatalSource);vm.seed=s.seed;vm.audioStatus=!audio->available()?HudAudioStatus::Unavailable:(audio->muted()?HudAudioStatus::Muted:HudAudioStatus::Available);
+    vm.crosshairOpacity=1.f-aim.blend();
     vm.hitAge=hitAge;vm.killAge=killAge;vm.damageAge=damageAge;vm.damageDirectionRadians=damageDirection;
     auto p=player->getPosition(),f=camera->getFront();vm.playerXZ={p.x,p.z};vm.playerForwardXZ={f.x,f.z};
     bool bounds=false;
@@ -368,23 +386,26 @@ void App::render(){
         while(hostileProjectiles->size()<32) hostileProjectiles->spawn({float(hostileProjectiles->size()%8)-4,1,-8},{0,0,1});
     }
     pixelRenderer->beginPixelRender();glEnable(GL_DEPTH_TEST);glDepthMask(GL_TRUE);
-    const auto view=camera->getViewMatrix(),projection=camera->getProjectionMatrix(320.f/200.f,player->getCurrentFov());
+    const auto view=camera->getViewMatrix(),projection=camera->getProjectionMatrix(float(pixelRenderer->getPixelWidth())/pixelRenderer->getPixelHeight(),aim.fov(player->getCurrentFov()),currentMap->getWorldSettings().farPlane);
     const auto& ws=currentMap->getWorldSettings();glClearColor(ws.backgroundColor.r,ws.backgroundColor.g,ws.backgroundColor.b,1);glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
     mapRenderer->clearDynamicLights();for(const auto& light:weapon->getActiveLights())mapRenderer->addDynamicLight(light.first,light.second,1,3);
     if(exploration)mapRenderer->setObservationState(exploration->snapshot().observationProgress,exploration->snapshot().calibrated);
     mapRenderer->setEnvironmentTime(runController->stats().snapshot().runTime);mapRenderer->setRiftWarnings(arena?director->warningProgress():std::array<float,4>{-1,-1,-1,-1});
-    mapRenderer->render(view,projection);weapon->render(view,projection);
+    mapRenderer->render(view,projection);
+    const bool translucentForest=currentMap->getEnvironmentPreset()==EnvironmentPreset::ForestCrystal;
+    if(!translucentForest)weapon->render(view,projection);
     std::vector<CharacterView> cv;for(const auto& e:enemyManager->getEnemies())if(!e.isDead()){
         CharacterView c;c.type=e.getType();c.position=e.getPosition();c.heading=e.getHeading();c.dimensions=e.getAABB().getSize();c.charging=e.isCharging();c.chargeProgress=e.getChargeProgress();c.aimLocked=e.isAimLocked();c.hitFlash=e.getHitFlash();c.phase=e.getId()*.731f;c.movement=glm::clamp(e.getMovementSpeed()/3.f,0.f,1.f);cv.push_back(c);
     }
     characters->renderWorld(view,projection,cv);renderProjectiles(view,projection);
     if(!arena&&!exploration&&GameConfig::getInstance().effects.enableGroundParticles)groundParticles->render(view,projection);
+    if(translucentForest){mapRenderer->renderTranslucent(view,projection);weapon->render(view,projection);}
     characters->renderFirstPerson(projection);
-    if(!pendingScreenshot.empty())captureScreenshot(pendingScreenshot+"-scene",320,200);
+    if(!pendingScreenshot.empty())captureScreenshot(pendingScreenshot+"-scene",pixelRenderer->getPixelWidth(),pixelRenderer->getPixelHeight());
     pixelRenderer->endPixelRender(fw,fh);
     hudRenderer->render(makeHud(view,projection),lw,lh,fw,fh);
     if(!pendingScreenshot.empty()){captureScreenshot(pendingScreenshot);pendingScreenshot.clear();}
-    if((options.acceptance=="flow"||options.acceptance=="screenshots"||options.acceptance=="spatial-combat")&&glGetError()!=GL_NO_ERROR)
+    if((options.acceptance=="flow"||options.acceptance=="screenshots"||options.acceptance=="spatial-combat"||options.acceptance=="camera-lean"||options.acceptance=="rifle-ads")&&glGetError()!=GL_NO_ERROR)
         throw std::runtime_error("OpenGL error during runtime acceptance render");
     if(options.acceptance=="flow") {
         if(screenshotStage==0&&gameState==GameState::READY){captureScreenshot("flow-ready");++screenshotStage;}
@@ -428,7 +449,83 @@ void App::recordPerformance(){
     std::ofstream raw(options.outputDirectory+"/frames-"+options.acceptance+"-"+std::to_string(acceptanceRuns+1)+".csv");raw<<"frame,wall_clock_ms\n";for(size_t i=0;i<frameTimes.size();++i)raw<<i<<','<<frameTimes[i]<<'\n';
     acceptanceLog.flush();frameTimes.clear();
 }
+// Explicit bounded synthetic functional route, never ordinary gameplay.
+void App::updateAdsAcceptance(float dt){
+    const float t=static_cast<float>(flowPlaybackSeconds);
+    auto check=[&](const char* name,bool passed){
+        acceptanceFailed|=!passed;
+        acceptanceLog<<"{\"event\":\"ads_check\",\"check\":\""<<name<<"\",\"passed\":"<<(passed?"true":"false")
+            <<",\"state\":"<<static_cast<int>(gameState)<<",\"blend\":"<<aim.blend()<<",\"fov\":"<<aim.fov(player->getCurrentFov())<<",\"mouse_scale\":"<<aim.mouseScale(player->getCurrentFov())<<"}\n";
+    };
+    if(flowStep==0 && t>.15f){
+        // Start the hidden synthetic route; explicit focusCallback below still
+        // exercises the same pause path used by ordinary visible gameplay.
+        setState(GameState::PLAYING);
+        check("hip_starts_clear",gameState==GameState::PLAYING && aim.blend()==0);pendingScreenshot="hip";++flowStep;
+    }else if(flowStep==1 && t>.3f){
+        aimHeld=true;flowFrozenPosition=player->getPosition();++flowStep;
+    }else if(flowStep==2 && t>.6f){
+        check("held_aim_reaches_target",aim.blend()==1 && std::abs(aim.fov(player->getCurrentFov())-32)<.001f);
+        const auto front=camera->getFront();camera->setFirstMouse(true);
+        processMousePosition(100,100);check("first_mouse_sample_does_not_jump",camera->getFront()==front);
+        const auto yaw=camera->getYaw();processMousePosition(110,100);
+        check("mouse_sensitivity_tracks_zoom",std::abs(camera->getYaw()-yaw-10*GameConfig::getInstance().player.mouseSensitivity*aim.mouseScale(player->getCurrentFov()))<.001f);
+        camera->setDirection(front);camera->setFirstMouse(true);
+        pendingScreenshot="ads";++flowStep;
+    }else if(flowStep==3 && t>1.f){
+        check("moving_while_aimed",aim.blend()==1 && glm::length(player->getPosition()-flowFrozenPosition)>.2f);
+        auto projected=camera->getProjectionMatrix(1.6f,aim.fov(player->getCurrentFov()))*camera->getViewMatrix()*glm::vec4(camera->getPosition()+camera->getFront()*5.f,1);
+        check("lean_keeps_center_ray",std::abs(projected.x/projected.w)<.00001f && std::abs(projected.y/projected.w)<.00001f);
+        firePrimary();const auto& bullets=weapon->getBullets();
+        check("aimed_shot_follows_eye_ray",!bullets.empty() && glm::length(bullets.back().position-camera->getPosition())<.00001f && glm::dot(bullets.back().direction,camera->getFront())>.99999f && bullets.back().speed==195);
+        check("sustained_aim_fire_works",runController->stats().snapshot().shotsFired>=3);
+        pendingScreenshot="ads-moving-fire";++flowStep;
+    }else if(flowStep==4 && t>1.25f){
+        adsFrozenBlend=aim.blend();flowFrozenTime=runController->stats().snapshot().runTime;
+        focusCallback(window,0);pendingScreenshot="ads-paused";++flowStep;
+    }else if(flowStep==5 && t>1.55f){
+        aimHeld=false;check("focus_pause_freezes_ads",gameState==GameState::PAUSED && adsFrozenBlend==1 && aim.blend()==adsFrozenBlend && runController->stats().snapshot().runTime==flowFrozenTime);
+        setState(GameState::PLAYING);check("resume_resets_mouse_sampling",camera->isFirstMouse());++flowStep;
+    }else if(flowStep==6 && t>1.8f){
+        check("released_during_pause_returns_to_hip",aim.blend()==0);pendingScreenshot="released";++flowStep;
+    }else if(flowStep==7 && t>1.95f){aimHeld=true;++flowStep;
+    }else if(flowStep==8 && t>2.25f){
+        check("reentry_reaches_ads",aim.blend()==1);applyDamage(200,DamageSource::EnemyProjectile,player->getPosition());++flowStep;
+    }else if(flowStep==9 && t>2.4f){
+        check("death_clears_ads",gameState==GameState::PLAYER_DEAD && aim.blend()==0 && !aimHeld);pendingScreenshot="ads-dead";++flowStep;
+    }else if(flowStep==10 && t>2.6f){
+        restartCurrentRun();check("restart_clears_ads",aim.blend()==0 && !aimHeld);pendingScreenshot="ads-restart";++flowStep;
+    }else if(flowStep==11 && t>2.9f){
+        aimHeld=true;aim.update(true,.16f);const auto original=currentMapFile;
+        const bool switched=loadMap("res/maps/hollow_orbit_arena.json");
+        check("map_switch_clears_ads",switched && aim.blend()==0 && !aimHeld && gameState==GameState::READY);
+        const bool returned=loadMap(original);check("forest_return_clears_ads",returned && aim.blend()==0 && !aimHeld);
+        setState(GameState::PLAYING);++flowStep;
+    }else if(flowStep==12 && t>3.15f){
+        check("all_ads_stages_completed",flowStep==12);glfwSetWindowShouldClose(window,GL_TRUE);++flowStep;
+    }
+    if(gameState==GameState::PLAYING){
+        if(t>.65f && t<.90f)firePrimary();
+        PlayerInput input;input.right=t>.65f && t<1.1f;
+        player->processInput(input,camera.get(),dt);
+    }
+}
+
 void App::updateAcceptance(float dt){
+    if(options.acceptance=="rifle-ads"){updateAdsAcceptance(dt);return;}
+    if(options.acceptance=="camera-lean") {
+        const float t=float(flowPlaybackSeconds);
+        auto check=[&](const char* name,bool passed){acceptanceFailed|=!passed;acceptanceLog<<"{\"event\":\"lean_check\",\"check\":\""<<name<<"\",\"passed\":"<<(passed?"true":"false")<<",\"seconds\":"<<t<<",\"roll_degrees\":"<<camera->getMovementRollDegrees()<<"}\n";};
+        if(flowStep==0&&t>.7f){check("left_head_tilts_left",camera->getMovementRollDegrees()<-.5f);pendingScreenshot="lean-left";++flowStep;}
+        else if(flowStep==1&&t>1.15f){check("braking_rebounds_right",camera->getMovementRollDegrees()>0);pendingScreenshot="lean-brake";++flowStep;}
+        else if(flowStep==2&&t>1.95f){check("right_head_tilts_right",camera->getMovementRollDegrees()>.5f);pendingScreenshot="lean-right";++flowStep;}
+        else if(flowStep==3&&t>2.1f){leanFrozenRoll=camera->getMovementRollDegrees();setState(GameState::PAUSED);pendingScreenshot="lean-paused";++flowStep;}
+        else if(flowStep==4&&t>2.4f){check("paused_roll_frozen",camera->getMovementRollDegrees()==leanFrozenRoll);setState(GameState::PLAYING);++flowStep;}
+        else if(flowStep==5&&t>2.85f){restartCurrentRun();check("restart_roll_zero",camera->getMovementRollDegrees()==0);pendingScreenshot="lean-restart";++flowStep;}
+        else if(flowStep==6&&t>3.0f){glfwSetWindowShouldClose(window,GL_TRUE);}
+        if(gameState==GameState::PLAYING){PlayerInput keys;keys.left=t<.8f;keys.right=t>=1.3f&&t<2.1f;player->processInput(keys,camera.get(),dt);}
+        return;
+    }
     if(options.acceptance=="spatial-combat"){updateSpatialCombatAcceptance(dt);return;}
     if(options.acceptance=="exploration"){updateExplorationAcceptance(dt);return;}
     const double elapsed=options.acceptance=="flow"?flowPlaybackSeconds:glfwGetTime()-modeStarted;
@@ -604,9 +701,15 @@ void App::updateSpatialCombatAcceptance(float dt) {
 void App::framebufferSizeCallback(GLFWwindow*,int w,int h){glViewport(0,0,w,h);}
 void App::mouseCallback(GLFWwindow* window,double x,double y){
     auto* app=static_cast<App*>(glfwGetWindowUserPointer(window));if(!app||app->gameState!=GameState::PLAYING||!app->options.acceptance.empty())return;
-    auto& camera=*app->camera;if(camera.isFirstMouse()){camera.setLastMousePos(x,y);camera.setFirstMouse(false);return;}
-    float dx=static_cast<float>(x)-camera.getLastX(),dy=camera.getLastY()-static_cast<float>(y);camera.setLastMousePos(x,y);app->player->processMouseMovement(&camera,dx,dy);
+    app->processMousePosition(x,y);
+}
+void App::processMousePosition(double x,double y){
+    if(camera->isFirstMouse()){camera->setLastMousePos(x,y);camera->setFirstMouse(false);return;}
+    const float dx=static_cast<float>(x)-camera->getLastX(),dy=camera->getLastY()-static_cast<float>(y);
+    camera->setLastMousePos(x,y);
+    const float scale=aim.mouseScale(player->getCurrentFov());
+    player->processMouseMovement(camera.get(),dx*scale,dy*scale);
 }
 void App::scrollCallback(GLFWwindow* window,double,double y){auto* app=static_cast<App*>(glfwGetWindowUserPointer(window));if(app&&app->gameState==GameState::PLAYING)app->camera->processMouseScroll(y);}
-void App::focusCallback(GLFWwindow* window,int focused){auto* app=static_cast<App*>(glfwGetWindowUserPointer(window));if(!app)return;if(!focused&&app->gameState==GameState::PLAYING)app->setState(GameState::PAUSED);app->camera->setFirstMouse(true);app->refocused=true;}
+void App::focusCallback(GLFWwindow* window,int focused){auto* app=static_cast<App*>(glfwGetWindowUserPointer(window));if(!app)return;if(app->options.acceptance=="rifle-ads")app->acceptanceLog<<"{\"event\":\"focus_callback\",\"focused\":"<<focused<<",\"seconds\":"<<app->flowPlaybackSeconds<<"}\n";if(!focused&&app->gameState==GameState::PLAYING)app->setState(GameState::PAUSED);app->camera->setFirstMouse(true);app->refocused=true;}
 }

@@ -569,7 +569,7 @@ private:
     bool confirmUnsaved=false,browse=false,saveDialog=false,overwrite=false,importDialog=false,importCollision=true;
     bool saveThenContinue=false;
     std::string browseDirectory=SILIC2_ROOT "/res/maps",overwritePath;
-    char directoryInput[1024]{},fileInput[1024]{},collisionInput[1024]{},modelAssetInput[1024]{},modelCollisionInput[1024]{};
+    char directoryInput[1024]{},fileInput[1024]{},collisionInput[1024]{},modelAssetInput[1024]{},modelCollisionInput[1024]{},modelTextureInput[1024]{};
     std::string filter;
     char filterInput[128]{};
     static constexpr ImGuiWindowFlags fixed=ImGuiWindowFlags_NoMove|ImGuiWindowFlags_NoResize|ImGuiWindowFlags_NoCollapse|ImGuiWindowFlags_NoSavedSettings;
@@ -794,14 +794,17 @@ public:
             if(selection.kind==ObjectKind::Model){
                 ImGui::TextWrapped("Visual: %s",j.getString("asset").c_str());
                 ImGui::TextWrapped("Collision: %s",j.getString("collisionAsset").empty()?"NONE (visual only)":j.getString("collisionAsset").c_str());
-                if(ImGui::Button("Edit resource paths...")){copy(modelAssetInput,j.getString("asset"));copy(modelCollisionInput,j.getString("collisionAsset"));ImGui::OpenPopup("Model resources");}
+                ImGui::TextWrapped("Base color: %s",j.getString("texture").empty()?"NONE (color only)":j.getString("texture").c_str());
+                if(ImGui::Button("Edit resource paths...")){copy(modelAssetInput,j.getString("asset"));copy(modelCollisionInput,j.getString("collisionAsset"));copy(modelTextureInput,j.getString("texture"));ImGui::OpenPopup("Model resources");}
                 if(ImGui::BeginPopupModal("Model resources",nullptr,ImGuiWindowFlags_AlwaysAutoResize)){
                     ImGui::SetNextItemWidth(440);ImGui::InputText("Visual OBJ",modelAssetInput,sizeof(modelAssetInput));
                     ImGui::SetNextItemWidth(440);ImGui::InputText("Collision OBJ",modelCollisionInput,sizeof(modelCollisionInput));
+                    ImGui::SetNextItemWidth(440);ImGui::InputText("Base-color image",modelTextureInput,sizeof(modelTextureInput));
                     ImGui::TextWrapped("Empty collision path means visual only. Relative paths use the map's asset directory.");
+                    ImGui::TextWrapped("Optional PNG/JPEG base color uses OBJ UV in game. Preview remains geometry-only; image decoding is checked in game.");
                     ImGui::TextWrapped("Asset directory: %s",document.map().getAssetBaseDirectory().c_str());
                     if(!document.error().empty())ImGui::TextWrapped("%s",document.error().c_str());
-                    if(ImGui::Button("Apply resources")){if(document.editSelected("Model resources",[&](SimpleJson& target){target["asset"]=SimpleJson(modelAssetInput);target["collisionAsset"]=SimpleJson(modelCollisionInput);}))ImGui::CloseCurrentPopup();}
+                    if(ImGui::Button("Apply resources")){if(document.editSelected("Model resources",[&](SimpleJson& target){target["asset"]=SimpleJson(modelAssetInput);target["collisionAsset"]=SimpleJson(modelCollisionInput);target["texture"]=SimpleJson(modelTextureInput);}))ImGui::CloseCurrentPopup();}
                     ImGui::SameLine();if(ImGui::Button("Cancel resources"))ImGui::CloseCurrentPopup();ImGui::EndPopup();
                 }
             }else editString("Texture path","texture",j);
@@ -894,10 +897,12 @@ public:
         auto root=document.map().toJson();auto ws=document.map().getWorldSettings();
         ImGui::Text("Schema: %.0f",root.getNumber("schemaVersion",1));
         ImGui::TextWrapped("Mode: %s",root.getString("gameMode","legacy").c_str());
-        const char* presets[]={"none","starry_crystal","hollow_orbit"};
+        const char* presets[]={"none","starry_crystal","hollow_orbit","forest_crystal"};
         const auto currentPreset=root.getString("environmentPreset");
-        int preset=currentPreset=="hollow_orbit"?2:currentPreset=="starry_crystal"?1:0;
-        if(ImGui::Combo("Environment",&preset,presets,3))document.applyJson("Environment preset",[&](SimpleJson& json){json["environmentPreset"]=SimpleJson(presets[preset]);});
+        int preset=currentPreset=="forest_crystal"?3:currentPreset=="hollow_orbit"?2:currentPreset=="starry_crystal"?1:0;
+        if(ImGui::Combo("Environment",&preset,presets,4))document.applyJson("Environment preset",[&](SimpleJson& json){json["environmentPreset"]=SimpleJson(presets[preset]);});
+        if(ImGui::InputFloat("Game far plane (0 = default)",&ws.farPlane))
+            document.applyJson("View distance",[&](SimpleJson& json){json["worldSettings"]["farPlane"]=SimpleJson(double(ws.farPlane));});
         const auto env=document.map().getEnvironment();
         float start=env.transformationStart,duration=env.transformationDuration;int particles=int(env.particleCount);
         bool ec=ImGui::DragFloat("Shift time",&start,.1f,0,3600);if(ImGui::IsItemActivated())++editToken;

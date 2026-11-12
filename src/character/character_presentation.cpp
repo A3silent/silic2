@@ -1,5 +1,8 @@
 #include "character/character_presentation.h"
 #include "engine/shader.h"
+#include "character/imported_weapon.h"
+#include "character/procedural_rifle.h"
+#include <iostream>
 #include <glm/gtc/matrix_transform.hpp>
 #include <algorithm>
 #include <cmath>
@@ -29,7 +32,7 @@ glm::vec3 directionOr(glm::vec3 direction, glm::vec3 fallback) {
 CharacterPresentation::CharacterPresentation() { vertices.reserve(65536); }
 CharacterPresentation::~CharacterPresentation() { shutdown(); }
 
-bool CharacterPresentation::init() {
+bool CharacterPresentation::init(const std::string& weaponConfigPath) {
     if (shader) return true;
     try {
         shader = std::make_unique<Shader>("res/shaders/character.vert", "res/shaders/character.frag");
@@ -54,11 +57,19 @@ bool CharacterPresentation::init() {
     }
     glBindVertexArray(previousVao);
     glBindBuffer(GL_ARRAY_BUFFER, previousBuffer);
+    std::string weaponStatus;
+    auto weaponAsset=resolveWeaponPresentation(weaponConfigPath,weaponStatus);
+    const auto sourceStatus=weaponStatus;
+    auto candidate=std::make_unique<ImportedWeapon>();
+    if (candidate->init(weaponAsset,weaponStatus)) importedWeapon=std::move(candidate);
+    std::cout << "Weapon presentation: " << sourceStatus << "; " << weaponStatus
+              << "; no hand meshes; open reflex sight\n";
     reset();
     return true;
 }
 
 void CharacterPresentation::shutdown() {
+    importedWeapon.reset();
     if (vao) glDeleteVertexArrays(1, &vao);
     if (vbo) glDeleteBuffers(1, &vbo);
     vao = vbo = 0;
@@ -103,9 +114,10 @@ void CharacterPresentation::onPrimaryShot() {
 }
 
 void CharacterPresentation::update(float dt, const FirstPersonView& player) {
+    // State-only sync supports death/READY without advancing presentation clocks.
+    playerState = player;
     if (!std::isfinite(dt) || dt <= 0.0f) return;
     time += dt;
-    playerState = player;
     const float speed = std::max(0.0f, player.speed);
     if (player.grounded) stepPhase += speed * dt * 1.8f;
     recoil *= std::exp(-24.0f * dt);
@@ -312,63 +324,25 @@ void CharacterPresentation::renderWorld(const glm::mat4& view, const glm::mat4& 
 void CharacterPresentation::renderFirstPerson(const glm::mat4& projection) {
     if (!shader) return;
     vertices.clear();
-    const float movement = playerState.grounded ? saturate(playerState.speed / 8.0f) : 0;
-    const float bobX = std::sin(stepPhase) * .006f * movement * (1.0f-slideBlend);
-    const float bobY = std::cos(stepPhase*2) * .004f * movement * (1.0f-slideBlend);
-    glm::mat4 root = glm::translate(glm::mat4(1), glm::vec3(.18f+bobX, -.15f+bobY-.025f*slideBlend, -.55f+.020f*recoil));
-    root = glm::rotate(root, -.10f*slideBlend, glm::vec3(0,0,1));
-    root = glm::rotate(root, .035f*recoil, glm::vec3(1,0,0));
-    // Camera-local visual offset only; gameplay retains its existing shot origin and aim.
-    const glm::vec3 metal(.24f,.26f,.24f), glove(.15f,.145f,.12f);
-    const glm::vec3 worn(.46f,.44f,.36f), rust(.28f,.20f,.14f);
-    // Worn receiver, separate tubular barrel, iron sight and a recessed bore.
-    box(part(root, {0,-.022f,.11f}, {.083f,.075f,.23f}), metal);
-    bone(root,{0,-.010f,.10f},{0,-.010f,-.055f},.029f,.024f,metal);
-    bone(root,{0,-.010f,-.056f},{0,-.010f,-.059f},.018f,.018f,Cavity);
-    for(int i=0;i<3;++i) {
-        box(part(root,{0,.021f,.02f+i*.043f},{.074f,.011f,.016f}),worn);
-        box(part(root,{.042f,-.015f,.04f+i*.045f},{.003f,.018f,.017f}),rust);
-    }
-    box(part(root,{0,.031f,-.015f},{.008f,.029f,.012f}),worn);
-    box(part(root,{0,.013f,.165f},{.048f,.009f,.022f}),worn);
-    // Restrained bone splint wired to the left side, not a luminous power gem.
-    bone(root,{-.044f,-.017f,.035f},{-.046f,-.010f,.145f},.010f,.007f,Bone*.7f);
-    for(int i=0;i<2;++i)
-        box(part(root,{-.044f,-.010f,.06f+i*.05f},{.021f,.035f,.007f}),metal*.65f);
-    box(part(root,{.043f,-.006f,.113f},{.004f,.012f,.014f}),{.33f,.37f,.22f});
-    box(part(root, {0,-.068f,.14f}, {.048f,.085f,.056f}, -.2f, {1,0,0}), glove);
-    box(part(root, {.026f,-.077f,.14f}, {.058f,.061f,.085f}), glove);
-    box(part(root, {-.07f,-.055f,.075f}, {.075f,.041f,.065f}, -.35f), glove);
-    box(part(root, {.057f,-.11f,.21f}, {.067f,.065f,.14f}, -.25f), metal);
-    box(part(root, {-.11f,-.087f,.14f}, {.062f,.055f,.15f}, -.55f), metal);
-    for (int i = 0; i < 3; ++i)
-        box(part(root, {-.073f+i*.019f,-.044f,.044f}, {.012f,.021f,.047f}), worn*.75f);
-    // Abraded receiver edges are sparse high-value marks at 320x200.
-    box(part(root,{.039f,.013f,.135f},{.005f,.006f,.07f}),worn);
-    box(part(root,{-.028f,.018f,.196f},{.025f,.004f,.012f}),worn);
-    if (muzzle > 0) {
-        const float size = .035f * muzzle / .035f;
-        bone(root,{0,-.01f,-.06f},{0,-.01f,-.11f},size,0,Hit,1);
-    }
-    // Painter order within the small view model keeps its own back faces hidden
-    // without clearing or writing into the world depth buffer.
-    std::vector<std::array<Vertex, 3>> faces;
-    faces.reserve(vertices.size() / 3);
-    for (size_t i = 0; i < vertices.size(); i += 3)
-        faces.push_back({vertices[i], vertices[i+1], vertices[i+2]});
-    std::stable_sort(faces.begin(), faces.end(), [](const auto& a, const auto& b) {
-        return a[0].position.z + a[1].position.z + a[2].position.z <
-               b[0].position.z + b[1].position.z + b[2].position.z;
-    });
-    vertices.clear();
-    for (const auto& face : faces) vertices.insert(vertices.end(), face.begin(), face.end());
-    // A fixed view-model lens prevents sprint/slide FOV from enlarging the gun
-    // over the crosshair. World projection and all aiming remain unchanged.
+    const glm::mat4 root = firstPersonWeaponRoot(stepPhase, playerState.speed,
+                                                  playerState.grounded, slideBlend, recoil, playerState.aimBlend);
+    // Keep the same lens and animation for both the optional imported asset and
+    // procedural fallback. Only the visual muzzle moves; gameplay aim does not.
     glm::mat4 weaponProjection = projection;
     const float aspect = projection[1][1] / projection[0][0];
     weaponProjection[1][1] = 1.0f / std::tan(glm::radians(35.0f));
     weaponProjection[0][0] = weaponProjection[1][1] / aspect;
-    draw(glm::mat4(1), weaponProjection, true);
+    if (importedWeapon && importedWeapon->render(root, weaponProjection)) {
+        if (muzzle > 0) {
+            const auto origin = importedWeapon->muzzlePosition(root);
+            const auto forward = importedWeapon->muzzleDirection(root);
+            bone(glm::mat4(1), origin, origin + forward*.05f, muzzle, 0, Hit, 1);
+            draw(glm::mat4(1), weaponProjection, true);
+        }
+        return;
+    }
+    // No per-frame mesh generation or sorting: every default/fallback rifle
+    // uses the same static cached geometry. A GPU failure is logged at init.
 }
 
 void CharacterPresentation::draw(const glm::mat4& view, const glm::mat4& projection, bool firstPerson) {

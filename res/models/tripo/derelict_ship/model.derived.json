@@ -1,0 +1,205 @@
+{
+  "format": "silic2-static-model",
+  "schemaVersion": 1,
+  "source": {
+    "file": "model.glb",
+    "sha256": "5cfa8c05bd04aed8af1db82fc98a5e91df6fc1c1dcdec96c15382c7da56cc105",
+    "bytes": 1458824,
+    "producer": "tripo-api",
+    "taskId": "aabfe52d-817a-4a44-9419-723aeaa2f3db",
+    "promptFile": "prompt.en.txt",
+    "promptSha256": "d6d4571043679630c0db7bc7613c3f5f526643a2961786ea8b85529a4907ac86"
+  },
+  "normalization": {
+    "rotationDegreesXYZ": [
+      0.0,
+      90.0,
+      0.0
+    ],
+    "scale": 38.07436399217221,
+    "pivot": "floor",
+    "sourcePivotAfterRotation": [
+      0.0,
+      -0.4990234375,
+      0.0
+    ],
+    "sourceBounds": {
+      "min": [
+        -0.4091796875,
+        -0.4990234375,
+        -0.4853515625
+      ],
+      "max": [
+        0.4091796875,
+        0.4990234375,
+        0.4853515625
+      ]
+    },
+    "coordinates": "right-handed +Y up; caller chooses forward using rotation",
+    "uvConvention": "OBJ bottom-left; GLB V flipped for vertically-flipped engine texture loader"
+  },
+  "bounds": {
+    "min": [
+      -8.06849353,
+      -19.0,
+      -10.55968691
+    ],
+    "max": [
+      8.06849353,
+      19.0,
+      10.55968691
+    ]
+  },
+  "parts": [
+    {
+      "baseColorFactor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "baseColorTexture": "textures/basecolor-000.jpg",
+      "doubleSided": true,
+      "obj": "parts/wreck-0.obj",
+      "bounds": {
+        "min": [
+          -8.06849353,
+          -19.0,
+          -10.44814092
+        ],
+        "max": [
+          8.06849353,
+          19.0,
+          10.44814092
+        ]
+      },
+      "sourceNode": 0,
+      "sourceMesh": 0,
+      "textureSha256": "673535711573f2e316982e8ce679a3ac050f9aabe640fe76f224a5d2cdcb317f",
+      "vertices": 22008,
+      "triangles": 7336,
+      "sha256": "aaafec748a13c3f8d5c83de140c6ab762240c1a74c6fb1bc6edfb273a95ab71f",
+      "sourcePivot": [
+        -10.41095857,
+        19.0,
+        -5.13111548
+      ]
+    },
+    {
+      "baseColorFactor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "baseColorTexture": "textures/basecolor-000.jpg",
+      "doubleSided": true,
+      "obj": "parts/wreck-1.obj",
+      "bounds": {
+        "min": [
+          -5.13111546,
+          -17.661448139999997,
+          -5.093933465
+        ],
+        "max": [
+          5.13111546,
+          17.66144814,
+          5.093933465
+        ]
+      },
+      "sourceNode": 0,
+      "sourceMesh": 0,
+      "textureSha256": "673535711573f2e316982e8ce679a3ac050f9aabe640fe76f224a5d2cdcb317f",
+      "vertices": 26880,
+      "triangles": 8960,
+      "sha256": "b3e42cc236fec6f988d667e95cc67ef09ea1b20372d564cc42ae64c6d8e23556",
+      "sourcePivot": [
+        0.11154655999999985,
+        20.33855186,
+        0.223091975
+      ]
+    },
+    {
+      "baseColorFactor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "baseColorTexture": "textures/basecolor-000.jpg",
+      "doubleSided": true,
+      "obj": "parts/wreck-2.obj",
+      "bounds": {
+        "min": [
+          -8.06849282,
+          -18.962818,
+          -10.55968691
+        ],
+        "max": [
+          8.06849282,
+          18.962818,
+          10.55968691
+        ]
+      },
+      "sourceNode": 0,
+      "sourceMesh": 0,
+      "textureSha256": "673535711573f2e316982e8ce679a3ac050f9aabe640fe76f224a5d2cdcb317f",
+      "vertices": 19692,
+      "triangles": 6564,
+      "sha256": "44431ead12f971ec449d710543424b864d526d78ad08dc21709b926e840c9ea4",
+      "sourcePivot": [
+        10.41095928,
+        18.962818,
+        5.01956949
+      ]
+    }
+  ],
+  "warnings": [
+    "Double-sided primitives were expanded with reversed faces/normals; triangle budget includes both sides.",
+    "Silic2 uses its own lighting/nearest texture filtering, not glTF PBR; base-color factors are retained.",
+    "Visual mesh is not an approved collision proxy; author collision separately and validate routes before placement.",
+    "Dislocated hull partition has uncapped fracture edges; decorative exterior only, no collision proxy."
+  ],
+  "triangles": 22860,
+  "vertices": 68580,
+  "derivation": {
+    "operation": "Unique triangle partition by centroid local X at -4m and +4m, rebased each piece to its own bounds center. All original triangles and UV preserved; runtime places pieces independently.",
+    "sourceObj": "parts/part-000.obj",
+    "sourceObjSha256": "c900d69e4db89c427b5efc34fe01cebe27fa14933d8c18393dd52121463797b6",
+    "pieces": [
+      {
+        "part": 0,
+        "selection": "centroid X<-4",
+        "sourcePivot": [
+          -10.41095857,
+          19.0,
+          -5.13111548
+        ],
+        "triangles": 7336
+      },
+      {
+        "part": 1,
+        "selection": "-4<=centroid X<=4",
+        "sourcePivot": [
+          0.11154655999999985,
+          20.33855186,
+          0.223091975
+        ],
+        "triangles": 8960
+      },
+      {
+        "part": 2,
+        "selection": "centroid X>4",
+        "sourcePivot": [
+          10.41095928,
+          18.962818,
+          5.01956949
+        ],
+        "triangles": 6564
+      }
+    ],
+    "retainedTriangles": 22860,
+    "newTriangles": 0,
+    "note": "Pieces have independent pivots; this manifest is a source record, not a whole-ship assembled transform. Use sourcePivot to reconstruct assembly."
+  }
+}

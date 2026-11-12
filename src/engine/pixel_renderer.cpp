@@ -5,7 +5,7 @@
 namespace silic2 {
 
 PixelRenderer::PixelRenderer()
-    : pixelWidth(320), pixelHeight(200),
+    : pixelWidth(480), pixelHeight(300),
       framebuffer(0), colorTexture(0), depthRenderbuffer(0),
       screenVAO(0), screenVBO(0) {
 }

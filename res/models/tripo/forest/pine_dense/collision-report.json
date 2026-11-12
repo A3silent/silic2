@@ -1,0 +1,94 @@
+{
+  "source_visual_sha256": "f55dfb2e30ff87439c6b1fa59184a387190e492a1f0ce6b219a9ef6fbc1a7094",
+  "collision_sha256": "d81c24b5c66aa164eb36f437f20a613ffb4fb27298618a1c72b62b2a135fa8a1",
+  "collision_triangles": 256,
+  "closed_components": 1,
+  "all_edges_have_two_incident_faces": true,
+  "adjacent_edge_directions_opposed": true,
+  "positive_volume_m3": 13.609262114543398,
+  "sections": [
+    {
+      "height_m": 0,
+      "center_xz": [
+        0.18238523325106792,
+        -0.18651581215925242
+      ],
+      "min_radius_m": 0.8773096757547449,
+      "max_radius_m": 1.511287448659794,
+      "sample_points_on_actual_surface": false,
+      "note": "Central low root-neck footprint extended down0.65m to floor; thin disconnected root toes decorative."
+    },
+    {
+      "height_m": 0.65,
+      "center_xz": [
+        0.18238523325106792,
+        -0.18651581215925242
+      ],
+      "min_radius_m": 0.8773096757547449,
+      "max_radius_m": 1.511287448659794,
+      "sample_points_on_actual_surface": true
+    },
+    {
+      "height_m": 1,
+      "center_xz": [
+        0.14982047525790376,
+        -0.20158800331842047
+      ],
+      "min_radius_m": 0.8183819221706061,
+      "max_radius_m": 1.1151455921913,
+      "sample_points_on_actual_surface": true
+    },
+    {
+      "height_m": 1.5,
+      "center_xz": [
+        0.21521176825265725,
+        -0.17612557313492094
+      ],
+      "min_radius_m": 0.7918080202929955,
+      "max_radius_m": 0.8873243694827231,
+      "sample_points_on_actual_surface": true
+    },
+    {
+      "height_m": 2.5,
+      "center_xz": [
+        0.20465684641288923,
+        -0.1759369613138284
+      ],
+      "min_radius_m": 0.6871265679098856,
+      "max_radius_m": 0.7737143217473291,
+      "sample_points_on_actual_surface": true
+    },
+    {
+      "height_m": 4,
+      "center_xz": [
+        0.1760745311158547,
+        -0.1751318067237833
+      ],
+      "min_radius_m": 0.5922340253286418,
+      "max_radius_m": 0.706817455221639,
+      "sample_points_on_actual_surface": true
+    },
+    {
+      "height_m": 6,
+      "center_xz": [
+        0.1612524465930262,
+        -0.18765099596293594
+      ],
+      "min_radius_m": 0.565783971535056,
+      "max_radius_m": 0.6454764620443817,
+      "sample_points_on_actual_surface": true
+    },
+    {
+      "height_m": 8,
+      "center_xz": [
+        0.16865589960125882,
+        -0.18810708954356106
+      ],
+      "min_radius_m": 0.4988444684762401,
+      "max_radius_m": 0.5713496323187564,
+      "sample_points_on_actual_surface": true
+    }
+  ],
+  "method": "16 rays on each selected connected actual horizontal main-trunk/root contour; connect corresponding azimuth samples into one closed nonconvex loft, cap at natural high trunk/crown region. No separate overlapping hulls. Low contact heights densely sampled.",
+  "limitations": "Secondary branches, foliage and disconnected thin root tips are decorative. Root-neck footprint extends vertically fromY0.65 to floor; does not follow each thin toe. Between measured heights the main trunk is linearly interpolated; radial16 sampling simplifies root edges, so runtime reachable-side checks remain required. High cap is inside visible wood/crown far above normal player reach; no cap at Y2.5m."
+}

@@ -1,0 +1,106 @@
+{
+  "revision": "forest-v1",
+  "status": "user_approved_and_submitted",
+  "approved_date": "2026-10-31",
+  "approval": "User confirmed four prompts in current chat 2026-10-31",
+  "submission_record": "artifacts/tripo/forest/generation-manifest.json",
+  "submitted_tasks": {
+    "01_pine_sparse": "0b9c16cb-207c-4431-88f0-45b1fd3f7d60",
+    "02_pine_dense": "5304ca19-f99d-43fc-8ca9-419111dcc291",
+    "03_pine_crooked": "b71418ec-5e12-403f-9441-af9dd575f4c1",
+    "04_crystal_spire": "a8f83362-b472-471c-9e03-2215f29483fd"
+  },
+  "online_owner": "ATLAS",
+  "online_calls_by_forest_assets": 0,
+  "model": "P1-20260311",
+  "assets": [
+    {
+      "id": "01_pine_sparse",
+      "runtime_id": "pine_sparse",
+      "target_dimensions_xyz_m": [
+        7,
+        22,
+        7
+      ],
+      "parameters": {
+        "face_limit": 2000,
+        "texture": true,
+        "pbr": false
+      },
+      "positive_characters": 878,
+      "negative_characters": 211,
+      "sha256": {
+        "brief.zh.txt": "ee1ac48bdfdca055828bdc9707b890cec71cd6f6254c254eaadb24e3d47b5f07",
+        "brief.en.txt": "7d3d235b0130c2dbe74f88420a86aacad0e543de66604c243e9966e46c53f791",
+        "prompt.en.txt": "fdf2a1c534a3c4a1780cd4c3e94dfeb4926fb0efecbcb10477f17f4b0eca4921",
+        "negative.en.txt": "90f111c9358e09532aeb948d53289253884e70e57d7a6dbbe317b92f69e8889b"
+      }
+    },
+    {
+      "id": "02_pine_dense",
+      "runtime_id": "pine_dense",
+      "target_dimensions_xyz_m": [
+        8,
+        18,
+        8
+      ],
+      "parameters": {
+        "face_limit": 2500,
+        "texture": true,
+        "pbr": false
+      },
+      "positive_characters": 903,
+      "negative_characters": 228,
+      "sha256": {
+        "brief.zh.txt": "f1b7f2dea69e777beed8bf52f1f6dc94b8ac83bb5ce8a7f6cdfc5f9594a0017a",
+        "brief.en.txt": "98a345987e43c23f438227089258900323677994af750ab06cf8bd1bd8c062c4",
+        "prompt.en.txt": "0a636b30ba9e06606415e72e75cbf674858110fd6eb91e4fdf5a8dec478a477f",
+        "negative.en.txt": "6213c1c54e7b39b71bb69e105484ba820f69aa2b22aeb93fe6083937e3f3d4bb"
+      }
+    },
+    {
+      "id": "03_pine_crooked",
+      "runtime_id": "pine_crooked",
+      "target_dimensions_xyz_m": [
+        12,
+        20,
+        11
+      ],
+      "parameters": {
+        "face_limit": 3000,
+        "texture": true,
+        "pbr": false
+      },
+      "positive_characters": 877,
+      "negative_characters": 231,
+      "sha256": {
+        "brief.zh.txt": "128f082f95eda615343d55d1a3af76ab6170915d47396ab61f121cbf917e831c",
+        "brief.en.txt": "3a65f06c65d9b6a74736d5ab7d73590ce45831198c2b5c83d94a73de2f1b5df8",
+        "prompt.en.txt": "bf2dfe5b434618586c781827a520d71168bf0a6ebfa550c8829779c7a1ab436f",
+        "negative.en.txt": "f1b81d9848f4e4fd82822fa476332420c1a3b94c273a4b7269ab381d7687535f"
+      }
+    },
+    {
+      "id": "04_crystal_spire",
+      "runtime_id": "crystal_spire",
+      "target_dimensions_xyz_m": [
+        16,
+        140,
+        16
+      ],
+      "parameters": {
+        "face_limit": 4000,
+        "texture": true,
+        "pbr": false
+      },
+      "positive_characters": 894,
+      "negative_characters": 239,
+      "sha256": {
+        "brief.zh.txt": "cc2148f718d841cf0d53079834bc2c0cdfab08acc5204008f7c3415f124c916c",
+        "brief.en.txt": "49f92aceb5b0dc873eb70025a589763480c253eed0ff7ac7e06599795192fd60",
+        "prompt.en.txt": "18fbb61b818760eb14cd998827dcbe736b42f96727a07a67dc4fbd9c159e1a65",
+        "negative.en.txt": "1b4e491a3d8b8d6a39d1d0ab7e926197e6007d3359e0cd6002ee4f08f5698b3d"
+      }
+    }
+  ]
+}

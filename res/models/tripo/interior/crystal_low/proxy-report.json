@@ -1,0 +1,2564 @@
+{
+  "source": "mineral_cluster/parts/part-000.obj",
+  "source_sha256": "9ec885313a8aa2f32edf951f66e2bd6399a97a2d3702a16ca697f7d54dc21097",
+  "uniform_scale": 0.3076923076923077,
+  "rotation_z": 0,
+  "floor_pivot_before_rebase": [
+    0.0,
+    0.0,
+    0.0
+  ],
+  "visual_triangles": 8402,
+  "collision_triangles": 3910,
+  "closed_convex_shells": 361,
+  "original_components": 4,
+  "dropped_components": [],
+  "local_bounds": {
+    "min": [
+      -0.7968688830769232,
+      0.0,
+      -0.7311154584615385
+    ],
+    "max": [
+      0.7968688830769232,
+      1.6,
+      0.7311154584615385
+    ]
+  },
+  "max_sampled_surface_error_m": 0.21942613331843908,
+  "max_vertex_outside_plane_m": 0.027992165898485355,
+  "shells": [
+    {
+      "sampled_surface_error_m": 0.0018613155446268765,
+      "max_vertex_outside_plane_m": 0.0015577619527992609,
+      "source_triangles": 6,
+      "volume": 4.860388782170606e-07,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.12896623660228146,
+      "max_vertex_outside_plane_m": 0.0018421805082184939,
+      "source_triangles": 7,
+      "volume": 5.317760396233888e-05,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.006311689470801449,
+      "max_vertex_outside_plane_m": 0.00030838574911210004,
+      "source_triangles": 14,
+      "volume": 3.985504660909089e-06,
+      "depth": 8
+    },
+    {
+      "sampled_surface_error_m": 0.009215149274878102,
+      "max_vertex_outside_plane_m": 0.00021432081525817048,
+      "source_triangles": 6,
+      "volume": 5.116200472449414e-07,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.05072147527646325,
+      "max_vertex_outside_plane_m": 1.1102230246251565e-16,
+      "source_triangles": 7,
+      "volume": 0.0005095973334281687,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.027043929326283113,
+      "max_vertex_outside_plane_m": 0.001111279696799694,
+      "source_triangles": 7,
+      "volume": 0.00041356144613899197,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.04352335460945437,
+      "max_vertex_outside_plane_m": 0.006698561128505975,
+      "source_triangles": 7,
+      "volume": 0.00017235396256593373,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.03555959537571838,
+      "max_vertex_outside_plane_m": 0.002101166721094866,
+      "source_triangles": 55,
+      "volume": 0.0009185081738578902,
+      "depth": 6
+    },
+    {
+      "sampled_surface_error_m": 0.019728741513625,
+      "max_vertex_outside_plane_m": 0.002553123367135729,
+      "source_triangles": 6,
+      "volume": 3.315286708805484e-05,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.014816765224089016,
+      "max_vertex_outside_plane_m": 0.005108022503407226,
+      "source_triangles": 7,
+      "volume": 2.1743821942674984e-06,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.03603395228503913,
+      "max_vertex_outside_plane_m": 0.002801775031735357,
+      "source_triangles": 14,
+      "volume": 0.0003445851023213126,
+      "depth": 8
+    },
+    {
+      "sampled_surface_error_m": 0.07777544095666358,
+      "max_vertex_outside_plane_m": 2.7755575615628914e-17,
+      "source_triangles": 7,
+      "volume": 0.0010084301325827528,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.022491394577800434,
+      "max_vertex_outside_plane_m": 0.004738750210486309,
+      "source_triangles": 7,
+      "volume": 0.0001451511496851909,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.052738238892124055,
+      "max_vertex_outside_plane_m": 0.001374261748023145,
+      "source_triangles": 7,
+      "volume": 0.0012312143223676888,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.04150822364292099,
+      "max_vertex_outside_plane_m": 0.01139873275143205,
+      "source_triangles": 7,
+      "volume": 0.00023675641635473367,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.037267003793467056,
+      "max_vertex_outside_plane_m": 0.006234751334271083,
+      "source_triangles": 27,
+      "volume": 0.0005323796665297932,
+      "depth": 7
+    },
+    {
+      "sampled_surface_error_m": 0.037608479135402995,
+      "max_vertex_outside_plane_m": 6.938893903907228e-18,
+      "source_triangles": 28,
+      "volume": 0.000732540058735851,
+      "depth": 7
+    },
+    {
+      "sampled_surface_error_m": 0.017847359080000243,
+      "max_vertex_outside_plane_m": 0.0029726373656393107,
+      "source_triangles": 54,
+      "volume": 5.832445906327906e-05,
+      "depth": 6
+    },
+    {
+      "sampled_surface_error_m": 0.008383847215532137,
+      "max_vertex_outside_plane_m": 0.00017055856675147335,
+      "source_triangles": 13,
+      "volume": 1.1629089172706823e-05,
+      "depth": 8
+    },
+    {
+      "sampled_surface_error_m": 0.03252311928717638,
+      "max_vertex_outside_plane_m": 0.0019231626698019144,
+      "source_triangles": 14,
+      "volume": 0.00019211264122355248,
+      "depth": 8
+    },
+    {
+      "sampled_surface_error_m": 0.04019294896227831,
+      "max_vertex_outside_plane_m": 0.0019814870013808994,
+      "source_triangles": 28,
+      "volume": 0.0003830893982419116,
+      "depth": 7
+    },
+    {
+      "sampled_surface_error_m": 0.07307986619972563,
+      "max_vertex_outside_plane_m": 0.0007313684256149353,
+      "source_triangles": 6,
+      "volume": 0.0001317007699832105,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.041121004621406256,
+      "max_vertex_outside_plane_m": 0.001275831816387532,
+      "source_triangles": 7,
+      "volume": 6.228951590001058e-05,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.02543156838520584,
+      "max_vertex_outside_plane_m": 0.005320248954526818,
+      "source_triangles": 14,
+      "volume": 0.00021460848702609274,
+      "depth": 8
+    },
+    {
+      "sampled_surface_error_m": 0.04328725997041875,
+      "max_vertex_outside_plane_m": 0.003915029052947293,
+      "source_triangles": 28,
+      "volume": 0.0006507425373275946,
+      "depth": 7
+    },
+    {
+      "sampled_surface_error_m": 0.04353593788194203,
+      "max_vertex_outside_plane_m": 2.7755575615628914e-17,
+      "source_triangles": 13,
+      "volume": 0.0008656835764464898,
+      "depth": 8
+    },
+    {
+      "sampled_surface_error_m": 0.023997711690561856,
+      "max_vertex_outside_plane_m": 1.3877787807814457e-17,
+      "source_triangles": 7,
+      "volume": 0.0002036035772894471,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.06546447015419399,
+      "max_vertex_outside_plane_m": 1.3877787807814457e-17,
+      "source_triangles": 7,
+      "volume": 0.000599273788345105,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.04060515042792524,
+      "max_vertex_outside_plane_m": 0.0006150557540824941,
+      "source_triangles": 28,
+      "volume": 0.0010981782604231193,
+      "depth": 7
+    },
+    {
+      "sampled_surface_error_m": 0.046233200256793505,
+      "max_vertex_outside_plane_m": 0.0009782355875191662,
+      "source_triangles": 6,
+      "volume": 9.431682053771408e-05,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.051401817524397216,
+      "max_vertex_outside_plane_m": 0.004529834747632761,
+      "source_triangles": 7,
+      "volume": 0.0001640811221520962,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.04548208422884471,
+      "max_vertex_outside_plane_m": 0.002557760263857678,
+      "source_triangles": 7,
+      "volume": 0.000295208845805386,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.0049157398613337904,
+      "max_vertex_outside_plane_m": 0.0007946876541639614,
+      "source_triangles": 7,
+      "volume": 9.05564305204418e-07,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.015335618224873742,
+      "max_vertex_outside_plane_m": 0.0017446342636186392,
+      "source_triangles": 13,
+      "volume": 9.213732980242277e-05,
+      "depth": 8
+    },
+    {
+      "sampled_surface_error_m": 0.030396105543744837,
+      "max_vertex_outside_plane_m": 0.004564237274811894,
+      "source_triangles": 14,
+      "volume": 9.763722290843044e-05,
+      "depth": 8
+    },
+    {
+      "sampled_surface_error_m": 0.0016594884190788955,
+      "max_vertex_outside_plane_m": 0.001261564592005382,
+      "source_triangles": 27,
+      "volume": 2.568326942421703e-06,
+      "depth": 7
+    },
+    {
+      "sampled_surface_error_m": 0.027813330927526553,
+      "max_vertex_outside_plane_m": 0.0011293741230424398,
+      "source_triangles": 14,
+      "volume": 1.084630508018201e-05,
+      "depth": 8
+    },
+    {
+      "sampled_surface_error_m": 0.004603865659303612,
+      "max_vertex_outside_plane_m": 0.0005152009965172181,
+      "source_triangles": 7,
+      "volume": 1.8111297868760434e-06,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.060009235274915654,
+      "max_vertex_outside_plane_m": 0.0019557603435222948,
+      "source_triangles": 7,
+      "volume": 7.117120133601869e-05,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.044335990258823614,
+      "max_vertex_outside_plane_m": 0.010144600655333139,
+      "source_triangles": 110,
+      "volume": 0.0016396699322398926,
+      "depth": 5
+    },
+    {
+      "sampled_surface_error_m": 0.07262568133450814,
+      "max_vertex_outside_plane_m": 0.006511243172645453,
+      "source_triangles": 6,
+      "volume": 0.0006295616504657181,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.04279916021249363,
+      "max_vertex_outside_plane_m": 6.938893903907228e-18,
+      "source_triangles": 7,
+      "volume": 0.00044559905427998304,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.03901654420297666,
+      "max_vertex_outside_plane_m": 0.005500067127575503,
+      "source_triangles": 14,
+      "volume": 0.00028809223088538795,
+      "depth": 8
+    },
+    {
+      "sampled_surface_error_m": 0.03332590555693637,
+      "max_vertex_outside_plane_m": 0.010737201719493841,
+      "source_triangles": 27,
+      "volume": 0.00013213054312938624,
+      "depth": 7
+    },
+    {
+      "sampled_surface_error_m": 0.03424554997911961,
+      "max_vertex_outside_plane_m": 0.010271504809305096,
+      "source_triangles": 55,
+      "volume": 0.0011512382300012435,
+      "depth": 6
+    },
+    {
+      "sampled_surface_error_m": 0.013004461843327592,
+      "max_vertex_outside_plane_m": 0.0010894387894633817,
+      "source_triangles": 27,
+      "volume": 7.417952058181904e-05,
+      "depth": 7
+    },
+    {
+      "sampled_surface_error_m": 0.06863948613970001,
+      "max_vertex_outside_plane_m": 0.005155560458877467,
+      "source_triangles": 7,
+      "volume": 0.0008688146956107782,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.04046087790564444,
+      "max_vertex_outside_plane_m": 0.0020474433206338766,
+      "source_triangles": 7,
+      "volume": 0.0003799788754796597,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.0286841547215119,
+      "max_vertex_outside_plane_m": 0.0011352322749976218,
+      "source_triangles": 14,
+      "volume": 0.00035150215190405326,
+      "depth": 8
+    },
+    {
+      "sampled_surface_error_m": 0.038068370829246696,
+      "max_vertex_outside_plane_m": 2.7755575615628914e-17,
+      "source_triangles": 6,
+      "volume": 0.00017407299781424998,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.029852472531673703,
+      "max_vertex_outside_plane_m": 0.0016463247867491149,
+      "source_triangles": 7,
+      "volume": 0.00011095975993496026,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.043320219199870245,
+      "max_vertex_outside_plane_m": 0.000887429691982744,
+      "source_triangles": 14,
+      "volume": 0.00018535925331888509,
+      "depth": 8
+    },
+    {
+      "sampled_surface_error_m": 0.03631676652587744,
+      "max_vertex_outside_plane_m": 0.0025752077667703654,
+      "source_triangles": 28,
+      "volume": 0.0003711073550507375,
+      "depth": 7
+    },
+    {
+      "sampled_surface_error_m": 0.024966877168676196,
+      "max_vertex_outside_plane_m": 0.004816804325932192,
+      "source_triangles": 13,
+      "volume": 2.5048840798381834e-05,
+      "depth": 8
+    },
+    {
+      "sampled_surface_error_m": 0.00870222316040164,
+      "max_vertex_outside_plane_m": 0.003772958417776473,
+      "source_triangles": 7,
+      "volume": 2.004009333057431e-05,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.04904899727336805,
+      "max_vertex_outside_plane_m": 0.00039249759656789784,
+      "source_triangles": 7,
+      "volume": 0.0018316596464866169,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.0510073095480546,
+      "max_vertex_outside_plane_m": 0.005619717971648022,
+      "source_triangles": 6,
+      "volume": 0.00044237584853462533,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.02447611745939498,
+      "max_vertex_outside_plane_m": 0.010125082426081337,
+      "source_triangles": 7,
+      "volume": 0.0002832881477860851,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.051237433685159595,
+      "max_vertex_outside_plane_m": 0.015218317000166487,
+      "source_triangles": 7,
+      "volume": 0.0002745037283869378,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.06057654114728228,
+      "max_vertex_outside_plane_m": 0.011251124496022474,
+      "source_triangles": 7,
+      "volume": 0.001127995468242609,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.02193824633818944,
+      "max_vertex_outside_plane_m": 0.004140855480011467,
+      "source_triangles": 6,
+      "volume": 6.092349893461859e-05,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.018291548021378678,
+      "max_vertex_outside_plane_m": 0.0007415167075826914,
+      "source_triangles": 7,
+      "volume": 1.95233605756535e-05,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.02310531255630983,
+      "max_vertex_outside_plane_m": 0.003957630725027597,
+      "source_triangles": 14,
+      "volume": 0.0001381266541075703,
+      "depth": 8
+    },
+    {
+      "sampled_surface_error_m": 0.06820514994611934,
+      "max_vertex_outside_plane_m": 0.007214538663001452,
+      "source_triangles": 7,
+      "volume": 0.0009645947771410195,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.11179540944409831,
+      "max_vertex_outside_plane_m": 0.010320702696266629,
+      "source_triangles": 7,
+      "volume": 0.00231929861452681,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.0353924845902592,
+      "max_vertex_outside_plane_m": 0.0058753241789511745,
+      "source_triangles": 14,
+      "volume": 0.0004053960324390453,
+      "depth": 8
+    },
+    {
+      "sampled_surface_error_m": 0.02278669729934245,
+      "max_vertex_outside_plane_m": 2.7755575615628914e-17,
+      "source_triangles": 27,
+      "volume": 0.00021627637209316886,
+      "depth": 7
+    },
+    {
+      "sampled_surface_error_m": 0.07387993518635663,
+      "max_vertex_outside_plane_m": 0.0008806276853960543,
+      "source_triangles": 7,
+      "volume": 0.0003788839793734383,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.050510186363046945,
+      "max_vertex_outside_plane_m": 0.01253785513340223,
+      "source_triangles": 7,
+      "volume": 0.0005927659654899619,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.040776588019852025,
+      "max_vertex_outside_plane_m": 0.0002746212083673677,
+      "source_triangles": 7,
+      "volume": 0.00030931920924023106,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.019303856984585394,
+      "max_vertex_outside_plane_m": 0.0022001742015202164,
+      "source_triangles": 7,
+      "volume": 8.209936678127027e-05,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.044950645658461914,
+      "max_vertex_outside_plane_m": 0.0008983820167433598,
+      "source_triangles": 13,
+      "volume": 0.0009899864140586003,
+      "depth": 8
+    },
+    {
+      "sampled_surface_error_m": 0.029942445964457817,
+      "max_vertex_outside_plane_m": 0.008349613937239347,
+      "source_triangles": 14,
+      "volume": 0.0003680785620821634,
+      "depth": 8
+    },
+    {
+      "sampled_surface_error_m": 0.03784745460451685,
+      "max_vertex_outside_plane_m": 0.010743280563323597,
+      "source_triangles": 28,
+      "volume": 0.0007888487861435042,
+      "depth": 7
+    },
+    {
+      "sampled_surface_error_m": 0.08822426698828055,
+      "max_vertex_outside_plane_m": 0.011615187402871223,
+      "source_triangles": 6,
+      "volume": 0.0030921438878030913,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.024625487233614195,
+      "max_vertex_outside_plane_m": 0.000546057879864309,
+      "source_triangles": 7,
+      "volume": 7.799103863987458e-05,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.057895058852289,
+      "max_vertex_outside_plane_m": 0.0030245302538478014,
+      "source_triangles": 7,
+      "volume": 0.0006498522625998475,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.006780448489494581,
+      "max_vertex_outside_plane_m": 0.005199981390695135,
+      "source_triangles": 7,
+      "volume": 6.538480735254256e-06,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.01557691014079365,
+      "max_vertex_outside_plane_m": 0.0025235922129791394,
+      "source_triangles": 13,
+      "volume": 0.000108084520663309,
+      "depth": 8
+    },
+    {
+      "sampled_surface_error_m": 0.09081436989767791,
+      "max_vertex_outside_plane_m": 0.001179809433657697,
+      "source_triangles": 7,
+      "volume": 0.0005621609325530035,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.010218275345838112,
+      "max_vertex_outside_plane_m": 0.0006667782670734049,
+      "source_triangles": 7,
+      "volume": 5.479426834189978e-06,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.007858683289086846,
+      "max_vertex_outside_plane_m": 0.003452710667233877,
+      "source_triangles": 27,
+      "volume": 6.0544907129690295e-05,
+      "depth": 7
+    },
+    {
+      "sampled_surface_error_m": 0.0395099062206848,
+      "max_vertex_outside_plane_m": 0.0034934479333875723,
+      "source_triangles": 7,
+      "volume": 0.00016023368084344116,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.004651505759808291,
+      "max_vertex_outside_plane_m": 2.6726121316045237e-09,
+      "source_triangles": 7,
+      "volume": 6.420814929591924e-06,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.08550264434444224,
+      "max_vertex_outside_plane_m": 0.00015855075024798215,
+      "source_triangles": 7,
+      "volume": 0.0002413866486513131,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.026683223684260283,
+      "max_vertex_outside_plane_m": 0.0011911305649410092,
+      "source_triangles": 7,
+      "volume": 5.2190169913014295e-05,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.035220847895578083,
+      "max_vertex_outside_plane_m": 0.008146429823245531,
+      "source_triangles": 27,
+      "volume": 0.0006527481527667949,
+      "depth": 7
+    },
+    {
+      "sampled_surface_error_m": 0.025885829246235566,
+      "max_vertex_outside_plane_m": 0.0016736338088720049,
+      "source_triangles": 7,
+      "volume": 9.025457104619557e-05,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.023230904673663604,
+      "max_vertex_outside_plane_m": 0.00015781238645501405,
+      "source_triangles": 7,
+      "volume": 8.592115321202803e-05,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.052341824349917146,
+      "max_vertex_outside_plane_m": 0.0012754410918868475,
+      "source_triangles": 7,
+      "volume": 0.00036854930871953374,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.03579012773268297,
+      "max_vertex_outside_plane_m": 0.002473490173994314,
+      "source_triangles": 7,
+      "volume": 0.0002376364187555394,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.04187294180619811,
+      "max_vertex_outside_plane_m": 0.0014748155611554181,
+      "source_triangles": 55,
+      "volume": 0.0004882116363813475,
+      "depth": 6
+    },
+    {
+      "sampled_surface_error_m": 0.04547800087710121,
+      "max_vertex_outside_plane_m": 1.1102230246251565e-16,
+      "source_triangles": 6,
+      "volume": 4.568753249402008e-05,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.01753455214372951,
+      "max_vertex_outside_plane_m": 0.0021084463261149544,
+      "source_triangles": 7,
+      "volume": 1.2145819280575527e-05,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.012200844892188431,
+      "max_vertex_outside_plane_m": 0.0010826440127504333,
+      "source_triangles": 14,
+      "volume": 2.538650994525224e-05,
+      "depth": 8
+    },
+    {
+      "sampled_surface_error_m": 0.06757953096346313,
+      "max_vertex_outside_plane_m": 0.004594621656843378,
+      "source_triangles": 6,
+      "volume": 0.0014231991003439892,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.0343509972227733,
+      "max_vertex_outside_plane_m": 0.004781419064181447,
+      "source_triangles": 7,
+      "volume": 0.00053429839776847,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.11866826000079544,
+      "max_vertex_outside_plane_m": 0.0045935447938793665,
+      "source_triangles": 7,
+      "volume": 0.0019251476298864304,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.053764006915142715,
+      "max_vertex_outside_plane_m": 0.003862671403640123,
+      "source_triangles": 7,
+      "volume": 0.0004252467262401185,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.09574765872830851,
+      "max_vertex_outside_plane_m": 1.1102230246251565e-16,
+      "source_triangles": 6,
+      "volume": 0.0028740409187972714,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.10267859131622228,
+      "max_vertex_outside_plane_m": 2.220446049250313e-16,
+      "source_triangles": 7,
+      "volume": 0.0038968575705878765,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.06594901754399862,
+      "max_vertex_outside_plane_m": 0.0012591971857068042,
+      "source_triangles": 7,
+      "volume": 0.0015221766170395203,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.05658067798394149,
+      "max_vertex_outside_plane_m": 0.0012059676604262437,
+      "source_triangles": 7,
+      "volume": 0.0011921573327619908,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.028996328908284515,
+      "max_vertex_outside_plane_m": 0.004318132055573826,
+      "source_triangles": 28,
+      "volume": 0.00018149144869553826,
+      "depth": 7
+    },
+    {
+      "sampled_surface_error_m": 0.007952047928082417,
+      "max_vertex_outside_plane_m": 0.0006608566688132145,
+      "source_triangles": 6,
+      "volume": 5.034321267582637e-06,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.12015135935926459,
+      "max_vertex_outside_plane_m": 0.01170163882710265,
+      "source_triangles": 7,
+      "volume": 0.004909805886239825,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.017696772770543573,
+      "max_vertex_outside_plane_m": 0.006979117784209121,
+      "source_triangles": 14,
+      "volume": 8.919036772190191e-05,
+      "depth": 8
+    },
+    {
+      "sampled_surface_error_m": 0.05171082784914609,
+      "max_vertex_outside_plane_m": 0.00635309241356069,
+      "source_triangles": 7,
+      "volume": 0.00013030915493709088,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.05816518839799812,
+      "max_vertex_outside_plane_m": 0.015466509074825996,
+      "source_triangles": 7,
+      "volume": 0.0002494548051869114,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.2023415647610401,
+      "max_vertex_outside_plane_m": 1.1102230246251565e-16,
+      "source_triangles": 7,
+      "volume": 0.0057093829016267375,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.013297811999974193,
+      "max_vertex_outside_plane_m": 0.004505570854810251,
+      "source_triangles": 7,
+      "volume": 7.90756988405895e-05,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.01701830028697722,
+      "max_vertex_outside_plane_m": 0.0019802861576781183,
+      "source_triangles": 13,
+      "volume": 7.453767461154707e-05,
+      "depth": 8
+    },
+    {
+      "sampled_surface_error_m": 0.012140935282057274,
+      "max_vertex_outside_plane_m": 0.0005567897207759409,
+      "source_triangles": 7,
+      "volume": 1.1424430833585575e-05,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.014859029339093792,
+      "max_vertex_outside_plane_m": 0.0023363846970954893,
+      "source_triangles": 7,
+      "volume": 3.963506223840244e-05,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.004825373909941543,
+      "max_vertex_outside_plane_m": 0.00043737654457054465,
+      "source_triangles": 7,
+      "volume": 3.959925648735206e-06,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.09155349951333147,
+      "max_vertex_outside_plane_m": 5.551115123125783e-17,
+      "source_triangles": 7,
+      "volume": 0.0018090204906050665,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.10389628055499733,
+      "max_vertex_outside_plane_m": 0.007143206066846,
+      "source_triangles": 7,
+      "volume": 0.006520425152303152,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.11235244199500827,
+      "max_vertex_outside_plane_m": 1.1102230246251565e-16,
+      "source_triangles": 7,
+      "volume": 0.004332715317780287,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.04059860934955306,
+      "max_vertex_outside_plane_m": 0.016862175493439407,
+      "source_triangles": 6,
+      "volume": 2.650181198038394e-05,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.019427366988888813,
+      "max_vertex_outside_plane_m": 0.008327528406584017,
+      "source_triangles": 7,
+      "volume": 0.00018706810097850478,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.011794137195218856,
+      "max_vertex_outside_plane_m": 0.0049991224543667195,
+      "source_triangles": 14,
+      "volume": 7.516695157560021e-05,
+      "depth": 8
+    },
+    {
+      "sampled_surface_error_m": 0.027896088047986704,
+      "max_vertex_outside_plane_m": 0.0016910115297927436,
+      "source_triangles": 6,
+      "volume": 0.00012510089448477296,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.1094883543145135,
+      "max_vertex_outside_plane_m": 0.018347945205102342,
+      "source_triangles": 7,
+      "volume": 0.004798590095448754,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.07032567214908077,
+      "max_vertex_outside_plane_m": 0.0044378199885633865,
+      "source_triangles": 7,
+      "volume": 0.0002152685979807093,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.1242579126895774,
+      "max_vertex_outside_plane_m": 0.009340368653620888,
+      "source_triangles": 7,
+      "volume": 0.00160409185490683,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.050575122084097486,
+      "max_vertex_outside_plane_m": 0.0005872021295774965,
+      "source_triangles": 6,
+      "volume": 0.0004850294055324116,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.09505411166473426,
+      "max_vertex_outside_plane_m": 0.012395597705180533,
+      "source_triangles": 7,
+      "volume": 0.0010491650411846914,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.027108304742202046,
+      "max_vertex_outside_plane_m": 0.001566748255484196,
+      "source_triangles": 14,
+      "volume": 0.00012358128104483781,
+      "depth": 8
+    },
+    {
+      "sampled_surface_error_m": 0.006584220592711732,
+      "max_vertex_outside_plane_m": 0.003740007129634633,
+      "source_triangles": 7,
+      "volume": 2.8394802197697073e-06,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.014346321361519533,
+      "max_vertex_outside_plane_m": 0.0021461411387242446,
+      "source_triangles": 7,
+      "volume": 0.00014550933927033095,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.058929217081195355,
+      "max_vertex_outside_plane_m": 1.1102230246251565e-16,
+      "source_triangles": 7,
+      "volume": 0.0014619284280817427,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.11065253398696927,
+      "max_vertex_outside_plane_m": 0.00030383445815440613,
+      "source_triangles": 7,
+      "volume": 0.002216284069248724,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.025139455827848732,
+      "max_vertex_outside_plane_m": 0.0068657760866067535,
+      "source_triangles": 6,
+      "volume": 5.453849304037667e-05,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.04896426608310201,
+      "max_vertex_outside_plane_m": 0.004648424845424909,
+      "source_triangles": 7,
+      "volume": 0.0010231597858496894,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.04242739726093094,
+      "max_vertex_outside_plane_m": 0.00849603256458061,
+      "source_triangles": 14,
+      "volume": 0.0008575334063601358,
+      "depth": 8
+    },
+    {
+      "sampled_surface_error_m": 0.04999207417517971,
+      "max_vertex_outside_plane_m": 0.0063710084601498185,
+      "source_triangles": 7,
+      "volume": 0.0010782251877794987,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.06958910782663112,
+      "max_vertex_outside_plane_m": 0.013195506512583444,
+      "source_triangles": 7,
+      "volume": 0.0024693202701419714,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.04234438069040309,
+      "max_vertex_outside_plane_m": 0.005983602201996119,
+      "source_triangles": 14,
+      "volume": 0.0004921001017202548,
+      "depth": 8
+    },
+    {
+      "sampled_surface_error_m": 0.024874804441348156,
+      "max_vertex_outside_plane_m": 1.1102230246251565e-16,
+      "source_triangles": 6,
+      "volume": 6.162442508036345e-05,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.003669646811004694,
+      "max_vertex_outside_plane_m": 0.0022810658683406274,
+      "source_triangles": 7,
+      "volume": 1.0135160790297232e-05,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.011261311282602259,
+      "max_vertex_outside_plane_m": 0.0015188169031457865,
+      "source_triangles": 7,
+      "volume": 1.8781499925492495e-05,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.01636057614773548,
+      "max_vertex_outside_plane_m": 0.008566575140835864,
+      "source_triangles": 7,
+      "volume": 7.826219788125063e-05,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.022060667447339772,
+      "max_vertex_outside_plane_m": 0.0024077179541650492,
+      "source_triangles": 14,
+      "volume": 0.00018289836493671645,
+      "depth": 8
+    },
+    {
+      "sampled_surface_error_m": 0.061706721315636114,
+      "max_vertex_outside_plane_m": 0.0033008056338778013,
+      "source_triangles": 7,
+      "volume": 0.00010307061743243686,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.05708196194798663,
+      "max_vertex_outside_plane_m": 0.0011885951811966555,
+      "source_triangles": 7,
+      "volume": 0.0013990761953027223,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.042239839120054384,
+      "max_vertex_outside_plane_m": 0.003925318849576559,
+      "source_triangles": 54,
+      "volume": 0.001729970506527762,
+      "depth": 6
+    },
+    {
+      "sampled_surface_error_m": 0.013648597156111334,
+      "max_vertex_outside_plane_m": 0.001800353500432006,
+      "source_triangles": 27,
+      "volume": 7.900918132074813e-05,
+      "depth": 7
+    },
+    {
+      "sampled_surface_error_m": 0.04414833384980548,
+      "max_vertex_outside_plane_m": 0.00958264289785385,
+      "source_triangles": 28,
+      "volume": 0.0003894642256160427,
+      "depth": 7
+    },
+    {
+      "sampled_surface_error_m": 0.055406037407246006,
+      "max_vertex_outside_plane_m": 0.008209274956841983,
+      "source_triangles": 6,
+      "volume": 0.0017766557853488838,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.0715247368414097,
+      "max_vertex_outside_plane_m": 0.0036185938299542753,
+      "source_triangles": 7,
+      "volume": 0.0006685570273025388,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.036141123133649415,
+      "max_vertex_outside_plane_m": 0.0030114464531313667,
+      "source_triangles": 7,
+      "volume": 0.00013778901904554005,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.0518764499812846,
+      "max_vertex_outside_plane_m": 0.003427845832468218,
+      "source_triangles": 7,
+      "volume": 4.707911456641559e-05,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.04062614774355945,
+      "max_vertex_outside_plane_m": 0.000810613499746371,
+      "source_triangles": 14,
+      "volume": 0.00019774044625311266,
+      "depth": 8
+    },
+    {
+      "sampled_surface_error_m": 0.006136722208781907,
+      "max_vertex_outside_plane_m": 0.0016736527668807372,
+      "source_triangles": 7,
+      "volume": 2.681903150569559e-05,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.02173144833549689,
+      "max_vertex_outside_plane_m": 0.002224455046639817,
+      "source_triangles": 7,
+      "volume": 9.625073659933648e-05,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.04033279716377586,
+      "max_vertex_outside_plane_m": 0.0027057913454438254,
+      "source_triangles": 27,
+      "volume": 0.0006338744860644577,
+      "depth": 7
+    },
+    {
+      "sampled_surface_error_m": 0.03718124110307175,
+      "max_vertex_outside_plane_m": 0.010144466719897258,
+      "source_triangles": 28,
+      "volume": 0.0014975782080603498,
+      "depth": 7
+    },
+    {
+      "sampled_surface_error_m": 0.03748941762277686,
+      "max_vertex_outside_plane_m": 0.0048330162923082565,
+      "source_triangles": 13,
+      "volume": 0.0003464013628876802,
+      "depth": 8
+    },
+    {
+      "sampled_surface_error_m": 0.04326763758388268,
+      "max_vertex_outside_plane_m": 0.003787373894848123,
+      "source_triangles": 14,
+      "volume": 0.0007075987073145211,
+      "depth": 8
+    },
+    {
+      "sampled_surface_error_m": 0.038867683938715154,
+      "max_vertex_outside_plane_m": 0.0007583778177159828,
+      "source_triangles": 13,
+      "volume": 0.00022224706201610464,
+      "depth": 8
+    },
+    {
+      "sampled_surface_error_m": 0.02921272922734555,
+      "max_vertex_outside_plane_m": 0.00233001975357211,
+      "source_triangles": 7,
+      "volume": 0.00028383040945533655,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.0503117353068433,
+      "max_vertex_outside_plane_m": 5.551115123125783e-17,
+      "source_triangles": 7,
+      "volume": 0.0012882853676450658,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.023268423858581043,
+      "max_vertex_outside_plane_m": 0.008398762778715735,
+      "source_triangles": 13,
+      "volume": 3.34086690724926e-05,
+      "depth": 8
+    },
+    {
+      "sampled_surface_error_m": 0.04301707572139669,
+      "max_vertex_outside_plane_m": 0.005067980858952728,
+      "source_triangles": 7,
+      "volume": 0.0002864550575380841,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.009428860533114565,
+      "max_vertex_outside_plane_m": 0.0023216645838648464,
+      "source_triangles": 7,
+      "volume": 1.744106246246739e-05,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.07669193897563775,
+      "max_vertex_outside_plane_m": 0.012879398089827104,
+      "source_triangles": 7,
+      "volume": 0.0014694802330864718,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.0742609247414503,
+      "max_vertex_outside_plane_m": 0.001084482642976975,
+      "source_triangles": 7,
+      "volume": 0.0011950378915052096,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.0436663381843415,
+      "max_vertex_outside_plane_m": 0.0018742979569190688,
+      "source_triangles": 14,
+      "volume": 0.0007642041055250063,
+      "depth": 8
+    },
+    {
+      "sampled_surface_error_m": 0.03819081535712632,
+      "max_vertex_outside_plane_m": 0.008924365098056592,
+      "source_triangles": 27,
+      "volume": 0.00038908050665905443,
+      "depth": 7
+    },
+    {
+      "sampled_surface_error_m": 0.023913317467249853,
+      "max_vertex_outside_plane_m": 0.0012704787515785687,
+      "source_triangles": 28,
+      "volume": 0.00015846348953155238,
+      "depth": 7
+    },
+    {
+      "sampled_surface_error_m": 0.038999243928042195,
+      "max_vertex_outside_plane_m": 0.009022651825709105,
+      "source_triangles": 27,
+      "volume": 0.0012951462426882385,
+      "depth": 7
+    },
+    {
+      "sampled_surface_error_m": 0.03423688766559934,
+      "max_vertex_outside_plane_m": 5.551115123125783e-17,
+      "source_triangles": 7,
+      "volume": 0.0002421591390117544,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.025505780791468768,
+      "max_vertex_outside_plane_m": 2.7755575615628914e-17,
+      "source_triangles": 7,
+      "volume": 0.00016876750174979417,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.021125204590594887,
+      "max_vertex_outside_plane_m": 0.009029984412752379,
+      "source_triangles": 14,
+      "volume": 7.751528516044031e-05,
+      "depth": 8
+    },
+    {
+      "sampled_surface_error_m": 0.04337477709709318,
+      "max_vertex_outside_plane_m": 0.010008878080513095,
+      "source_triangles": 27,
+      "volume": 0.00035567185384467016,
+      "depth": 7
+    },
+    {
+      "sampled_surface_error_m": 0.042863929312446786,
+      "max_vertex_outside_plane_m": 0.002572514500020495,
+      "source_triangles": 27,
+      "volume": 0.0003183186129326815,
+      "depth": 7
+    },
+    {
+      "sampled_surface_error_m": 0.019436568226578316,
+      "max_vertex_outside_plane_m": 0.0010918086549457084,
+      "source_triangles": 27,
+      "volume": 9.390242602094729e-05,
+      "depth": 7
+    },
+    {
+      "sampled_surface_error_m": 0.03816835988973466,
+      "max_vertex_outside_plane_m": 0.0028807205251311302,
+      "source_triangles": 28,
+      "volume": 0.0007596506818986635,
+      "depth": 7
+    },
+    {
+      "sampled_surface_error_m": 0.02495509428574493,
+      "max_vertex_outside_plane_m": 0.0014699028659335561,
+      "source_triangles": 6,
+      "volume": 0.00010714823066779821,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.003909286415778999,
+      "max_vertex_outside_plane_m": 0.0001404543918782017,
+      "source_triangles": 7,
+      "volume": 9.720731159279709e-08,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.010409992953479824,
+      "max_vertex_outside_plane_m": 0.004178491548677887,
+      "source_triangles": 7,
+      "volume": 1.2442554445905205e-05,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.048633186717146414,
+      "max_vertex_outside_plane_m": 0.0004747397294956289,
+      "source_triangles": 7,
+      "volume": 7.163165481319754e-05,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.021196581119674845,
+      "max_vertex_outside_plane_m": 0.0006184696736334094,
+      "source_triangles": 28,
+      "volume": 0.00034934825987041087,
+      "depth": 7
+    },
+    {
+      "sampled_surface_error_m": 0.028197470979432513,
+      "max_vertex_outside_plane_m": 0.010649707455643864,
+      "source_triangles": 13,
+      "volume": 0.00031666096555215014,
+      "depth": 8
+    },
+    {
+      "sampled_surface_error_m": 0.0432800362728736,
+      "max_vertex_outside_plane_m": 0.008834075875044506,
+      "source_triangles": 14,
+      "volume": 0.00041001085698868156,
+      "depth": 8
+    },
+    {
+      "sampled_surface_error_m": 0.02372496507193516,
+      "max_vertex_outside_plane_m": 0.010039283305799368,
+      "source_triangles": 14,
+      "volume": 0.00015603331384954846,
+      "depth": 8
+    },
+    {
+      "sampled_surface_error_m": 0.026129805108731714,
+      "max_vertex_outside_plane_m": 0.001070844846918266,
+      "source_triangles": 14,
+      "volume": 0.00014571400171074675,
+      "depth": 8
+    },
+    {
+      "sampled_surface_error_m": 0.0331923848538185,
+      "max_vertex_outside_plane_m": 0.002656842742827119,
+      "source_triangles": 27,
+      "volume": 0.00012485018249567834,
+      "depth": 7
+    },
+    {
+      "sampled_surface_error_m": 0.03800965637711408,
+      "max_vertex_outside_plane_m": 5.551115123125783e-17,
+      "source_triangles": 13,
+      "volume": 0.00022183766473358752,
+      "depth": 8
+    },
+    {
+      "sampled_surface_error_m": 0.03659983040128311,
+      "max_vertex_outside_plane_m": 0.0038616105915506016,
+      "source_triangles": 14,
+      "volume": 0.0006793727002214647,
+      "depth": 8
+    },
+    {
+      "sampled_surface_error_m": 0.04245226588161982,
+      "max_vertex_outside_plane_m": 0.004750930100529099,
+      "source_triangles": 13,
+      "volume": 0.0002647931249146207,
+      "depth": 8
+    },
+    {
+      "sampled_surface_error_m": 0.016344898002216193,
+      "max_vertex_outside_plane_m": 0.001204795786149064,
+      "source_triangles": 14,
+      "volume": 3.7082092258803145e-05,
+      "depth": 8
+    },
+    {
+      "sampled_surface_error_m": 0.05183139625064106,
+      "max_vertex_outside_plane_m": 0.0027028576545964147,
+      "source_triangles": 7,
+      "volume": 0.0002665479446722357,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.008165958435415054,
+      "max_vertex_outside_plane_m": 0.0002346583645950473,
+      "source_triangles": 7,
+      "volume": 1.565552204720338e-05,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.08460422307251458,
+      "max_vertex_outside_plane_m": 0.0015231627885100019,
+      "source_triangles": 7,
+      "volume": 0.0018798183800327382,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.04066481679424909,
+      "max_vertex_outside_plane_m": 6.938893903907228e-18,
+      "source_triangles": 7,
+      "volume": 0.0001397945588804566,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.034293937532824205,
+      "max_vertex_outside_plane_m": 0.0009776398908549755,
+      "source_triangles": 27,
+      "volume": 0.0004452817694608021,
+      "depth": 7
+    },
+    {
+      "sampled_surface_error_m": 0.0075841935875007715,
+      "max_vertex_outside_plane_m": 0.000440854534856594,
+      "source_triangles": 7,
+      "volume": 8.487739086554387e-06,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.07747523587875146,
+      "max_vertex_outside_plane_m": 5.551115123125783e-17,
+      "source_triangles": 7,
+      "volume": 0.000785947864134588,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.04369375522604314,
+      "max_vertex_outside_plane_m": 0.0013219442739157428,
+      "source_triangles": 7,
+      "volume": 0.00042526728272399705,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.042811379738637245,
+      "max_vertex_outside_plane_m": 0.013455689849809438,
+      "source_triangles": 7,
+      "volume": 0.0004223409137285479,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.04717253728874504,
+      "max_vertex_outside_plane_m": 0.0005551607717740603,
+      "source_triangles": 6,
+      "volume": 0.00038451689696361385,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.08378722920654069,
+      "max_vertex_outside_plane_m": 5.551115123125783e-17,
+      "source_triangles": 7,
+      "volume": 0.0008061976921232038,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.018737095274154007,
+      "max_vertex_outside_plane_m": 0.00014516742850503167,
+      "source_triangles": 14,
+      "volume": 0.0001180405576333668,
+      "depth": 8
+    },
+    {
+      "sampled_surface_error_m": 0.0064142074513159585,
+      "max_vertex_outside_plane_m": 0.0036282889028578236,
+      "source_triangles": 28,
+      "volume": 2.1145181829398138e-05,
+      "depth": 7
+    },
+    {
+      "sampled_surface_error_m": 0.014077589692057925,
+      "max_vertex_outside_plane_m": 0.002600896117407936,
+      "source_triangles": 13,
+      "volume": 4.2714995551649356e-05,
+      "depth": 8
+    },
+    {
+      "sampled_surface_error_m": 0.061153016236859384,
+      "max_vertex_outside_plane_m": 0.007669143331746786,
+      "source_triangles": 7,
+      "volume": 0.0009741876635170263,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.022922353286500642,
+      "max_vertex_outside_plane_m": 0.000537552400775354,
+      "source_triangles": 7,
+      "volume": 0.00013803458331075258,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.044556560220742496,
+      "max_vertex_outside_plane_m": 0.001653127233254309,
+      "source_triangles": 13,
+      "volume": 0.0007387050685601063,
+      "depth": 8
+    },
+    {
+      "sampled_surface_error_m": 0.030254067736502323,
+      "max_vertex_outside_plane_m": 0.005042933747581357,
+      "source_triangles": 7,
+      "volume": 0.0001505999418254559,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.04893514370537053,
+      "max_vertex_outside_plane_m": 0.0006519329377790428,
+      "source_triangles": 7,
+      "volume": 0.0006901883301830376,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.040493211504595124,
+      "max_vertex_outside_plane_m": 0.002936440404014251,
+      "source_triangles": 27,
+      "volume": 0.0002172024095982714,
+      "depth": 7
+    },
+    {
+      "sampled_surface_error_m": 0.01304632152026575,
+      "max_vertex_outside_plane_m": 0.005128217597950374,
+      "source_triangles": 14,
+      "volume": 4.3554065049344875e-05,
+      "depth": 8
+    },
+    {
+      "sampled_surface_error_m": 0.03401224510622007,
+      "max_vertex_outside_plane_m": 0.0054085840423910014,
+      "source_triangles": 7,
+      "volume": 0.0005549726913923975,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.07810657094149358,
+      "max_vertex_outside_plane_m": 0.0011813600825006376,
+      "source_triangles": 7,
+      "volume": 0.0004964999224014644,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.08921183389292059,
+      "max_vertex_outside_plane_m": 5.551115123125783e-17,
+      "source_triangles": 6,
+      "volume": 0.0005599610916075403,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.04244163466048632,
+      "max_vertex_outside_plane_m": 0.01337424469429696,
+      "source_triangles": 7,
+      "volume": 5.547989071090471e-05,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.0303955506579505,
+      "max_vertex_outside_plane_m": 0.0070110568793143035,
+      "source_triangles": 14,
+      "volume": 0.00080526664256364,
+      "depth": 8
+    },
+    {
+      "sampled_surface_error_m": 0.01772191315582107,
+      "max_vertex_outside_plane_m": 0.005371770255402211,
+      "source_triangles": 14,
+      "volume": 6.151695964112745e-05,
+      "depth": 8
+    },
+    {
+      "sampled_surface_error_m": 0.006359326165976637,
+      "max_vertex_outside_plane_m": 0.0005778578588298555,
+      "source_triangles": 7,
+      "volume": 1.6422960059219358e-06,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.057472772511479836,
+      "max_vertex_outside_plane_m": 0.005336744685267403,
+      "source_triangles": 7,
+      "volume": 0.0005647037717574112,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.04335756490727063,
+      "max_vertex_outside_plane_m": 0.010255708397582622,
+      "source_triangles": 6,
+      "volume": 0.00025848986850352326,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.0554245655460927,
+      "max_vertex_outside_plane_m": 0.0076479610768833695,
+      "source_triangles": 7,
+      "volume": 0.0008970814681239284,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.04295484324763366,
+      "max_vertex_outside_plane_m": 0.0038531504716139142,
+      "source_triangles": 14,
+      "volume": 0.0003485450299308238,
+      "depth": 8
+    },
+    {
+      "sampled_surface_error_m": 0.06720359313675034,
+      "max_vertex_outside_plane_m": 0.0010405670340365158,
+      "source_triangles": 7,
+      "volume": 0.00046330102573197184,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.004190239521576222,
+      "max_vertex_outside_plane_m": 0.0019500534016432813,
+      "source_triangles": 7,
+      "volume": 2.6399481830435975e-06,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.01002445878291067,
+      "max_vertex_outside_plane_m": 0.0009016910818474277,
+      "source_triangles": 7,
+      "volume": 9.623539926063185e-06,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.10555876552023064,
+      "max_vertex_outside_plane_m": 0.02478635042430566,
+      "source_triangles": 7,
+      "volume": 0.0029714076600107606,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.03199510732514603,
+      "max_vertex_outside_plane_m": 0.0048269551732191,
+      "source_triangles": 13,
+      "volume": 0.0002286063604999608,
+      "depth": 8
+    },
+    {
+      "sampled_surface_error_m": 0.043591801298875604,
+      "max_vertex_outside_plane_m": 0.003714746234253663,
+      "source_triangles": 14,
+      "volume": 0.0005109991796902757,
+      "depth": 8
+    },
+    {
+      "sampled_surface_error_m": 0.032739328049010884,
+      "max_vertex_outside_plane_m": 0.00032378314888203974,
+      "source_triangles": 6,
+      "volume": 0.000113006245761175,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.010463926747537988,
+      "max_vertex_outside_plane_m": 0.0004644991981742619,
+      "source_triangles": 7,
+      "volume": 2.8650629900984745e-06,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.04783839976392581,
+      "max_vertex_outside_plane_m": 0.014208219982758084,
+      "source_triangles": 7,
+      "volume": 0.0006950794372045658,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.04494846685240632,
+      "max_vertex_outside_plane_m": 0.0027038353647041644,
+      "source_triangles": 7,
+      "volume": 0.00013701136748087606,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.061729290497513745,
+      "max_vertex_outside_plane_m": 0.0015378761373090605,
+      "source_triangles": 13,
+      "volume": 0.000395071629978112,
+      "depth": 8
+    },
+    {
+      "sampled_surface_error_m": 0.031262705608515726,
+      "max_vertex_outside_plane_m": 0.0016229277902812533,
+      "source_triangles": 7,
+      "volume": 7.845152582607626e-05,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.05386290766546891,
+      "max_vertex_outside_plane_m": 0.0045982196423596244,
+      "source_triangles": 7,
+      "volume": 0.000890875716719364,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.045503292019947565,
+      "max_vertex_outside_plane_m": 0.0010715102567483703,
+      "source_triangles": 7,
+      "volume": 0.00022511716407035967,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.015622462295963367,
+      "max_vertex_outside_plane_m": 0.0017684018747770036,
+      "source_triangles": 7,
+      "volume": 4.508892352442069e-05,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.02844787477780473,
+      "max_vertex_outside_plane_m": 0.0013498929538692805,
+      "source_triangles": 7,
+      "volume": 0.00016367694669449333,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.03374182336972716,
+      "max_vertex_outside_plane_m": 0.0009158011141584786,
+      "source_triangles": 7,
+      "volume": 0.00020334778122001803,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.04253371926232146,
+      "max_vertex_outside_plane_m": 0.007003508435296596,
+      "source_triangles": 27,
+      "volume": 0.0009410857923951087,
+      "depth": 7
+    },
+    {
+      "sampled_surface_error_m": 0.02222588878777787,
+      "max_vertex_outside_plane_m": 0.0009086169027273383,
+      "source_triangles": 14,
+      "volume": 3.3823082837552496e-05,
+      "depth": 8
+    },
+    {
+      "sampled_surface_error_m": 0.005165648379530606,
+      "max_vertex_outside_plane_m": 2.7755575615628914e-17,
+      "source_triangles": 7,
+      "volume": 4.220851043421705e-06,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.059353674130848494,
+      "max_vertex_outside_plane_m": 0.0013118533830531187,
+      "source_triangles": 7,
+      "volume": 0.0002720785516712107,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.031023196776699912,
+      "max_vertex_outside_plane_m": 5.551115123125783e-17,
+      "source_triangles": 13,
+      "volume": 6.303647433960144e-05,
+      "depth": 8
+    },
+    {
+      "sampled_surface_error_m": 0.04495379626171905,
+      "max_vertex_outside_plane_m": 0.00044094353759882576,
+      "source_triangles": 7,
+      "volume": 0.00012554088180451094,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.09160450415688369,
+      "max_vertex_outside_plane_m": 0.0032653897999585513,
+      "source_triangles": 7,
+      "volume": 0.0018819060215063159,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.044003034824117826,
+      "max_vertex_outside_plane_m": 0.0031588842278782447,
+      "source_triangles": 7,
+      "volume": 0.000546746014219618,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.05273785429748337,
+      "max_vertex_outside_plane_m": 0.0004628644629871004,
+      "source_triangles": 7,
+      "volume": 0.0004171735254769556,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.054725239873784075,
+      "max_vertex_outside_plane_m": 0.0009448947884996839,
+      "source_triangles": 7,
+      "volume": 0.00038851777883236753,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.05060929255341027,
+      "max_vertex_outside_plane_m": 0.0005002032784288124,
+      "source_triangles": 7,
+      "volume": 0.0002626187865600563,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.03614552476513649,
+      "max_vertex_outside_plane_m": 0.003232163864640515,
+      "source_triangles": 13,
+      "volume": 0.00016073001587203282,
+      "depth": 8
+    },
+    {
+      "sampled_surface_error_m": 0.027337934317538025,
+      "max_vertex_outside_plane_m": 0.004469553513475888,
+      "source_triangles": 7,
+      "volume": 6.68122071367258e-05,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.05258317133712327,
+      "max_vertex_outside_plane_m": 0.007318273113218449,
+      "source_triangles": 7,
+      "volume": 0.0004290430321550406,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.014550868518136428,
+      "max_vertex_outside_plane_m": 0.002605448547927658,
+      "source_triangles": 13,
+      "volume": 5.357666569919899e-05,
+      "depth": 8
+    },
+    {
+      "sampled_surface_error_m": 0.005321870418177627,
+      "max_vertex_outside_plane_m": 0.0007402977524426646,
+      "source_triangles": 7,
+      "volume": 1.2186747804622333e-05,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.04166314696914324,
+      "max_vertex_outside_plane_m": 0.00043055732452490503,
+      "source_triangles": 7,
+      "volume": 0.00020413563865762517,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.020896107031740798,
+      "max_vertex_outside_plane_m": 0.001079605272598566,
+      "source_triangles": 13,
+      "volume": 1.9876371865140566e-05,
+      "depth": 8
+    },
+    {
+      "sampled_surface_error_m": 0.04684590703780153,
+      "max_vertex_outside_plane_m": 0.002031031024418567,
+      "source_triangles": 7,
+      "volume": 0.00016067370651270285,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.03777702492397239,
+      "max_vertex_outside_plane_m": 0.00031117224750176753,
+      "source_triangles": 7,
+      "volume": 2.705948182140832e-05,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.04220221957122605,
+      "max_vertex_outside_plane_m": 0.0004711617351691455,
+      "source_triangles": 14,
+      "volume": 0.0004709497138828517,
+      "depth": 8
+    },
+    {
+      "sampled_surface_error_m": 0.012453884148242982,
+      "max_vertex_outside_plane_m": 0.0036479424245607073,
+      "source_triangles": 14,
+      "volume": 5.1084951087871465e-05,
+      "depth": 8
+    },
+    {
+      "sampled_surface_error_m": 0.023708425129435818,
+      "max_vertex_outside_plane_m": 0.005401243893598584,
+      "source_triangles": 13,
+      "volume": 4.073503497400674e-05,
+      "depth": 8
+    },
+    {
+      "sampled_surface_error_m": 0.038991235143648016,
+      "max_vertex_outside_plane_m": 0.0016603668858224119,
+      "source_triangles": 14,
+      "volume": 0.00018253003277904294,
+      "depth": 8
+    },
+    {
+      "sampled_surface_error_m": 0.02150805035449551,
+      "max_vertex_outside_plane_m": 0.00232733617982242,
+      "source_triangles": 7,
+      "volume": 9.04029028855486e-06,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.0528017731714613,
+      "max_vertex_outside_plane_m": 0.0017601190072011885,
+      "source_triangles": 7,
+      "volume": 0.00021376430946122473,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.03827602197415031,
+      "max_vertex_outside_plane_m": 0.003578416093294956,
+      "source_triangles": 7,
+      "volume": 4.889024252323203e-05,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.050638431536842575,
+      "max_vertex_outside_plane_m": 0.005350503904278603,
+      "source_triangles": 7,
+      "volume": 0.00036055784008664625,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.04196194928699424,
+      "max_vertex_outside_plane_m": 0.001597321848565425,
+      "source_triangles": 13,
+      "volume": 0.0003301164787296983,
+      "depth": 8
+    },
+    {
+      "sampled_surface_error_m": 0.019402918076244363,
+      "max_vertex_outside_plane_m": 0.001602481667732178,
+      "source_triangles": 7,
+      "volume": 7.182096158162372e-05,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.021152956501802645,
+      "max_vertex_outside_plane_m": 0.005202622290173695,
+      "source_triangles": 7,
+      "volume": 0.000315658142464937,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.022171379592511496,
+      "max_vertex_outside_plane_m": 0.00027098518178528264,
+      "source_triangles": 7,
+      "volume": 7.486509898039332e-05,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.0684262419261597,
+      "max_vertex_outside_plane_m": 0.0010709533323255555,
+      "source_triangles": 7,
+      "volume": 0.0015553807645697483,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.010614278740446771,
+      "max_vertex_outside_plane_m": 0.0009079367387674897,
+      "source_triangles": 7,
+      "volume": 0.00017169397130040967,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.0656385159014154,
+      "max_vertex_outside_plane_m": 0.0048591807848286095,
+      "source_triangles": 7,
+      "volume": 0.0009799636442427283,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.011136297284383492,
+      "max_vertex_outside_plane_m": 0.003500055537718285,
+      "source_triangles": 6,
+      "volume": 5.8196556486089106e-05,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.0357174736651643,
+      "max_vertex_outside_plane_m": 0.013948381538401108,
+      "source_triangles": 7,
+      "volume": 7.891700663544948e-05,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.027496120028900017,
+      "max_vertex_outside_plane_m": 0.003300486452996812,
+      "source_triangles": 7,
+      "volume": 3.633514545316208e-05,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.04261823549084643,
+      "max_vertex_outside_plane_m": 0.0075792553726280465,
+      "source_triangles": 7,
+      "volume": 0.000576378738028481,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.12054582538953111,
+      "max_vertex_outside_plane_m": 0.0015399973492662977,
+      "source_triangles": 6,
+      "volume": 0.00389144443338224,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.01832131954388266,
+      "max_vertex_outside_plane_m": 0.0016932323854946738,
+      "source_triangles": 7,
+      "volume": 1.776850498484061e-05,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.011254021064756044,
+      "max_vertex_outside_plane_m": 0.0012813472532680614,
+      "source_triangles": 14,
+      "volume": 1.7456415405698467e-05,
+      "depth": 8
+    },
+    {
+      "sampled_surface_error_m": 0.036459859232253984,
+      "max_vertex_outside_plane_m": 1.1102230246251565e-16,
+      "source_triangles": 13,
+      "volume": 0.0003582504511695698,
+      "depth": 8
+    },
+    {
+      "sampled_surface_error_m": 0.04441797672489659,
+      "max_vertex_outside_plane_m": 0.004142567394492536,
+      "source_triangles": 7,
+      "volume": 0.0003653925809516655,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.03819031857046499,
+      "max_vertex_outside_plane_m": 0.003897171741484018,
+      "source_triangles": 7,
+      "volume": 0.0003894231927133127,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.05742133387899596,
+      "max_vertex_outside_plane_m": 0.0073609806829187385,
+      "source_triangles": 7,
+      "volume": 6.274483653887393e-05,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.009449097322973582,
+      "max_vertex_outside_plane_m": 0.0008462986834111841,
+      "source_triangles": 7,
+      "volume": 2.220422625336988e-06,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.04721516814404743,
+      "max_vertex_outside_plane_m": 0.0,
+      "source_triangles": 7,
+      "volume": 0.00044764540071130814,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.06313933758371693,
+      "max_vertex_outside_plane_m": 0.025623889380742837,
+      "source_triangles": 7,
+      "volume": 0.0012208234800826856,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.003400114180515581,
+      "max_vertex_outside_plane_m": 0.001299331748467178,
+      "source_triangles": 13,
+      "volume": 4.671075281734864e-06,
+      "depth": 8
+    },
+    {
+      "sampled_surface_error_m": 0.0197153737981645,
+      "max_vertex_outside_plane_m": 0.00174215018856555,
+      "source_triangles": 7,
+      "volume": 2.316606516313433e-05,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.027183856433790104,
+      "max_vertex_outside_plane_m": 0.006917413615673468,
+      "source_triangles": 7,
+      "volume": 0.00019261406580631571,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.019908838197302138,
+      "max_vertex_outside_plane_m": 0.007411411609759597,
+      "source_triangles": 7,
+      "volume": 0.00014068475007910774,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.021787866658078858,
+      "max_vertex_outside_plane_m": 3.469446951953614e-17,
+      "source_triangles": 7,
+      "volume": 0.0005050439069750405,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.04310105744849781,
+      "max_vertex_outside_plane_m": 0.008682020831530135,
+      "source_triangles": 14,
+      "volume": 0.0004939009036738386,
+      "depth": 8
+    },
+    {
+      "sampled_surface_error_m": 0.07006198112259063,
+      "max_vertex_outside_plane_m": 0.00023993529278742987,
+      "source_triangles": 6,
+      "volume": 0.0014649265444121114,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.03671604785406675,
+      "max_vertex_outside_plane_m": 0.0017725615019874574,
+      "source_triangles": 7,
+      "volume": 0.0003914340017749142,
+      "depth": 9
+    },
+    {
+      "sampled_surface_error_m": 0.012755438544685908,
+      "max_vertex_outside_plane_m": 0.002414415546599491,
+      "source_triangles": 14,
+      "volume": 1.0933285767276311e-05,
+      "depth": 8
+    },
+    {
+      "sampled_surface_error_m": 0.0347065570353112,
+      "max_vertex_outside_plane_m": 0.021344457264618866,
+      "source_triangles": 28,
+      "volume": 0.00019454793185178968,
+      "depth": 7
+    },
+    {
+      "sampled_surface_error_m": 0.1215883360211641,
+      "max_vertex_outside_plane_m": 0.02567495592610705,
+      "source_triangles": 7,
+      "volume": 0.0021964689905458494,
+      "depth": 5
+    },
+    {
+      "sampled_surface_error_m": 0.046500412584564076,
+      "max_vertex_outside_plane_m": 0.00991246590410929,
+      "source_triangles": 7,
+      "volume": 0.0024937296842305738,
+      "depth": 5
+    },
+    {
+      "sampled_surface_error_m": 0.08803331498868855,
+      "max_vertex_outside_plane_m": 5.551115123125783e-17,
+      "source_triangles": 7,
+      "volume": 0.005192807308508794,
+      "depth": 5
+    },
+    {
+      "sampled_surface_error_m": 0.09207898285900216,
+      "max_vertex_outside_plane_m": 0.003519457481970023,
+      "source_triangles": 8,
+      "volume": 0.004788547165356632,
+      "depth": 5
+    },
+    {
+      "sampled_surface_error_m": 0.08137545399511029,
+      "max_vertex_outside_plane_m": 0.005240609159829324,
+      "source_triangles": 7,
+      "volume": 0.0033992832213095145,
+      "depth": 5
+    },
+    {
+      "sampled_surface_error_m": 0.05951179685694953,
+      "max_vertex_outside_plane_m": 0.01397711733657167,
+      "source_triangles": 8,
+      "volume": 0.0007760174193792714,
+      "depth": 5
+    },
+    {
+      "sampled_surface_error_m": 0.1854250773628501,
+      "max_vertex_outside_plane_m": 0.027992165898485355,
+      "source_triangles": 7,
+      "volume": 0.019293275767847888,
+      "depth": 5
+    },
+    {
+      "sampled_surface_error_m": 0.07433690687342062,
+      "max_vertex_outside_plane_m": 0.0029102780948478124,
+      "source_triangles": 8,
+      "volume": 0.002253872606919231,
+      "depth": 5
+    },
+    {
+      "sampled_surface_error_m": 0.018151090298936478,
+      "max_vertex_outside_plane_m": 0.008135882168887894,
+      "source_triangles": 7,
+      "volume": 0.0005022195788005723,
+      "depth": 5
+    },
+    {
+      "sampled_surface_error_m": 0.018081994692643318,
+      "max_vertex_outside_plane_m": 0.0019986724130088285,
+      "source_triangles": 7,
+      "volume": 0.0001685475121176777,
+      "depth": 5
+    },
+    {
+      "sampled_surface_error_m": 0.03354095326027176,
+      "max_vertex_outside_plane_m": 0.014200759304784927,
+      "source_triangles": 7,
+      "volume": 0.00014599029387213998,
+      "depth": 5
+    },
+    {
+      "sampled_surface_error_m": 0.06255459017630799,
+      "max_vertex_outside_plane_m": 0.007901464416246534,
+      "source_triangles": 8,
+      "volume": 0.001986884653080937,
+      "depth": 5
+    },
+    {
+      "sampled_surface_error_m": 0.05397471859504667,
+      "max_vertex_outside_plane_m": 0.009813618244440547,
+      "source_triangles": 7,
+      "volume": 0.0005548141303305394,
+      "depth": 5
+    },
+    {
+      "sampled_surface_error_m": 0.036910620323944016,
+      "max_vertex_outside_plane_m": 0.012957903144739324,
+      "source_triangles": 8,
+      "volume": 0.0008524431005195516,
+      "depth": 5
+    },
+    {
+      "sampled_surface_error_m": 0.010030721648169956,
+      "max_vertex_outside_plane_m": 0.00027509280809512315,
+      "source_triangles": 7,
+      "volume": 1.0697928355395114e-05,
+      "depth": 5
+    },
+    {
+      "sampled_surface_error_m": 0.06362371923282907,
+      "max_vertex_outside_plane_m": 0.00984114345871201,
+      "source_triangles": 8,
+      "volume": 0.0009709592922374055,
+      "depth": 5
+    },
+    {
+      "sampled_surface_error_m": 0.013986404543421135,
+      "max_vertex_outside_plane_m": 0.0008495546692621203,
+      "source_triangles": 7,
+      "volume": 1.8259670671987438e-05,
+      "depth": 5
+    },
+    {
+      "sampled_surface_error_m": 0.13628075299570208,
+      "max_vertex_outside_plane_m": 0.02702603901746331,
+      "source_triangles": 7,
+      "volume": 0.0049753542438656624,
+      "depth": 5
+    },
+    {
+      "sampled_surface_error_m": 0.01847707147569302,
+      "max_vertex_outside_plane_m": 0.0011019268292828538,
+      "source_triangles": 15,
+      "volume": 9.911066591778847e-05,
+      "depth": 4
+    },
+    {
+      "sampled_surface_error_m": 0.05707254226263473,
+      "max_vertex_outside_plane_m": 0.0040063159514799745,
+      "source_triangles": 7,
+      "volume": 0.0007167006767279168,
+      "depth": 5
+    },
+    {
+      "sampled_surface_error_m": 0.11837199374666042,
+      "max_vertex_outside_plane_m": 0.004907874210789365,
+      "source_triangles": 8,
+      "volume": 0.007505424079100604,
+      "depth": 5
+    },
+    {
+      "sampled_surface_error_m": 0.06780076057687055,
+      "max_vertex_outside_plane_m": 0.014787689349784083,
+      "source_triangles": 7,
+      "volume": 0.0004888051285910108,
+      "depth": 5
+    },
+    {
+      "sampled_surface_error_m": 0.025771568139055703,
+      "max_vertex_outside_plane_m": 0.00282914592870509,
+      "source_triangles": 8,
+      "volume": 1.6197873503693914e-05,
+      "depth": 5
+    },
+    {
+      "sampled_surface_error_m": 0.03734752898293943,
+      "max_vertex_outside_plane_m": 0.00450769673554921,
+      "source_triangles": 15,
+      "volume": 0.00046308105647560626,
+      "depth": 4
+    },
+    {
+      "sampled_surface_error_m": 0.19275709867257973,
+      "max_vertex_outside_plane_m": 0.0018283938848461245,
+      "source_triangles": 7,
+      "volume": 0.015239269162667808,
+      "depth": 5
+    },
+    {
+      "sampled_surface_error_m": 0.20321690930395978,
+      "max_vertex_outside_plane_m": 0.020988898565567293,
+      "source_triangles": 8,
+      "volume": 0.011446706342259277,
+      "depth": 5
+    },
+    {
+      "sampled_surface_error_m": 0.21942613331843908,
+      "max_vertex_outside_plane_m": 2.220446049250313e-16,
+      "source_triangles": 7,
+      "volume": 0.03693284817414824,
+      "depth": 5
+    },
+    {
+      "sampled_surface_error_m": 0.16102375998326252,
+      "max_vertex_outside_plane_m": 2.220446049250313e-16,
+      "source_triangles": 8,
+      "volume": 0.018238033116642054,
+      "depth": 5
+    },
+    {
+      "sampled_surface_error_m": 0.10709616769484505,
+      "max_vertex_outside_plane_m": 0.0037985176688393185,
+      "source_triangles": 7,
+      "volume": 0.0038731241041697374,
+      "depth": 5
+    },
+    {
+      "sampled_surface_error_m": 0.07996447074639051,
+      "max_vertex_outside_plane_m": 2.220446049250313e-16,
+      "source_triangles": 8,
+      "volume": 0.0032799179547104555,
+      "depth": 5
+    },
+    {
+      "sampled_surface_error_m": 0.001514011108703897,
+      "max_vertex_outside_plane_m": 0.0009233120435198361,
+      "source_triangles": 11,
+      "volume": 9.874209938199974e-07,
+      "depth": 5
+    },
+    {
+      "sampled_surface_error_m": 0.06455879037120722,
+      "max_vertex_outside_plane_m": 0.003217644609885467,
+      "source_triangles": 11,
+      "volume": 0.0027326448858830356,
+      "depth": 5
+    },
+    {
+      "sampled_surface_error_m": 0.05851581126555154,
+      "max_vertex_outside_plane_m": 0.011884663638969978,
+      "source_triangles": 11,
+      "volume": 0.0016798063972964304,
+      "depth": 5
+    },
+    {
+      "sampled_surface_error_m": 0.10678094610746251,
+      "max_vertex_outside_plane_m": 0.0017467139392784437,
+      "source_triangles": 11,
+      "volume": 0.0038039528457634664,
+      "depth": 5
+    },
+    {
+      "sampled_surface_error_m": 0.03705547027563001,
+      "max_vertex_outside_plane_m": 0.007551739590951928,
+      "source_triangles": 11,
+      "volume": 0.0008124800767738546,
+      "depth": 5
+    },
+    {
+      "sampled_surface_error_m": 0.04085152556736541,
+      "max_vertex_outside_plane_m": 0.013893346246332906,
+      "source_triangles": 11,
+      "volume": 0.0011089222083926755,
+      "depth": 5
+    },
+    {
+      "sampled_surface_error_m": 0.11518294422228643,
+      "max_vertex_outside_plane_m": 0.01527729358068275,
+      "source_triangles": 11,
+      "volume": 0.007355560725888163,
+      "depth": 5
+    },
+    {
+      "sampled_surface_error_m": 0.09621934404071876,
+      "max_vertex_outside_plane_m": 0.01787750511011894,
+      "source_triangles": 11,
+      "volume": 0.0037149369531066004,
+      "depth": 5
+    },
+    {
+      "sampled_surface_error_m": 0.04352499665756547,
+      "max_vertex_outside_plane_m": 0.004244079899703743,
+      "source_triangles": 22,
+      "volume": 0.0003192804366627641,
+      "depth": 4
+    },
+    {
+      "sampled_surface_error_m": 0.016703871342527866,
+      "max_vertex_outside_plane_m": 0.0015305632286646276,
+      "source_triangles": 22,
+      "volume": 0.00020594675364063792,
+      "depth": 4
+    },
+    {
+      "sampled_surface_error_m": 0.02182900376592999,
+      "max_vertex_outside_plane_m": 0.0026660576567296007,
+      "source_triangles": 11,
+      "volume": 0.00016109834391207632,
+      "depth": 5
+    },
+    {
+      "sampled_surface_error_m": 0.07609165597944426,
+      "max_vertex_outside_plane_m": 0.007541043422216431,
+      "source_triangles": 11,
+      "volume": 0.0011562724880174345,
+      "depth": 5
+    },
+    {
+      "sampled_surface_error_m": 0.07516727091212164,
+      "max_vertex_outside_plane_m": 0.003596128306094709,
+      "source_triangles": 11,
+      "volume": 0.0012281088389964018,
+      "depth": 5
+    },
+    {
+      "sampled_surface_error_m": 0.07322308896180663,
+      "max_vertex_outside_plane_m": 0.014878358547129066,
+      "source_triangles": 11,
+      "volume": 0.002469095224762745,
+      "depth": 5
+    },
+    {
+      "sampled_surface_error_m": 0.012565590303414467,
+      "max_vertex_outside_plane_m": 0.002907971562022049,
+      "source_triangles": 11,
+      "volume": 2.5539982057514693e-05,
+      "depth": 5
+    },
+    {
+      "sampled_surface_error_m": 0.030548160883694515,
+      "max_vertex_outside_plane_m": 0.013952749627505465,
+      "source_triangles": 11,
+      "volume": 0.0005827076978467058,
+      "depth": 5
+    },
+    {
+      "sampled_surface_error_m": 0.07013703904198437,
+      "max_vertex_outside_plane_m": 0.010923805483950055,
+      "source_triangles": 11,
+      "volume": 0.00034621723091819386,
+      "depth": 5
+    },
+    {
+      "sampled_surface_error_m": 0.040816282345253446,
+      "max_vertex_outside_plane_m": 0.00971033273197841,
+      "source_triangles": 11,
+      "volume": 0.0010054885116567572,
+      "depth": 5
+    },
+    {
+      "sampled_surface_error_m": 0.033413527959096544,
+      "max_vertex_outside_plane_m": 0.004328148020902367,
+      "source_triangles": 11,
+      "volume": 0.0006758219276731639,
+      "depth": 5
+    },
+    {
+      "sampled_surface_error_m": 0.03727078136572278,
+      "max_vertex_outside_plane_m": 0.010037268073688134,
+      "source_triangles": 11,
+      "volume": 0.0005955390257712194,
+      "depth": 5
+    },
+    {
+      "sampled_surface_error_m": 0.05394084369972513,
+      "max_vertex_outside_plane_m": 0.011409882604668103,
+      "source_triangles": 11,
+      "volume": 0.0019066678595664084,
+      "depth": 5
+    },
+    {
+      "sampled_surface_error_m": 0.02874641198669884,
+      "max_vertex_outside_plane_m": 0.008650012172413624,
+      "source_triangles": 11,
+      "volume": 0.00012261958368683723,
+      "depth": 5
+    },
+    {
+      "sampled_surface_error_m": 0.019857846832121853,
+      "max_vertex_outside_plane_m": 0.0015798503145008636,
+      "source_triangles": 11,
+      "volume": 0.00018063191307307914,
+      "depth": 5
+    },
+    {
+      "sampled_surface_error_m": 0.0075892021524025955,
+      "max_vertex_outside_plane_m": 0.0054302349325155985,
+      "source_triangles": 11,
+      "volume": 3.7337903589610855e-05,
+      "depth": 5
+    },
+    {
+      "sampled_surface_error_m": 0.09058534563074924,
+      "max_vertex_outside_plane_m": 0.0012684327624715164,
+      "source_triangles": 11,
+      "volume": 0.0018718679092863872,
+      "depth": 5
+    },
+    {
+      "sampled_surface_error_m": 0.11433238573869026,
+      "max_vertex_outside_plane_m": 0.017218219667476657,
+      "source_triangles": 11,
+      "volume": 0.008967357604824736,
+      "depth": 5
+    },
+    {
+      "sampled_surface_error_m": 0.08237983841737648,
+      "max_vertex_outside_plane_m": 0.0070148443600502874,
+      "source_triangles": 11,
+      "volume": 0.0015513337605382186,
+      "depth": 5
+    },
+    {
+      "sampled_surface_error_m": 0.11902352114354024,
+      "max_vertex_outside_plane_m": 0.0038972297295755687,
+      "source_triangles": 11,
+      "volume": 0.002575081853586237,
+      "depth": 5
+    },
+    {
+      "sampled_surface_error_m": 0.10233841117456026,
+      "max_vertex_outside_plane_m": 0.00470695665280009,
+      "source_triangles": 11,
+      "volume": 0.004567973286964257,
+      "depth": 5
+    },
+    {
+      "sampled_surface_error_m": 0.06127456201809465,
+      "max_vertex_outside_plane_m": 0.0076111101756340255,
+      "source_triangles": 12,
+      "volume": 0.0011289112266724317,
+      "depth": 5
+    },
+    {
+      "sampled_surface_error_m": 0.0124466132570024,
+      "max_vertex_outside_plane_m": 0.003422045760835074,
+      "source_triangles": 107,
+      "volume": 5.0890691333399384e-05,
+      "depth": 0
+    }
+  ],
+  "numpy_version": "2.5.4",
+  "scipy_version": "1.18.1",
+  "method": "Connected source components, recursive longest-centroid-axis split if hull surface error>.045m. Fixed-direction extreme points form individually closed outward convex shells. No overall skeleton hull, no voxel stairs. Error samples triangle centroids and edge midpoints; not a continuous worst-case guarantee.",
+  "visual_sha256": "f3b86075a1875a17b88d73d860eb3979757b9bd979ea7a40927d46f1fea897d1",
+  "collision_sha256": "38122aed59b50fa7ebc6a2c445a5b4d48f1418298f0e8f62a0beb217f0d16f00"
+}

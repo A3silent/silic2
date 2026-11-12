@@ -1,0 +1,151 @@
+{
+  "task": "SIGHT-WIDTH-ACCEPT",
+  "date": "2026-11-12",
+  "result": "passed",
+  "geometry": {
+    "source": "Compiled frozen baseline/current production builder and same sight helper; 70-degree viewmodel projection at 480x300.",
+    "checks": [
+      {
+        "name": "actual_complete_sight_geometry_widened_35_percent",
+        "passed": true,
+        "vertices_checked": 258,
+        "max_x_error": 2.4549999949607937e-09,
+        "topology_unchanged": true
+      },
+      {
+        "name": "sight_height_and_depth_unchanged",
+        "passed": true
+      },
+      {
+        "name": "nonuniform_scale_normals_correct",
+        "passed": true,
+        "max_error": 6.762626680867356e-08
+      },
+      {
+        "name": "actual_upper_frame_projection",
+        "passed": true,
+        "before_pixels": [
+          34.03395460462423,
+          11.436391255299782
+        ],
+        "after_pixels": [
+          45.94583911324068,
+          11.436391255299782
+        ],
+        "ratios": [
+          1.3500000116647617,
+          1.0
+        ]
+      },
+      {
+        "name": "reticle_geometry_shape_and_center_unchanged",
+        "passed": true,
+        "projected_center": [
+          240.0,
+          150.00000064330993
+        ],
+        "projected_diameter": [
+          2.25158462589593,
+          2.251582878237315
+        ]
+      },
+      {
+        "name": "entire_gun_body_including_all_energy_routes_unchanged",
+        "passed": true,
+        "vertices_checked": 3570,
+        "changed_materials": [],
+        "note": "Full-builder body is checked exactly; only the separately emitted sight is excluded."
+      },
+      {
+        "name": "material_and_emission_selection_unchanged",
+        "passed": true
+      },
+      {
+        "name": "sight_anchor_and_full_rifle_bounds_unchanged",
+        "passed": true
+      }
+    ],
+    "passed": true
+  },
+  "builds": {
+    "debug": {
+      "command": "make -f Makefile.map BUILD=debug -j4 all test procedural-rifle-check ads-check",
+      "exit_code": 0,
+      "normal_tests": "passed",
+      "procedural_rifle": "passed",
+      "ads_cpu": "passed",
+      "log": "build-debug.log",
+      "binary_sha256": "122baf60091b03fa5285f90913964a23f856d77c2677c41d9b3f2c1a50eb4682"
+    },
+    "release": {
+      "command": "make -f Makefile.map BUILD=release -j4 all test procedural-rifle-check ads-check",
+      "exit_code": 0,
+      "normal_tests": "passed",
+      "procedural_rifle": "passed",
+      "ads_cpu": "passed",
+      "log": "build-release.log",
+      "binary_sha256": "426ac5befc87b231a29de1379a4c961f516243d8b27ba6fc172cfafc050075a1"
+    }
+  },
+  "actual_app": {
+    "command": "./silic2-release res/maps/starry_crystal_arena.json --acceptance rifle-ads --output artifacts/acceptance/crimson-sight-width/verify/app --width 1280 --height 720 --vsync on",
+    "exit_code": 0,
+    "checks": 17,
+    "passed": 17,
+    "configuration": {
+      "event": "configuration",
+      "logical_width": 1280,
+      "logical_height": 720,
+      "framebuffer_width": 2560,
+      "framebuffer_height": 1440,
+      "internal_width": 480,
+      "internal_height": 300,
+      "vsync": true,
+      "audio_available": true,
+      "synthetic_input": true
+    },
+    "evidence": "app/rifle-ads.jsonl",
+    "screenshots": [
+      "app/hip.png",
+      "app/ads.png",
+      "app/ads-moving-fire.png",
+      "app/ads-paused.png",
+      "app/ads-restart.png"
+    ]
+  },
+  "verified_source": {
+    "source": "src/character/procedural_rifle.cpp",
+    "sha256": "81c89e323bb75298b0fe53753403c34ad2d4270664574b369dbcd296e6155d97"
+  },
+  "independent_atlas_check": {
+    "raw_app_checks": 17,
+    "passed": 17,
+    "source_and_binary_hashes_match": true,
+    "baseline_files": 1049,
+    "unchanged": 1042,
+    "assigned_changes": [
+      "README.md",
+      "README_CN.md",
+      "docs/agent-team.md",
+      "docs/procedural-crimson-rifle.md",
+      "plan/procedural-crimson-rifle.md",
+      "res/shaders/forest_map.vert",
+      "src/character/procedural_rifle.cpp"
+    ],
+    "visual_review": [
+      "matched hip/ADS and side previews",
+      "formal App hip, ADS and moving-fire scenes"
+    ]
+  },
+  "source_delivery": {
+    "scope": "Current forest arena, imported-asset support, camera lean, ADS and procedural-rifle source snapshot plus 35-percent sight-width adjustment",
+    "asset_policy": "Source only; model, texture, audio, capture and build files remain local",
+    "excluded_unrelated_file": "docs/interview-project-summary.md",
+    "remote_push": false
+  },
+  "limitations": [
+    "Hidden real-App synthetic input is not human playtesting or OS focus-event delivery verification.",
+    "No performance benchmark or API calls.",
+    "Windows/Linux runtime not tested."
+  ]
+}

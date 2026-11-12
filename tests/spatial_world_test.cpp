@@ -61,6 +61,21 @@ void runSpatialWorldTests() {
     }
     {std::ofstream obj(temporary);obj<<"v 0 0 0\nv 2 0 0\nv 2 0 2\nv 0 0 2\nf 1 2 3 4\n";}
     require(map.loadFromJson(document,temporary.parent_path().string()),"planar convex quad accepted");
+    // Imported model textures retain authored UV and resolve relative to the map,
+    // including Save As to a different directory. No GPU/image decoder is needed.
+    document["geometry"]["models"][0]["texture"]=SimpleJson("silic2-imported-color.png");
+    require(map.loadFromJson(document,temporary.parent_path().string()),"optional model texture accepted");
+    require(map.getModels()[0].texture=="silic2-imported-color.png","authored texture path retained");
+    const auto resolvedTexture=(temporary.parent_path()/"silic2-imported-color.png").string();
+    require(map.getBrushes().back().texture==resolvedTexture,"compiled model texture resolved from map directory");
+    const auto saveDirectory=temporary.parent_path()/("silic2-texture-rebase-"+std::to_string(std::chrono::steady_clock::now().time_since_epoch().count()));
+    std::filesystem::create_directory(saveDirectory);
+    const auto saved=saveDirectory/"map.json";
+    require(map.saveToFile(saved.string()),"model textured map Save As");
+    Map reopened;require(reopened.loadFromFile(saved.string()),"model textured map reopens after Save As");
+    require(reopened.getModels()[0].texture=="../silic2-imported-color.png","texture path rebased in saved JSON");
+    require(reopened.getBrushes().back().texture==resolvedTexture,"reopened model texture points at original resource");
+    std::filesystem::remove(saved);std::filesystem::remove(saveDirectory);
     std::filesystem::remove(temporary);
     auto first=world->nextWaypoint({0,.015f,-10},target);require(glm::length(first-glm::vec3(0,.015f,-10))>.5f,"node skin offset cannot return own foot forever");
     std::cout<<"Spatial fixture passed: real slope up/down/crest/slide, separate bridge levels, solid interior, ray opening, enemy detour and height contact\n";

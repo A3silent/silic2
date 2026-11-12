@@ -1,0 +1,28 @@
+{
+  "source": "mineral_cluster/parts/part-000.obj",
+  "source_sha256": "9ec885313a8aa2f32edf951f66e2bd6399a97a2d3702a16ca697f7d54dc21097",
+  "x_min_source_cut": null,
+  "height": 13,
+  "uniform_scale": 2.5,
+  "rotation_z": 0,
+  "rotation_y": 0,
+  "floor_pivot": [
+    0.0,
+    0.0,
+    0.0
+  ],
+  "visual_triangles": 8402,
+  "bounds": {
+    "min": [
+      -6.474559675,
+      0.0,
+      -5.9403131
+    ],
+    "max": [
+      6.474559675,
+      13.0,
+      5.9403131
+    ]
+  },
+  "visual_sha256": "ecc06e3a97cf965370ecb19118afcb6795d557d83467bf58a60091ad910f9209"
+}

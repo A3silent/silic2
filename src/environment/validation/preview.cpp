@@ -28,7 +28,7 @@ int main(){
  glFramebufferRenderbuffer(GL_FRAMEBUFFER,GL_DEPTH_ATTACHMENT,GL_RENDERBUFFER,depth);if(glCheckFramebufferStatus(GL_FRAMEBUFFER)!=GL_FRAMEBUFFER_COMPLETE)return 4;
  glViewport(0,0,320,200);glEnable(GL_DEPTH_TEST);glEnable(GL_CULL_FACE);
  {
- silic2::Map map;if(!map.loadFromFile("res/maps/starry_crystal_arena.json"))return 5;
+ silic2::Map map;if(!map.loadFromFile("res/maps/crystal_megastructure_arena.json"))return 5;
  silic2::MapRenderer renderer;renderer.loadMap(map);
  auto view=glm::lookAt(glm::vec3(0,1.6,13),glm::vec3(0,2.5,0),glm::vec3(0,1,0));auto proj=glm::perspective(glm::radians(80.f),1.6f,.1f,150.f);
  renderer.setEnvironmentTime(0);glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);renderer.render(view,proj);capture("/tmp/silic2_env_before.ppm",320,200);

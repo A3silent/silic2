@@ -6,6 +6,7 @@
 #include <glm/glm.hpp>
 #include "engine/app_options.h"
 #include "engine/run_state.h"
+#include "engine/aim_state.h"
 #include "game/gameplay_types.h"
 struct GLFWwindow;
 namespace silic2 {
@@ -23,6 +24,9 @@ public:
     bool loadMap(const std::string& mapFile);
 private:
     AppOptions options;
+    AimState aim;
+    bool aimHeld=false;
+    float adsFrozenBlend=0;
     GLFWwindow* window = nullptr;
     std::unique_ptr<Map> currentMap;
     std::unique_ptr<MapRenderer> mapRenderer;
@@ -68,13 +72,17 @@ private:
     bool frameCaptured=false;
     int flowStep=0;
     float flowFrozenTime=0;
+    float leanFrozenRoll=0;
     uint64_t flowAudioFrames=0;
     glm::vec3 flowFrozenPosition{0};
     bool initWindow();
     void cleanup();
     void processInput();
+    void processMousePosition(double x,double y);
     void update(float dt);
     void updatePlaying(float dt);
+    void updateFirstPerson(float dt);
+    void updateAdsAcceptance(float dt);
     void render();
     void setState(GameState next);
     void finishCurrentRun(RoomResult result, RunEndReason reason);

@@ -1,0 +1,941 @@
+{
+  "schemaVersion": 1,
+  "task": "TRIPO-ART",
+  "status": "implemented_engineering_checked",
+  "created_date": "2026-10-17",
+  "map_baseline": {
+    "path": "res/maps/starry_crystal_arena.json",
+    "sha256": "001ac8d47a498c5e3262b34d97269c4c9a0e5dea44574b9f7a3581d9910e50ac",
+    "contentVersion": "crystal-combat-world-v1",
+    "nav_nodes": 85,
+    "nav_links": 171,
+    "patrol_points": 41
+  },
+  "generation_policy": {
+    "owner": "ATLAS",
+    "initial_asset_count": 5,
+    "actual_generations": 5,
+    "paid_purchase_authorized": false,
+    "extras_authorized": false,
+    "availability": "All five approved tasks succeeded and downloaded; 40 credits each, 200 total. No extra paid processing or regeneration.",
+    "note": "Long briefs guide art review; only bounded English prompt and negative files go into CLI fields. Seeds are requested hints, not reproducibility guarantees. Polygon budgets are acceptance targets, not guaranteed generator output.",
+    "requires_human_prompt_approval": true,
+    "prompts_frozen_for_review": true,
+    "prompt_revision": "low-resolution-silhouette-v2; approved 2026-10-17",
+    "human_prompt_approval": {
+      "date": "2026-10-17",
+      "user_message": "开始",
+      "revision": "low-resolution-silhouette-v2",
+      "all_review_hashes_verified": true
+    },
+    "initial_api_balance": 1000,
+    "credits_consumed_total": 200,
+    "balance_after_generation": 800,
+    "frozen_after_generation": 0
+  },
+  "assets": [
+    {
+      "id": "01_orbital_rifle",
+      "priority": 1,
+      "status": "installed_and_runtime_checked",
+      "generation": {
+        "requested_seed": 1701701,
+        "seed_guaranteed": false,
+        "prompt_file": "tools/tripo/prompts/01_orbital_rifle/prompt.en.txt",
+        "negative_prompt_file": "tools/tripo/prompts/01_orbital_rifle/negative.en.txt",
+        "brief_file": "tools/tripo/prompts/01_orbital_rifle/brief.zh.txt",
+        "prompt_characters": 893,
+        "negative_characters": 227,
+        "task_id": "9483a0cd-145a-4823-9f80-f3d2455a8ae8",
+        "source_file": "artifacts/tripo/raw/01_orbital_rifle/tripo-out/one-original-rigid-sci-fi-horror-9483a0cd/model.glb",
+        "review_sha256": {
+          "brief_file": "2307f6ebf92f84e92015fc7bcdaf2d3677a9c58cd947a5a681e137f509ac115f",
+          "prompt_file": "c414b06c90666c60b106465ab31794e09987fd18458555ad87b919765f172ed7",
+          "negative_prompt_file": "0a6c9eaf449307bfb0dfec22bd43616426d46ceb305f79fdd8c8989831a4f860"
+        },
+        "credits_consumed": 40,
+        "download_output_dir": "artifacts/tripo/raw/01_orbital_rifle/tripo-out/one-original-rigid-sci-fi-horror-9483a0cd"
+      },
+      "mesh": {
+        "target_triangles": 6000,
+        "hard_max_triangles": 20000,
+        "target_dimensions_xyz_m": [
+          0.2,
+          0.3,
+          0.85
+        ],
+        "max_material_parts": 4,
+        "static": true,
+        "opaque_only": true,
+        "preferred_source": "UV-mapped GLB",
+        "import_up": "+Y",
+        "import_forward": "-Z",
+        "inspect_actual_orientation": true,
+        "origin": "ground-centered; weapon uses KINETIC attachment frame"
+      },
+      "runtime": {
+        "texture_budget": "base-color only; initially <=1024px per part after inspection",
+        "collision": "none outside accessible area; explicit proxy review for reachable objects",
+        "no_baked_emission": true,
+        "observed_triangles": 11022,
+        "texture_observed": "one 2048px JPEG",
+        "bundle_manifest": "res/models/tripo/orbital_rifle/model.import.json"
+      }
+    },
+    {
+      "id": "02_derelict_ship",
+      "priority": 2,
+      "status": "installed_and_runtime_checked",
+      "generation": {
+        "requested_seed": 1701702,
+        "seed_guaranteed": false,
+        "prompt_file": "tools/tripo/prompts/02_derelict_ship/prompt.en.txt",
+        "negative_prompt_file": "tools/tripo/prompts/02_derelict_ship/negative.en.txt",
+        "brief_file": "tools/tripo/prompts/02_derelict_ship/brief.zh.txt",
+        "prompt_characters": 873,
+        "negative_characters": 246,
+        "task_id": "aabfe52d-817a-4a44-9419-723aeaa2f3db",
+        "source_file": "artifacts/tripo/raw/02_derelict_ship/tripo-out/one-enormous-crashed-orbital-ves-aabfe52d/model.glb",
+        "review_sha256": {
+          "brief_file": "e598b64690f341ca70bebee0609e761fbea24cf1ce22e0b5caea63593c15fa29",
+          "prompt_file": "d6d4571043679630c0db7bc7613c3f5f526643a2961786ea8b85529a4907ac86",
+          "negative_prompt_file": "d41340e3aacc1f5880d5b0eef30814b4cc3222860b69e80f21310110f18a8381"
+        },
+        "credits_consumed": 40,
+        "download_output_dir": "artifacts/tripo/raw/02_derelict_ship/tripo-out/one-enormous-crashed-orbital-ves-aabfe52d"
+      },
+      "mesh": {
+        "target_triangles": 12000,
+        "hard_max_triangles": 20000,
+        "target_dimensions_xyz_m": [
+          38,
+          18,
+          16
+        ],
+        "max_material_parts": 4,
+        "static": true,
+        "opaque_only": true,
+        "preferred_source": "UV-mapped GLB",
+        "import_up": "+Y",
+        "import_forward": "-Z",
+        "inspect_actual_orientation": true,
+        "origin": "ground-centered; weapon uses KINETIC attachment frame"
+      },
+      "runtime": {
+        "texture_budget": "base-color only; initially <=1024px per part after inspection",
+        "collision": "none outside accessible area; explicit proxy review for reachable objects",
+        "no_baked_emission": true,
+        "budget_exception": "ATLAS approved 22860 runtime triangles (11430 source) to retain original opaque double-sided open hull safely; final performance validation required.",
+        "bundle_manifest": "res/models/tripo/derelict_ship/model.derived.json",
+        "observed_triangles": 22860,
+        "texture_observed": "one 2048px JPEG"
+      }
+    },
+    {
+      "id": "03_alien_skeleton",
+      "priority": 3,
+      "status": "installed_and_runtime_checked",
+      "generation": {
+        "requested_seed": 1701703,
+        "seed_guaranteed": false,
+        "prompt_file": "tools/tripo/prompts/03_alien_skeleton/prompt.en.txt",
+        "negative_prompt_file": "tools/tripo/prompts/03_alien_skeleton/negative.en.txt",
+        "brief_file": "tools/tripo/prompts/03_alien_skeleton/brief.zh.txt",
+        "prompt_characters": 885,
+        "negative_characters": 225,
+        "task_id": "e13f3d53-15e1-43b8-b781-13f2bfef1a51",
+        "source_file": "artifacts/tripo/raw/03_alien_skeleton/tripo-out/one-colossal-dry-fossil-skeleton-e13f3d53/model.glb",
+        "review_sha256": {
+          "brief_file": "6750c213273c0c8c5a87ba710ae53d6f689d4a5a377525a8929c15e847c3a498",
+          "prompt_file": "82e58e6a55938991cc7668a14249850139cfd2f705e86d2d1e0fdc2e38ca8098",
+          "negative_prompt_file": "3f1c10f81d09c27de2bbc91b2a00773182446d98dd7eaa19dd3dc83c8c466ded"
+        },
+        "credits_consumed": 40,
+        "download_output_dir": "artifacts/tripo/raw/03_alien_skeleton/tripo-out/one-colossal-dry-fossil-skeleton-e13f3d53"
+      },
+      "mesh": {
+        "target_triangles": 10000,
+        "hard_max_triangles": 20000,
+        "target_dimensions_xyz_m": [
+          13,
+          14,
+          32
+        ],
+        "max_material_parts": 2,
+        "static": true,
+        "opaque_only": true,
+        "preferred_source": "UV-mapped GLB",
+        "import_up": "+Y",
+        "import_forward": "-Z",
+        "inspect_actual_orientation": true,
+        "origin": "ground-centered; weapon uses KINETIC attachment frame"
+      },
+      "runtime": {
+        "texture_budget": "base-color only; initially <=1024px per part after inspection",
+        "collision": "none outside accessible area; explicit proxy review for reachable objects",
+        "no_baked_emission": true,
+        "bundle_manifest": "res/models/tripo/alien_skeleton/model.derived.json",
+        "observed_triangles": 7062,
+        "texture_observed": "one 2048px JPEG"
+      }
+    },
+    {
+      "id": "04_mineral_cluster",
+      "priority": 4,
+      "status": "installed_and_runtime_checked",
+      "generation": {
+        "requested_seed": 1701704,
+        "seed_guaranteed": false,
+        "prompt_file": "tools/tripo/prompts/04_mineral_cluster/prompt.en.txt",
+        "negative_prompt_file": "tools/tripo/prompts/04_mineral_cluster/negative.en.txt",
+        "brief_file": "tools/tripo/prompts/04_mineral_cluster/brief.zh.txt",
+        "prompt_characters": 843,
+        "negative_characters": 233,
+        "task_id": "ce3ea470-cdca-4dec-854e-44c327ee52d1",
+        "source_file": "artifacts/tripo/raw/04_mineral_cluster/tripo-out/one-irregular-opaque-alien-miner-ce3ea470/model.glb",
+        "review_sha256": {
+          "brief_file": "b60bd2d73776a802117afa320e5d4a5169a7002da5973992db5fa2c2ec63a441",
+          "prompt_file": "230d4dd92ba83c695bc735d950123e88ed84b849558ff5a1b7018955c9c988bb",
+          "negative_prompt_file": "ab72c890387abc90282da619cddd9a9d35ab9e6c03088f08b496ce42d61643f7"
+        },
+        "credits_consumed": 40,
+        "download_output_dir": "artifacts/tripo/raw/04_mineral_cluster/tripo-out/one-irregular-opaque-alien-miner-ce3ea470"
+      },
+      "mesh": {
+        "target_triangles": 4000,
+        "hard_max_triangles": 20000,
+        "target_dimensions_xyz_m": [
+          3.6,
+          5.2,
+          3.2
+        ],
+        "max_material_parts": 2,
+        "static": true,
+        "opaque_only": true,
+        "preferred_source": "UV-mapped GLB",
+        "import_up": "+Y",
+        "import_forward": "-Z",
+        "inspect_actual_orientation": true,
+        "origin": "ground-centered; weapon uses KINETIC attachment frame"
+      },
+      "runtime": {
+        "texture_budget": "base-color only; initially <=1024px per part after inspection",
+        "collision": "none outside accessible area; explicit proxy review for reachable objects",
+        "no_baked_emission": true,
+        "bundle_manifest": "res/models/tripo/mineral_cluster/model.import.json",
+        "observed_triangles": 8402,
+        "texture_observed": "one 2048px JPEG"
+      }
+    },
+    {
+      "id": "05_fractured_rubble",
+      "priority": 5,
+      "status": "installed_and_runtime_checked",
+      "generation": {
+        "requested_seed": 1701705,
+        "seed_guaranteed": false,
+        "prompt_file": "tools/tripo/prompts/05_fractured_rubble/prompt.en.txt",
+        "negative_prompt_file": "tools/tripo/prompts/05_fractured_rubble/negative.en.txt",
+        "brief_file": "tools/tripo/prompts/05_fractured_rubble/brief.zh.txt",
+        "prompt_characters": 857,
+        "negative_characters": 242,
+        "task_id": "abab1408-c69c-4503-987a-a58394b9cb3d",
+        "source_file": "artifacts/tripo/raw/05_fractured_rubble/tripo-out/one-low-irregular-rubble-patch-f-abab1408/model.glb",
+        "review_sha256": {
+          "brief_file": "153dd97039bbb46ef0fdad06f88ecb9840eb0beafa99947b4ac680ea546397d7",
+          "prompt_file": "3285c9132361c845b97adddfd845d6f9aec3a5013bad03119da12e93242cd10a",
+          "negative_prompt_file": "56b7b2ef02cb3f2cb020221ec23c854d33f9e32b8a912dd3fad4d1d5edb97104"
+        },
+        "credits_consumed": 40,
+        "download_output_dir": "artifacts/tripo/raw/05_fractured_rubble/tripo-out/one-low-irregular-rubble-patch-f-abab1408"
+      },
+      "mesh": {
+        "target_triangles": 3000,
+        "hard_max_triangles": 20000,
+        "target_dimensions_xyz_m": [
+          4.2,
+          0.65,
+          3.0
+        ],
+        "max_material_parts": 2,
+        "static": true,
+        "opaque_only": true,
+        "preferred_source": "UV-mapped GLB",
+        "import_up": "+Y",
+        "import_forward": "-Z",
+        "inspect_actual_orientation": true,
+        "origin": "ground-centered; weapon uses KINETIC attachment frame"
+      },
+      "runtime": {
+        "texture_budget": "base-color only; initially <=1024px per part after inspection",
+        "collision": "none outside accessible area; explicit proxy review for reachable objects",
+        "no_baked_emission": true,
+        "bundle_manifest": "res/models/tripo/fractured_rubble/model.import.json",
+        "observed_triangles": 5840,
+        "texture_observed": "one 2048px JPEG"
+      }
+    }
+  ],
+  "placement_proposals": [
+    {
+      "asset": "02_derelict_ship",
+      "zone": "north exterior skyline",
+      "position": [
+        0,
+        3,
+        -47
+      ],
+      "rotation": [
+        0,
+        0,
+        -8
+      ],
+      "target_size": [
+        38,
+        18,
+        16
+      ],
+      "policy": "Decorative; entire rotated geometry outside reachable shell, inspect stern visibility over north wall."
+    },
+    {
+      "asset": "03_alien_skeleton",
+      "zone": "east exterior skyline",
+      "position": [
+        43,
+        2,
+        0
+      ],
+      "rotation": [
+        0,
+        12,
+        0
+      ],
+      "target_size": [
+        13,
+        14,
+        32
+      ],
+      "policy": "Decorative; rib tips outside playable shell, no arch crossing combat route."
+    },
+    {
+      "asset": "04_mineral_cluster",
+      "zone": "central existing crystal shell",
+      "position": [
+        0,
+        0,
+        2
+      ],
+      "rotation": [
+        0,
+        27,
+        0
+      ],
+      "target_size": [
+        3.6,
+        5.2,
+        3.2
+      ],
+      "policy": "Conditional. Reject protrusion beyond current solid footprint or new sightline obstruction; must inspect actual model."
+    },
+    {
+      "asset": "04_mineral_cluster",
+      "zone": "northwest exterior shell",
+      "position": [
+        -24,
+        0,
+        -25
+      ],
+      "rotation": [
+        0,
+        61,
+        0
+      ],
+      "target_size": [
+        3.6,
+        5.2,
+        3.2
+      ],
+      "policy": "Decorative beyond radius28 play boundary, inspect wall occlusion."
+    },
+    {
+      "asset": "04_mineral_cluster",
+      "zone": "southeast exterior shell",
+      "position": [
+        25,
+        0,
+        24
+      ],
+      "rotation": [
+        0,
+        -34,
+        0
+      ],
+      "target_size": [
+        2.5,
+        3.6,
+        2.2
+      ],
+      "policy": "Decorative beyond radius28; preserve south rift silhouette."
+    },
+    {
+      "asset": "05_fractured_rubble",
+      "zone": "east existing tactical cover base",
+      "position": [
+        23,
+        0,
+        -9
+      ],
+      "rotation": [
+        0,
+        -25,
+        0
+      ],
+      "target_size": [
+        4.2,
+        0.65,
+        3.0
+      ],
+      "policy": "Conditional. Tall pieces contained in existing cover footprint; no large noncollidable stones on accessible floor."
+    },
+    {
+      "asset": "05_fractured_rubble",
+      "zone": "west existing buttress base",
+      "position": [
+        -26,
+        0,
+        -12
+      ],
+      "rotation": [
+        0,
+        40,
+        0
+      ],
+      "target_size": [
+        3.2,
+        0.5,
+        2.3
+      ],
+      "policy": "Conditional. Inside existing support/wall footprint; keep x=-22 route clear."
+    },
+    {
+      "asset": "05_fractured_rubble",
+      "zone": "west existing buttress base",
+      "position": [
+        -26,
+        0,
+        12
+      ],
+      "rotation": [
+        0,
+        -70,
+        0
+      ],
+      "target_size": [
+        2.8,
+        0.43,
+        2.0
+      ],
+      "policy": "Conditional. Inside existing support/wall footprint; keep x=-22 route clear."
+    }
+  ],
+  "coordinate_contract": {
+    "units": "meters",
+    "up": "+Y",
+    "rotation_order": "T*Rz*Ry*Rx*S",
+    "position": "ground-center after import; weapon separately authored",
+    "target_size": "desired envelope, fit uniformly after inspecting actual bounds; no arbitrary anatomy stretching",
+    "map_change_ready": true
+  },
+  "protected_space": {
+    "minimum_main_route_width_m": 4,
+    "minimum_headroom_m": 2.3,
+    "spawn_clearance_radius_m": 3,
+    "patrol_segment_clearance_radius_m": 2,
+    "forbidden_decor": "bridge tread, ramp tread/crest, bridge underpass clearance, rift footprint, Sentry footprint",
+    "all_existing_collision_transforms": "preserved unless VECTOR reviews an explicit change",
+    "outside_reachable_check": "full transformed vertices/overhangs, not pivot only"
+  },
+  "acceptance": [
+    "Require actual downloaded source models and real task IDs; do not write missing paths to map",
+    "Verify importer UVs, texture paths, winding, opaque materials, finite geometry and normalized dimensions",
+    "Compare actual transformed mesh envelopes against all nodes, links, patrol segments and spawn footprints; VECTOR reviews any proxy or topology change",
+    "Inspect start, ramp feet/crests, upper walk, lower vault and east passage at320x200; pre/during/post transformation with threat readability",
+    "Nominal first placement target:12k ship+10k skeleton+3*4k crystals+3*3k rubble=43k additional environment triangles, plus6k weapon. Hard upper limit20k per asset is a guardrail, not a target; actual draw calls/totals measured.",
+    "Run CPU diagnostics and normal movement patrol, load game and editor; GL only in ATLAS slot; no full-run performance claims from thumbnails",
+    "Preserve Hollow environment; shared rifle appearance intentionally changes both maps",
+    "Keep models/textures Git-excluded; source prompts and nonbinary manifest can be tracked"
+  ],
+  "optional_unfunded": [
+    {
+      "asset": "torn_hull_panel",
+      "priority": "only after first five",
+      "approach": "prefer reuse/extraction from actual wreck rather than another paid generation"
+    },
+    {
+      "asset": "broken_bone_segment",
+      "priority": "only after first five",
+      "approach": "prefer safe reuse from actual skeleton; no automatic credit consumption"
+    }
+  ],
+  "limitations": [
+    "Human visual/readability/playfeel assessment pending",
+    "One 218.146ms isolated frame recorded; cause unproven, no consecutive frames above50ms",
+    "User subsequently reported opening map_editor during the first attempt and believes there was no actual game issue. This is consistent with external focus interruption; no code fix was made. Three unchanged reruns passed; original logs retained.",
+    "Rubble placements are shallow ground fractures; full-height model preserved for authoring"
+  ],
+  "visual_priority": "320x200 readability: chunky silhouette, large/medium shapes, simple matte color blocks, restrained noise; explicitly no photorealistic microdetail",
+  "actual_placement": {
+    "map": "res/maps/starry_crystal_arena.json",
+    "map_sha256": "1a0dab604b51dfd29511a0e0f50a64819d35637988caa9840c912b6f73443262",
+    "content_version": "crystal-combat-world-tripo-v1",
+    "instances": [
+      {
+        "id": 4100,
+        "name": "Tripo bone trial",
+        "position": [
+          34,
+          7,
+          1
+        ],
+        "rotation": [
+          0,
+          0,
+          -12
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ],
+        "triangles": 7062,
+        "bounds": {
+          "min": [
+            31.413250842431022,
+            12.52946021185954,
+            -8.73776908
+          ],
+          "max": [
+            46.53910893688844,
+            25.29922037085225,
+            8.9843449
+          ]
+        },
+        "minimum_vertex_radiusXZ": 31.453911879512994,
+        "placement_class": "exterior landmark",
+        "obj_sha256": "f7e51224861b2d14c7a9a0c96882bfab24ac30f2bf6c5800f90e551a1391ab53",
+        "texture": "../models/tripo/alien_skeleton/textures/basecolor-000.jpg"
+      },
+      {
+        "id": 4200,
+        "name": "Tripo mineral wall crown",
+        "position": [
+          -22,
+          12,
+          -23
+        ],
+        "rotation": [
+          0,
+          60,
+          0
+        ],
+        "scale": [
+          2,
+          2,
+          2
+        ],
+        "triangles": 8402,
+        "bounds": {
+          "min": [
+            -27.48718094244004,
+            12.0,
+            -27.447272550533143
+          ],
+          "max": [
+            -15.529922809182157,
+            22.4,
+            -18.78750894737017
+          ]
+        },
+        "minimum_vertex_radiusXZ": 28.211181717680233,
+        "placement_class": "unreachable crown",
+        "obj_sha256": "9ec885313a8aa2f32edf951f66e2bd6399a97a2d3702a16ca697f7d54dc21097",
+        "texture": "../models/tripo/mineral_cluster/textures/basecolor-000.jpg"
+      },
+      {
+        "id": 4201,
+        "name": "Tripo mineral wall crown",
+        "position": [
+          27,
+          11.5,
+          12
+        ],
+        "rotation": [
+          0,
+          -35,
+          0
+        ],
+        "scale": [
+          1.6,
+          1.6,
+          1.6
+        ],
+        "triangles": 8402,
+        "bounds": {
+          "min": [
+            23.59529506164112,
+            11.5,
+            7.581579491654087
+          ],
+          "max": [
+            30.6315215731587,
+            19.82,
+            17.294903368166345
+          ]
+        },
+        "minimum_vertex_radiusXZ": 25.89499316979713,
+        "placement_class": "unreachable crown",
+        "obj_sha256": "9ec885313a8aa2f32edf951f66e2bd6399a97a2d3702a16ca697f7d54dc21097",
+        "texture": "../models/tripo/mineral_cluster/textures/basecolor-000.jpg"
+      },
+      {
+        "id": 4202,
+        "name": "Tripo mineral wall crown",
+        "position": [
+          -28,
+          15,
+          8
+        ],
+        "rotation": [
+          0,
+          135,
+          0
+        ],
+        "scale": [
+          1.8,
+          1.8,
+          1.8
+        ],
+        "triangles": 8402,
+        "bounds": {
+          "min": [
+            -32.1576218164204,
+            15.0,
+            1.9125163305930801
+          ],
+          "max": [
+            -24.179132603612768,
+            24.36,
+            12.934747384468139
+          ]
+        },
+        "minimum_vertex_radiusXZ": 25.55141513207067,
+        "placement_class": "unreachable crown",
+        "obj_sha256": "9ec885313a8aa2f32edf951f66e2bd6399a97a2d3702a16ca697f7d54dc21097",
+        "texture": "../models/tripo/mineral_cluster/textures/basecolor-000.jpg"
+      },
+      {
+        "id": 4300,
+        "name": "Tripo shallow fractured ground",
+        "position": [
+          7,
+          -0.39883567287497335,
+          4
+        ],
+        "rotation": [
+          0,
+          15,
+          0
+        ],
+        "scale": [
+          1.2,
+          1.2,
+          1.2
+        ],
+        "triangles": 5840,
+        "bounds": {
+          "min": [
+            4.330874480555751,
+            -0.39883567287497335,
+            1.3125045973432194
+          ],
+          "max": [
+            9.56696697786858,
+            0.04500000032502666,
+            6.820872554196484
+          ]
+        },
+        "minimum_vertex_radiusXZ": 4.952948717292787,
+        "placement_class": "shallow ground layer",
+        "obj_sha256": "8d78b98c701791990185ff86a4000f85ab3981ffde0636c09229606f5df6e815",
+        "texture": "../models/tripo/fractured_rubble/textures/basecolor-000.jpg"
+      },
+      {
+        "id": 4301,
+        "name": "Tripo shallow fractured ground",
+        "position": [
+          -8,
+          -0.5097945910937166,
+          10
+        ],
+        "rotation": [
+          0,
+          75,
+          0
+        ],
+        "scale": [
+          1.5,
+          1.5,
+          1.5
+        ],
+        "triangles": 5840,
+        "bounds": {
+          "min": [
+            -11.660109321792241,
+            -0.5097945910937166,
+            7.11681002671095
+          ],
+          "max": [
+            -4.900347060659204,
+            0.04500000040628338,
+            13.394072556899697
+          ]
+        },
+        "minimum_vertex_radiusXZ": 9.589130824178932,
+        "placement_class": "shallow ground layer",
+        "obj_sha256": "8d78b98c701791990185ff86a4000f85ab3981ffde0636c09229606f5df6e815",
+        "texture": "../models/tripo/fractured_rubble/textures/basecolor-000.jpg"
+      },
+      {
+        "id": 4302,
+        "name": "Tripo shallow fractured ground",
+        "position": [
+          21,
+          -0.32486306072914445,
+          -14
+        ],
+        "rotation": [
+          0,
+          -25,
+          0
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ],
+        "triangles": 5840,
+        "bounds": {
+          "min": [
+            18.598416012776827,
+            -0.32486306072914445,
+            -16.575383068145523
+          ],
+          "max": [
+            23.123377092813797,
+            0.045000000270855545,
+            -11.885377308628406
+          ]
+        },
+        "minimum_vertex_radiusXZ": 22.796073617727004,
+        "placement_class": "shallow ground layer",
+        "obj_sha256": "8d78b98c701791990185ff86a4000f85ab3981ffde0636c09229606f5df6e815",
+        "texture": "../models/tripo/fractured_rubble/textures/basecolor-000.jpg"
+      },
+      {
+        "id": 4000,
+        "name": "Tripo detached port hull",
+        "position": [
+          -19.547109604471146,
+          15.56758591110826,
+          -49.902313814317665
+        ],
+        "rotation": [
+          45,
+          0,
+          -38
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ],
+        "triangles": 7336,
+        "bounds": {
+          "min": [
+            -32.936366905414275,
+            0.2037063980094409,
+            -67.04446409840916
+          ],
+          "max": [
+            -6.770074975401521,
+            25.278757177846316,
+            -29.499999999999996
+          ]
+        },
+        "minimum_vertex_radiusXZ": 31.421699143087476,
+        "placement_class": "exterior landmark",
+        "obj_sha256": "aaafec748a13c3f8d5c83de140c6ab762240c1a74c6fb1bc6edfb273a95ab71f",
+        "texture": "../models/tripo/derelict_ship/textures/basecolor-000.jpg"
+      },
+      {
+        "id": 4001,
+        "name": "Tripo broken central keel",
+        "position": [
+          1.854164514046056,
+          13.186648880037502,
+          -47.32705539818106
+        ],
+        "rotation": [
+          65,
+          0,
+          -12
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ],
+        "triangles": 8960,
+        "bounds": {
+          "min": [
+            -4.3820300504875425,
+            2.6995466531447043,
+            -63.88374601389583
+          ],
+          "max": [
+            8.357395668297107,
+            24.911802605698185,
+            -29.500000000000004
+          ]
+        },
+        "minimum_vertex_radiusXZ": 29.523947276544884,
+        "placement_class": "exterior landmark",
+        "obj_sha256": "b3e42cc236fec6f988d667e95cc67ef09ea1b20372d564cc42ae64c6d8e23556",
+        "texture": "../models/tripo/derelict_ship/textures/basecolor-000.jpg"
+      },
+      {
+        "id": 4002,
+        "name": "Tripo detached starboard hull",
+        "position": [
+          24.903818590117734,
+          -0.7755151633898283,
+          -48.8140741523646
+        ],
+        "rotation": [
+          80,
+          10,
+          18
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ],
+        "triangles": 6564,
+        "bounds": {
+          "min": [
+            13.592423708327818,
+            -12.483111849572829,
+            -68.1887961054142
+          ],
+          "max": [
+            32.65644907008439,
+            12.715882211247944,
+            -29.499999999999996
+          ]
+        },
+        "minimum_vertex_radiusXZ": 35.56710601508369,
+        "placement_class": "exterior landmark",
+        "obj_sha256": "44431ead12f971ec449d710543424b864d526d78ad08dc21709b926e840c9ea4",
+        "texture": "../models/tripo/derelict_ship/textures/basecolor-000.jpg"
+      }
+    ],
+    "existing_models_unchanged": 23,
+    "additional_environment_triangles": 72648,
+    "additional_draw_calls": 10
+  },
+  "final_acceptance": {
+    "record": "docs/tripo-asset-pass.md",
+    "evidence": "artifacts/acceptance/tripo/final-integration",
+    "debug_release_build_and_cpu": "pass",
+    "editor_ctest": "7/7 pass",
+    "route_points": "41/41 pass",
+    "combat_seconds": 91.465,
+    "performance_frames": 29880,
+    "p95_ms": 6.1846667,
+    "p99_ms": 8.302125,
+    "max_ms": 218.14613,
+    "longest_over_50ms": 1,
+    "crystal_flow": "10/10 pass",
+    "hollow_flow": "initial4failed, then3runs10/10 pass",
+    "protected_files": 19,
+    "commit_or_push": false,
+    "hollow_flow_context": "User subsequently reported opening map_editor during the first attempt and believes there was no actual game issue. This is consistent with external focus interruption; no code fix was made. Three unchanged reruns passed; original logs retained."
+  },
+  "interior_cover_followup": {
+    "status": "implemented_functional_checks_passed",
+    "record": "docs/crystal-interior-cover.md",
+    "generation_calls": 0,
+    "new_credit_consumption": 0,
+    "performance_testing": "skipped_by_explicit_user_request",
+    "scope": "Reuse ship, bone and crystal meshes as four colliding interior covers; retain exterior landmarks and rifle.",
+    "map_sha256": "226426381ec9eb6530b04c58f1b623aff4f17ea2340976db45404b568dd5cb21",
+    "content_version": "crystal-combat-world-tripo-interior-v1",
+    "cover_ids": [
+      31,
+      32,
+      4400,
+      4401
+    ],
+    "placement_report": "artifacts/acceptance/tripo-interior/placement-report.json",
+    "reproduction": "res/models/tripo/interior/README.md",
+    "nav_nodes": 85,
+    "nav_links": 167,
+    "known_limitation": "Chaser may stop pursuing a player on a cover top; reproduced on previous covers, ground-level detours pass. No AI change in this pass.",
+    "checks": {
+      "debug_release_build_and_cpu": "pass",
+      "interior_checks": "61/61 pass",
+      "ordinary_input_route": "41/41 pass",
+      "editor_ctest": "7/7 pass",
+      "short_gl_visual": "pass",
+      "performance": "not_run_user_requested"
+    },
+    "evidence": "artifacts/acceptance/tripo-interior",
+    "commit_or_push": false,
+    "superseded_by": "megastructure_followup"
+  },
+  "megastructure_followup": {
+    "status": "implemented_functional_checks_passed",
+    "reason": "User clarified that models should form giant architectural walls and space boundaries, superseding small interior-cover placement.",
+    "record": "docs/crystal-megastructure.md",
+    "generation_calls": 0,
+    "new_credit_consumption": 0,
+    "performance_testing": "skipped_by_explicit_user_request",
+    "map_sha256": "2fe44617d6aa298ac4be2b05f62e35f17c4b6b4a55e7744b04d219eb10710f14",
+    "content_version": "crystal-combat-world-tripo-megastructure-v1",
+    "model_ids": [
+      4500,
+      4501,
+      4502
+    ],
+    "removed_small_cover_ids": [
+      31,
+      32,
+      4400,
+      4401
+    ],
+    "evidence": "artifacts/acceptance/tripo-mega",
+    "reproduction": "res/models/tripo/mega/README.md",
+    "functional_checks": "90/90 pass",
+    "ordinary_input_route": "41/41 pass",
+    "editor_ctest": "7/7 pass",
+    "nav_nodes": 83,
+    "nav_links": 163,
+    "known_limitations": [
+      "Approximately 45000 collision proxy triangles; no performance benchmark this pass.",
+      "Local proxy surface approximation, not exact mesh collision.",
+      "Existing Chaser pursuit limitation for elevated targets unchanged."
+    ],
+    "commit_or_push": false
+  }
+}

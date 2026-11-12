@@ -19,11 +19,17 @@ public:
 
     // Update camera vectors
     void update();
+    // Presentation-only roll from resolved actor motion, never from eye bob or keys.
+    void updateMovementLean(const glm::vec3& feet, float deltaTime);
+    void resetMovementLean(const glm::vec3& feet);
+    void syncMovementLeanPosition(const glm::vec3& feet);
+    float getMovementRollDegrees() const { return movementRoll; }
 
     // Getters
     glm::mat4 getViewMatrix() const;
     glm::mat4 getProjectionMatrix(float aspectRatio) const;
-    glm::mat4 getProjectionMatrix(float aspectRatio, float customFov) const;
+    // Map override is per draw, so switching maps cannot retain stale distance.
+    glm::mat4 getProjectionMatrix(float aspectRatio, float customFov, float mapFarPlane = 0) const;
     glm::vec3 getPosition() const { return position; }
     glm::vec3 getFront() const { return front; }
     glm::vec3 getUp() const { return up; }
@@ -53,6 +59,9 @@ private:
     glm::vec3 up;
     glm::vec3 right;
     glm::vec3 worldUp;
+    glm::vec3 previousFeet{0};
+    bool hasMovementSample = false;
+    float movementRoll = 0, movementRollVelocity = 0;
 
     // Euler angles
     float yaw;

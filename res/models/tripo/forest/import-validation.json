@@ -1,0 +1,26 @@
+[
+  {
+    "asset": "pine_sparse",
+    "cpp_loader": "1 parts, 3952 triangles validated by engine loader",
+    "texture_decode": "/Users/ritzsun/Desktop/game/opengl/silic2/res/models/tripo/forest/pine_sparse/textures/basecolor-000.jpg\n  pixelWidth: 2048\n  pixelHeight: 2048",
+    "hashes_verified": true
+  },
+  {
+    "asset": "pine_dense",
+    "cpp_loader": "1 parts, 4922 triangles validated by engine loader",
+    "texture_decode": "/Users/ritzsun/Desktop/game/opengl/silic2/res/models/tripo/forest/pine_dense/textures/basecolor-000.jpg\n  pixelWidth: 2048\n  pixelHeight: 2048",
+    "hashes_verified": true
+  },
+  {
+    "asset": "pine_crooked",
+    "cpp_loader": "1 parts, 5586 triangles validated by engine loader",
+    "texture_decode": "/Users/ritzsun/Desktop/game/opengl/silic2/res/models/tripo/forest/pine_crooked/textures/basecolor-000.jpg\n  pixelWidth: 2048\n  pixelHeight: 2048",
+    "hashes_verified": true
+  },
+  {
+    "asset": "crystal_spire",
+    "cpp_loader": "1 parts, 8130 triangles validated by engine loader",
+    "texture_decode": "/Users/ritzsun/Desktop/game/opengl/silic2/res/models/tripo/forest/crystal_spire/textures/basecolor-000.jpg\n  pixelWidth: 2048\n  pixelHeight: 2048",
+    "hashes_verified": true
+  }
+]

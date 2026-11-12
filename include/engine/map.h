@@ -10,7 +10,7 @@
 
 namespace silic2 {
 enum class GameMode { Legacy, ArenaSurvival, Exploration };
-enum class EnvironmentPreset { None, StarryCrystal, HollowOrbit };
+enum class EnvironmentPreset { None, StarryCrystal, HollowOrbit, ForestCrystal };
 struct EnvironmentSettings {
     EnvironmentPreset preset = EnvironmentPreset::None;
     float transformationStart = 45, transformationDuration = 4;
@@ -19,6 +19,8 @@ struct EnvironmentSettings {
     glm::vec3 landmarkPosition{0}, landmarkScale{1};
 };
 struct WorldSettings {
+    // Zero preserves the global render far plane for legacy maps.
+    float farPlane = 0.0f;
     float gravity = -9.8f;
     glm::vec3 ambientLight{.2f, .2f, .3f}, backgroundColor{.1f, .1f, .2f};
 };
@@ -48,7 +50,7 @@ struct GeometryObject {
 };
 struct ModelInstance {
     uint32_t id=0;
-    std::string name, asset, collisionAsset, material="default";
+    std::string name, asset, collisionAsset, material="default", texture;
     glm::vec3 position{0}, rotation{0}, scale{1}, color{.8f};
     SimpleJson source;
 };

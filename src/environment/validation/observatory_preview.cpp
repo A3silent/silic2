@@ -17,7 +17,7 @@ int main(int argc,char** argv){
  assert(glfwInit());glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR,3);glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR,3);glfwWindowHint(GLFW_OPENGL_PROFILE,GLFW_OPENGL_CORE_PROFILE);glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT,GL_TRUE);glfwWindowHint(GLFW_VISIBLE,GL_FALSE);
  auto*w=glfwCreateWindow(640,360,"Crystal Observatory evidence",nullptr,nullptr);assert(w);glfwMakeContextCurrent(w);assert(gladLoadGLLoader((GLADloadproc)glfwGetProcAddress));glEnable(GL_DEPTH_TEST);glEnable(GL_CULL_FACE);
  {
- silic2::Map map;assert(map.loadFromFile("res/maps/starry_crystal_arena.json"));const auto document=map.toJson().toString();
+ silic2::Map map;assert(map.loadFromFile("res/maps/crystal_megastructure_arena.json"));const auto document=map.toJson().toString();
  silic2::MapRenderer renderer;assert(renderer.loadMap(map));silic2::PixelRenderer pixel;assert(pixel.init(320,200));int width,height;glfwGetFramebufferSize(w,&width,&height);
  float fieldOfView=65.f;
  const auto& e=map.getExploration();const auto scene=silic2::deriveEnvironmentScene(map);

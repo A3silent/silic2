@@ -1,0 +1,28 @@
+{
+  "source": "derelict_ship/parts/wreck-0.obj",
+  "source_sha256": "aaafec748a13c3f8d5c83de140c6ab762240c1a74c6fb1bc6edfb273a95ab71f",
+  "x_min_source_cut": null,
+  "height": 12,
+  "uniform_scale": 0.7436332417806375,
+  "rotation_z": 90,
+  "rotation_y": 90,
+  "floor_pivot": [
+    -4.440892098500626e-16,
+    -5.999999999999999,
+    0.0
+  ],
+  "visual_triangles": 7336,
+  "bounds": {
+    "min": [
+      -7.769584888047866,
+      0.0,
+      -14.129031593832112
+    ],
+    "max": [
+      7.769584888047866,
+      12.0,
+      14.129031593832112
+    ]
+  },
+  "visual_sha256": "9f347ced82f7c9c880b36db5ba293a83c120726ab89f0f1b7a2858e1dc42727a"
+}

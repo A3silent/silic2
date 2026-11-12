@@ -1,13 +1,40 @@
 #include "engine/map_renderer.h"
 #include "engine/shader.h"
+#include "engine/mesh_asset.h"
+#include <filesystem>
+#include <map>
+#include <tuple>
 #include "environment/environment_renderer.h"
 #include <algorithm>
 #include <stdexcept>
+#include <set>
 #include <glm/gtc/matrix_transform.hpp>
 #include <iostream>
 
 namespace silic2 {
 namespace {
+// The dedicated pass has no persistent GL-state side effects. Its depth contents
+// intentionally retain the crystal front surface for later additive world FX.
+struct TranslucentState {
+    GLboolean colorMask[4],depthMask;GLint depthFunc,program,vao,activeTexture,texture0,polygon[2];
+    GLint srcRgb,dstRgb,srcAlpha,dstAlpha,equationRgb,equationAlpha;
+    bool depth,blend,cull;
+    TranslucentState():depth(glIsEnabled(GL_DEPTH_TEST)),blend(glIsEnabled(GL_BLEND)),cull(glIsEnabled(GL_CULL_FACE)) {
+        glGetBooleanv(GL_COLOR_WRITEMASK,colorMask);glGetBooleanv(GL_DEPTH_WRITEMASK,&depthMask);
+        glGetIntegerv(GL_DEPTH_FUNC,&depthFunc);glGetIntegerv(GL_CURRENT_PROGRAM,&program);glGetIntegerv(GL_VERTEX_ARRAY_BINDING,&vao);
+        glGetIntegerv(GL_ACTIVE_TEXTURE,&activeTexture);glActiveTexture(GL_TEXTURE0);glGetIntegerv(GL_TEXTURE_BINDING_2D,&texture0);
+        glGetIntegerv(GL_POLYGON_MODE,polygon);glGetIntegerv(GL_BLEND_SRC_RGB,&srcRgb);glGetIntegerv(GL_BLEND_DST_RGB,&dstRgb);
+        glGetIntegerv(GL_BLEND_SRC_ALPHA,&srcAlpha);glGetIntegerv(GL_BLEND_DST_ALPHA,&dstAlpha);
+        glGetIntegerv(GL_BLEND_EQUATION_RGB,&equationRgb);glGetIntegerv(GL_BLEND_EQUATION_ALPHA,&equationAlpha);
+    }
+    ~TranslucentState() {
+        glColorMask(colorMask[0],colorMask[1],colorMask[2],colorMask[3]);glDepthMask(depthMask);glDepthFunc(depthFunc);
+        glBlendFuncSeparate(srcRgb,dstRgb,srcAlpha,dstAlpha);glBlendEquationSeparate(equationRgb,equationAlpha);
+        depth?glEnable(GL_DEPTH_TEST):glDisable(GL_DEPTH_TEST);blend?glEnable(GL_BLEND):glDisable(GL_BLEND);cull?glEnable(GL_CULL_FACE):glDisable(GL_CULL_FACE);
+        glPolygonMode(GL_FRONT_AND_BACK,polygon[0]);glUseProgram(program);glBindVertexArray(vao);
+        glActiveTexture(GL_TEXTURE0);glBindTexture(GL_TEXTURE_2D,texture0);glActiveTexture(activeTexture);
+    }
+};
 struct CrystalTextureProfile { const char* file; glm::vec3 mean; float worldSize, strength; };
 const CrystalTextureProfile crystalProfiles[] = {
     {"res/texture/crystal_combat/metal_deck-64.png",{.27865f,.30123f,.32231f},6.f,.80f},
@@ -47,13 +74,26 @@ bool MapRenderer::loadMap(const Map& map) {
     
     const auto& brushes = map.getBrushes();
     const auto preset=map.getEnvironmentPreset();
-    const bool arena = preset==EnvironmentPreset::StarryCrystal || preset==EnvironmentPreset::HollowOrbit;
+    const bool arena = preset==EnvironmentPreset::StarryCrystal || preset==EnvironmentPreset::HollowOrbit || preset==EnvironmentPreset::ForestCrystal;
     if (arena) {
         environment = std::make_unique<EnvironmentRenderer>(deriveEnvironmentScene(map));
-        arenaShader = std::make_unique<Shader>("res/shaders/map.vert", environmentShaderPaths(preset).mapFragment);
+        arenaShader = std::make_unique<Shader>(preset==EnvironmentPreset::ForestCrystal ? "res/shaders/forest_map.vert" : "res/shaders/map.vert", environmentShaderPaths(preset).mapFragment);
         GLint linked = GL_FALSE;
         glGetProgramiv(arenaShader->ID, GL_LINK_STATUS, &linked);
         if (!linked) throw std::runtime_error("Arena material shader failed to link");
+    }
+    if(environment && environment->scene().forestWorld) {
+        // A complete neutral sampler prevents feedback from the pixel-render
+        // attachment even on drivers that inspect inactive sampler branches.
+        forestCrystalShader=std::make_unique<Shader>("res/shaders/map.vert","res/shaders/forest_crystal.frag");
+        GLint linked=GL_FALSE;glGetProgramiv(forestCrystalShader->ID,GL_LINK_STATUS,&linked);
+        if(!linked)throw std::runtime_error("Forest translucent crystal shader failed to link");
+        glGenTextures(1,&forestNeutralTexture);
+        glBindTexture(GL_TEXTURE_2D,forestNeutralTexture);
+        const unsigned char white[]={255,255,255,255};
+        glTexImage2D(GL_TEXTURE_2D,0,GL_RGBA,1,1,0,GL_RGBA,GL_UNSIGNED_BYTE,white);
+        glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
     }
     if(environment && environment->scene().combatWorld) {
         // Four cache lookups only at map load; failed files leave the original
@@ -63,6 +103,14 @@ bool MapRenderer::loadMap(const Map& map) {
     }
     std::cout << "Loading " << brushes.size() << " brushes for rendering..." << std::endl;
     
+    // Group only explicit forest pine models: other geometry retains its path.
+    // Model source and collision remain untouched; the GPU owns one local mesh.
+    std::map<uint32_t,const ModelInstance*> pineModels;
+    if(preset==EnvironmentPreset::ForestCrystal)
+        for(const auto& model:map.getModels())
+            if(model.material=="forest_pine")pineModels.emplace(model.id,&model);
+    using TreeKey=std::tuple<std::string,std::string,float,float,float>;
+    std::map<TreeKey,TreeBatch*> batches;
     for (const auto& brush : brushes) {
         auto renderable = std::make_unique<RenderableBrush>();
         renderable->color = brush.color;
@@ -86,10 +134,43 @@ bool MapRenderer::loadMap(const Map& map) {
             if(renderable->crystalTextureProfile>=0)
                 renderable->texture=crystalTextures[renderable->crystalTextureProfile];
         }
+        const auto pine=pineModels.find(brush.id);
+        if(pine!=pineModels.end()) {
+            const auto& model=*pine->second;
+            const auto path=(std::filesystem::path(map.getAssetBaseDirectory())/model.asset).lexically_normal().string();
+            const TreeKey key{path,brush.texture,brush.color.x,brush.color.y,brush.color.z};
+            auto found=batches.find(key);
+            TreeBatch* batch=nullptr;
+            if(found==batches.end()) {
+                auto owned=std::make_unique<TreeBatch>();batch=owned.get();
+                auto mesh=loadStaticObj(path);Brush local;
+                local.id=brush.id;local.material=brush.material;
+                local.vertices=std::move(mesh.vertices);local.faces=std::move(mesh.faces);local.texCoords=std::move(mesh.texCoords);
+                batch->mesh.color=brush.color;batch->mesh.material=brush.material;
+                batch->mesh.texture=renderable->texture;
+                setupBrushGeometry(local,batch->mesh);
+                batches.emplace(key,batch);treeBatches.push_back(std::move(owned));
+            } else batch=found->second;
+            batch->instances.push_back({staticTransform(model.position,model.rotation,model.scale),renderable->minimum,renderable->maximum});
+            continue;
+        }
         setupBrushGeometry(brush, *renderable);
         renderableBrushes.push_back(std::move(renderable));
     }
-    
+
+    for(auto& batch:treeBatches) {
+        batch->visibleTransforms.reserve(batch->instances.size());
+        glGenBuffers(1,&batch->instanceVBO);
+        glBindVertexArray(batch->mesh.VAO);
+        glBindBuffer(GL_ARRAY_BUFFER,batch->instanceVBO);
+        glBufferData(GL_ARRAY_BUFFER,batch->instances.size()*sizeof(glm::mat4),nullptr,GL_DYNAMIC_DRAW);
+        for(GLuint column=0;column<4;++column) {
+            glEnableVertexAttribArray(3+column);
+            glVertexAttribPointer(3+column,4,GL_FLOAT,GL_FALSE,sizeof(glm::mat4),reinterpret_cast<void*>(column*sizeof(glm::vec4)));
+            glVertexAttribDivisor(3+column,1);
+        }
+        glBindVertexArray(0);
+    }
     updateLighting();
     
     std::cout << "Map loaded successfully. " << renderableBrushes.size() << " brushes ready for rendering." << std::endl;
@@ -99,8 +180,11 @@ bool MapRenderer::loadMap(const Map& map) {
 void MapRenderer::clearMap() {
     environment.reset();
     arenaShader.reset();
+    forestCrystalShader.reset();
+    if(forestNeutralTexture){glDeleteTextures(1,&forestNeutralTexture);forestNeutralTexture=0;}
     combinedLights.clear();
     renderableBrushes.clear();
+    treeBatches.clear();
     crystalTextures.fill(nullptr);
     lightData.clear();
     dynamicLights.clear();
@@ -127,8 +211,11 @@ void MapRenderer::render(const glm::mat4& view, const glm::mat4& projection) {
     if (environment) environment->renderSky(view, projection);
     Shader* shader = environment ? arenaShader.get() : mapShader.get();
     shader->use();
+    shader->setBool("instanced",false);
     shader->setMat4("view", view);
     shader->setMat4("projection", projection);
+    if(environment && environment->scene().forestWorld)
+        shader->setVec3("cameraPosition",glm::vec3(glm::inverse(view)[3]));
     
     // Set world settings
     const auto& worldSettings = currentMap->getWorldSettings();
@@ -151,6 +238,7 @@ void MapRenderer::render(const glm::mat4& view, const glm::mat4& projection) {
     if (environment) {
         const float phase = environment->transformation();
         for (auto& light : combinedLights) {
+            if(environment->scene().forestWorld) continue;
             if(environment->scene().settings.preset==EnvironmentPreset::StarryCrystal) {
                 light.color*=glm::mix(glm::vec3(1.f),glm::vec3(1.2f,.7f,1.15f),phase);
                 continue;
@@ -191,9 +279,11 @@ void MapRenderer::render(const glm::mat4& view, const glm::mat4& projection) {
     glm::mat4 model = glm::mat4(1.0f);
     for (size_t i = 0; i < renderableBrushes.size(); ++i) {
         // std::cout << "Rendering brush " << i << " with " << renderableBrushes[i]->indexCount << " indices" << std::endl;
+        if(forestCrystalShader && renderableBrushes[i]->material=="forest_spire")continue;
         renderBrush(*renderableBrushes[i], model, *shader);
     }
     
+    renderTrees(projection*view,*shader);
     if (environment) environment->renderDetails(view, projection);
 
     // Reset polygon mode
@@ -219,6 +309,23 @@ void MapRenderer::initShaders() {
             throw;
         }
     }
+}
+
+void MapRenderer::renderTranslucent(const glm::mat4& view,const glm::mat4& projection) {
+    if(!forestCrystalShader || !environment)return;
+    TranslucentState saved;
+    glEnable(GL_DEPTH_TEST);glDisable(GL_CULL_FACE);glDisable(GL_BLEND);glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
+    auto& shader=*forestCrystalShader;shader.use();shader.setMat4("view",view);shader.setMat4("projection",projection);
+    shader.setVec3("cameraPosition",glm::vec3(glm::inverse(view)[3]));environment->setMapUniforms(shader);
+    // Opaque enemies in front already own nearer depth; enemies behind remain
+    // in the color buffer and are visible through the single alpha composition.
+    glColorMask(GL_FALSE,GL_FALSE,GL_FALSE,GL_FALSE);glDepthMask(GL_TRUE);glDepthFunc(GL_LESS);shader.setBool("depthOnly",true);
+    for(const auto& brush:renderableBrushes)if(brush->material=="forest_spire")renderBrush(*brush,glm::mat4(1),shader);
+    glColorMask(GL_TRUE,GL_TRUE,GL_TRUE,GL_TRUE);glDepthMask(GL_FALSE);glDepthFunc(GL_EQUAL);
+    // Premultiplied surface plus bounded independent emission. Background
+    // transmission remains (1-alpha); emission is not attenuated a second time.
+    glEnable(GL_BLEND);glBlendEquationSeparate(GL_FUNC_ADD,GL_FUNC_ADD);glBlendFuncSeparate(GL_ONE,GL_ONE_MINUS_SRC_ALPHA,GL_ONE,GL_ONE_MINUS_SRC_ALPHA);shader.setBool("depthOnly",false);
+    for(const auto& brush:renderableBrushes)if(brush->material=="forest_spire")renderBrush(*brush,glm::mat4(1),shader);
 }
 
 void MapRenderer::setupBrushGeometry(const Brush& brush, RenderableBrush& renderable) {
@@ -257,10 +364,19 @@ void MapRenderer::setupBrushGeometry(const Brush& brush, RenderableBrush& render
     if (environment) {
         vertexData.clear();
         indices.clear();
+        std::set<std::array<float,9>> uniqueCrystalFaces;
         for (size_t f = 0; f + 2 < brush.faces.size(); f += 3) {
             const auto a = brush.vertices[brush.faces[f]];
             const auto b = brush.vertices[brush.faces[f+1]];
             const auto c = brush.vertices[brush.faces[f+2]];
+            if(forestCrystalShader && brush.material=="forest_spire") {
+                // GLB doubleSided exports contain coincident reverse triangles.
+                // Collapse only the GPU copy; keep original map/asset/collision intact.
+                std::array<std::array<float,3>,3> points{{{{a.x,a.y,a.z}},{{b.x,b.y,b.z}},{{c.x,c.y,c.z}}}};
+                std::sort(points.begin(),points.end());std::array<float,9> key{};
+                for(size_t v=0;v<3;++v)for(size_t axis=0;axis<3;++axis)key[v*3+axis]=points[v][axis];
+                if(!uniqueCrystalFaces.insert(key).second)continue;
+            }
             const glm::vec3 cross = glm::cross(b-a, c-a);
             if (glm::dot(cross,cross) < 1e-10f) continue;
             const glm::vec3 normal = glm::normalize(cross);
@@ -328,7 +444,7 @@ void MapRenderer::updateLighting() {
     std::cout << "Updated lighting: " << lightData.size() << " lights" << std::endl;
 }
 
-void MapRenderer::renderBrush(const RenderableBrush& brush, const glm::mat4& model, Shader& shader) {
+void MapRenderer::renderBrush(const RenderableBrush& brush, const glm::mat4& model, Shader& shader, GLsizei instances) {
     if (brush.VAO == 0) {
         std::cout << "Brush has invalid VAO (0)" << std::endl;
         return;
@@ -352,8 +468,14 @@ void MapRenderer::renderBrush(const RenderableBrush& brush, const glm::mat4& mod
             shader.setInt("materialKind",kind);
         }
         if (environment->scene().combatWorld) {
-            int kind=brush.material=="combat_crystal"?12:brush.material=="combat_ivory"?13:
+            int kind=brush.material=="imported_static"?15:
+                     brush.material=="combat_crystal"?12:brush.material=="combat_ivory"?13:
                      brush.material=="combat_brown"?14:brush.material=="combat_foundation"?10:11;
+            shader.setInt("materialKind",kind);
+        }
+        if(environment->scene().forestWorld) {
+            const int kind=brush.surfaceType==SurfaceType::FLOOR?20:
+                brush.material=="forest_spire"?23:brush.material=="forest_thicket"?22:21;
             shader.setInt("materialKind",kind);
         }
         shader.setVec3("brushMinimum",brush.minimum);
@@ -374,10 +496,14 @@ void MapRenderer::renderBrush(const RenderableBrush& brush, const glm::mat4& mod
         brush.texture->bind(0);
     } else {
         shader.setBool("useTexture", false);
+        // Forest ground is untextured; do not leave the previous pixel target
+        // bound to a sampler while it is also the current render attachment.
+        if(environment && environment->scene().forestWorld) glBindTexture(GL_TEXTURE_2D,forestNeutralTexture);
     }
     
     glBindVertexArray(brush.VAO);
-    glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(brush.indexCount), GL_UNSIGNED_INT, 0);
+    if(instances>0)glDrawElementsInstanced(GL_TRIANGLES,static_cast<GLsizei>(brush.indexCount),GL_UNSIGNED_INT,nullptr,instances);
+    else glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(brush.indexCount), GL_UNSIGNED_INT, 0);
     glBindVertexArray(0);
     
     // Check for OpenGL errors
@@ -385,6 +511,31 @@ void MapRenderer::renderBrush(const RenderableBrush& brush, const glm::mat4& mod
     if (error != GL_NO_ERROR) {
         std::cout << "OpenGL error after drawing brush: " << error << std::endl;
     }
+}
+
+void MapRenderer::renderTrees(const glm::mat4& viewProjection,Shader& shader) {
+    if(treeBatches.empty())return;
+    // Conservative AABB-plane test. Do not distance-cull or change tree detail.
+    const auto rows=glm::transpose(viewProjection);
+    const std::array<glm::vec4,6> planes{rows[3]+rows[0],rows[3]-rows[0],rows[3]+rows[1],rows[3]-rows[1],rows[3]+rows[2],rows[3]-rows[2]};
+    shader.setBool("instanced",true);
+    for(auto& batch:treeBatches) {
+        auto& visible=batch->visibleTransforms;visible.clear();
+        for(const auto& instance:batch->instances) {
+            bool outside=false;
+            for(const auto& plane:planes) {
+                glm::vec3 positive;
+                for(int axis=0;axis<3;++axis)positive[axis]=plane[axis]>=0?instance.maximum[axis]:instance.minimum[axis];
+                if(glm::dot(glm::vec3(plane),positive)+plane.w < -.01f){outside=true;break;}
+            }
+            if(!outside)visible.push_back(instance.transform);
+        }
+        if(visible.empty())continue;
+        glBindBuffer(GL_ARRAY_BUFFER,batch->instanceVBO);
+        glBufferSubData(GL_ARRAY_BUFFER,0,visible.size()*sizeof(glm::mat4),visible.data());
+        renderBrush(batch->mesh,glm::mat4(1),shader,static_cast<GLsizei>(visible.size()));
+    }
+    shader.setBool("instanced",false);
 }
 
 void MapRenderer::addDynamicLight(const glm::vec3& position, const glm::vec3& color, float intensity, float range) {

@@ -6,11 +6,13 @@
 ## 聊天与角色
 
 项目：`silic2`，project ID `d88b2ae3-dee5-4525-9461-d1e3aaab0081`。
-专业聊天均使用此项目的本地工作区。ATLAS 保留原聊天和历史，不另建副本。
+专业聊天均使用此项目的本地工作区。2026-11-12用户指定当前聊天接任ATLAS；
+原“Silic2 · 01 ATLAS｜策划统筹”聊天及历史保留，ID为
+`01a111a8-5950-7f32-9fd9-fe2346fd0761`。后续新任务交付使用下表当前入口。
 
 | 编号 | 聊天标题 / 别名 | 配置 | 聊天 ID | Host |
 | --- | --- | --- | --- | --- |
-| 1 | Silic2 · 01 ATLAS｜策划统筹 | 主 agent；见 AGENTS.md | `01a111a8-5950-7f32-9fd9-fe2346fd0761` | local |
+| 1 | 接替 ATLAS 任务（当前01 ATLAS／策划统筹） | 主 agent；见 AGENTS.md | `01a1d063-069e-7c42-93b4-186792653d6f` | local |
 | 2 | Silic2 · 02 VECTOR｜玩法编程 | `.codex/agents/silic2_gameplay.toml` | `01a11546-c363-7210-bb00-bb94be40552e` | local |
 | 3 | Silic2 · 03 PRISM｜界面设计 | `.codex/agents/silic2_ui.toml` | `01a11546-c75d-7793-9abd-0f17f7dd5683` | local |
 | 4 | Silic2 · 04 NEBULA｜场景美术 | `.codex/agents/silic2_environment.toml` | `01a11546-cc0a-7502-84f2-d9b174237024` | local |
@@ -250,3 +252,270 @@ NEBULA使用内置imagegen生成原创位图（用户本轮授权覆盖旧角色
 
 贴图任务已关闭，GPU释放；素材与提示词见res/texture/crystal_combat，
 [取舍与验收](crystal-texture-pass.md)。本轮未修改地图几何/玩法，未提交或推送。
+
+## Tripo 静态资产接入（2026-10-17）
+
+用户授权使用已有免费额度生成宇宙步枪、坠毁飞船、生物骨架、水晶簇和碎石装饰，
+接入模型工具、Crystal 摆放及武器外观替换；射击规则保持。资产仍只保留本地，
+本轮不提交或推送。现有未跟踪 interview-project-summary.md 与 codex-tripo-research.md 保留。
+
+| 任务 | 唯一入口 | 写入范围 | 状态 |
+| --- | --- | --- | --- |
+| TRIPO-IMPORT | VECTOR 临时子 agent | tools/assets/**、共享 mesh_asset / map 所需最小接口、对应 tests、Makefile | 已交付：18项离线导入测试及完整 Debug CPU 测试通过 |
+| TRIPO-ART | NEBULA 临时子 agent | tools/tripo/prompts/**、Crystal JSON、场景专属渲染及四件环境资产 | 已交付：船体3块、骨架残段、墙冠水晶3处、浅裂片3处；GL及Hollow环境基线通过 |
+| TRIPO-WEAPON | KINETIC 临时子 agent | include/src/character/**、character shaders、角色预览与测试、武器本地配置 | 已交付：真实步枪拟合启用，六姿态/CPU/GL验证通过 |
+| TRIPO-ACCEPT | ATLAS 当前聊天 | 额度核实、Tripo调用/下载与asset-plan状态、docs、基线与最终验收 | 五件各40credits，总200、剩800；独立图像/CSV/hash复核完成，保留异常记录 |
+
+三位执行者并行时只做 CPU/文件工作，实际 GL 时段由 ATLAS 串行安排。共享接口
+由 VECTOR 发布；NEBULA 和 KINETIC 消费同一导入结果。没有实际生成资产前，
+不得将占位模型标为 Tripo 成果，也不把缺失资源写入正式地图。
+
+用户追加要求：全部提示词完成后先供其确认，再启动任何生成。生成调用、消费额度、
+真实资产摆放和武器启用均保持待办。提示词详细描述造型意图，但模型适配320×200
+渲染，以轮廓、大中尺度结构和明暗分区为主，不追求微细节或高面数。
+
+本地接入 Debug / Release 构建通过；导入和武器 CPU/合成 GL 检查通过。
+场景 authored UV 采样验证通过，30组原材质结果与 HEAD 逐像素一致。
+19个玩法/敌人/音频/Hollow保护文件及 Crystal 地图哈希不变。
+这些结果仅验证接入能力，不代表真实 Tripo 模型、摆放、握持和性能验收已完成。
+
+2026-10-17 用户以“开始”确认低分辨率版五组提示词。ATLAS核对全部文本哈希，
+记录批准；实际 balance/whoami 均返回国际站 default 账号余额0、冻结0。
+当前仅等待领取额度所对应的账号/站点澄清，提示词无须再次批准，未提交生成任务。
+
+随后用户要求复查，API 已到账1000 credits、冻结0。ATLAS启动已批准五件资产，
+唯一负责所有在线生成/额度调用及 tools/tripo/asset-plan.json 的任务状态。
+本轮续作唯一写入分工：KINETIC负责步枪本地导入包、武器配置及 character 代码；
+NEBULA负责其余四件本地导入包、Crystal JSON及 environment/场景渲染；
+VECTOR负责导入工具修复、共享代码/构建与测试和最终性能检查。所有角色保留现有改动，
+不得自行追加在线生成；场景摆放基于真实资源，GL时段仍由ATLAS串行授权。
+
+VECTOR追加独占 tools/map_editor/src/map_editor_final.cpp、tests/editor_self_test.cpp
+（编辑器目录下）、README.md/README_CN.md（编辑器目录下）：仅补充模型贴图路径字段与
+保留/SaveAs测试，不扩展编辑器渲染器。ATLAS维护.gitignore以排除本地Tripo会话上下文。
+
+本轮已交付并关闭所有执行任务，GPU已释放。最终Debug/Release、41点巡路、编辑器7项
+测试及91.465秒实战通过；p95 6.185ms/p99 8.302ms，孤立218.146ms长帧保留。
+Hollow首次流程失败后同版本三次通过，用户补充同期打开map editor并认为无实际游戏
+问题，记录为用户报告的外部窗口干扰。详见[Tripo交付记录](tripo-asset-pass.md)。
+素材保持本地，未提交/推送，人工手感和可读性反馈仍待试玩。
+
+## Arena 内部模型掩体（2026-10-17）
+
+用户明确追加：部分飞船、骨架和水晶放入竞技场内部，兼作掩体与装饰，并有实际碰撞。
+该要求取代上一轮仅场外/不可达装饰的限制；复用已生成资源，不增加Tripo消费。
+保留现有未提交工作、外部地标和新步枪，保持射击/移动数值、敌人、音频、Hollow不变。
+
+| 任务 | 唯一入口 | 独占写入范围 | 验收 |
+| --- | --- | --- | --- |
+| INTERIOR-ART | NEBULA 临时子agent tripo_art | Crystal JSON（含导航建议的实际写入）、res/models/tripo内新增内部道具派生/简化碰撞代理与生成脚本、场景预览 | 船体/骨架/水晶均有内部可读实例，视觉/碰撞吻合，主要环路和坡道畅通 |
+| INTERIOR-COLLISION | VECTOR 临时子agent tripo_import | 必要共享空间代码/构建/测试及编辑器兼容；地图修改通过NEBULA交接 | 玩家/敌人移动、射击/敌弹/LOS一致碰撞；绕行/出生点/功能验证（用户取消本轮性能测试） |
+| INTERIOR-ACCEPT | ATLAS | 本记录、设计约束、资产清单状态和验收文档 | 审阅实际图片/变换/回归证据；资源仍仅本地，不提交推送 |
+
+先协调约4–5处内部掩体的尺寸/位置及代理形状，再改正式地图。可替换局部旧掩体避免
+无意义堆叠；不得封闭骨架明显开口或以整个包围盒制造空气墙。主通道尽量保持4米，
+坡口/桥下净空/出生点和Sentry射击空间受保护。需要改导航/巡路时由VECTOR给出具体
+节点与连接建议，NEBULA作为地图唯一作者落地。实际GL由ATLAS串行分配。
+
+内部掩体本轮已交付：31船体、32骨肋及4400/4401两簇水晶正式落图，带局部闭合
+碰撞代理；85导航点/167连接。NEBULA与VECTOR写入已冻结。Debug/Release及CPU通过，
+内部61项检查、41点普通巡路、编辑器7项均通过，短时GL图片已复核。用户明确取消
+本轮性能测试，未执行性能基准。旧低掩体的站顶Chaser停追问题对照复现并记录，
+未扩展AI修改。详见[内部掩体交付](crystal-interior-cover.md)。无新增Tripo消费、无提交推送。
+
+## 巨型模型墙体修订（2026-10-17，当前任务）
+
+用户澄清上一轮尺度理解有误：参考截图白色巨骨，将飞船/骨架/晶体作为巨型地图墙体和
+空间结构，不是地面小掩体。本轮以此取代四处低矮模型的摆放方案；复用真实源模型，
+使模型主体形成竞技场内可接近、可碰撞的墙面、转角与通道轮廓。建议8–16m高、
+12–24m跨度，以实际玩家视角而非绝对数值验收。不得仅把它们放到墙外做远景。
+允许替换/融合局部旧墙，保留主环路、上下坡与出生点；不改变武器/敌人/音频/Hollow。
+不做性能测试，不调用Tripo，不提交推送。
+
+| 任务 | 唯一入口 | 文件所有权 | 验收/交付 |
+| --- | --- | --- | --- |
+| MEGA-ART | NEBULA 临时 tripo_art | Crystal JSON、res/models/tripo/巨型场景派生/碰撞资源、场景预览 | 先出玩家高度实景候选，再定稿巨大船壳/骨墙/晶壁，交ATLAS |
+| MEGA-FUNCTION | VECTOR 临时 tripo_import | 必要共享代码/测试/Makefile；导航改动交NEBULA写 | 移动/射线/通路/编辑器功能，禁止性能测试，交ATLAS |
+| MEGA-ACCEPT | ATLAS | 本索引、docs、asset-plan及验收 | 审查尺度/实际可接近性/证据 |
+
+同一文件唯一作者；保留既有未提交工作。GPU仍串行，先NEBULA预览，后VECTOR短功能。
+
+巨型墙体修订已交付：西船墙地上10m/跨度28m、东南骨墙11m、东北晶壁13m，
+上一轮4小掩体移除。NEBULA资源/地图冻结；VECTOR正式90项功能、41点巡路、editor7项
+通过，Debug/Release构建和短GL验证完成。ATLAS复核玩家高度图、模型哈希与保护文件。
+不做性能测试；没有新增Tripo消费、提交或推送。详见[巨型结构交付](crystal-megastructure.md)。
+
+## 摄像机侧移倾斜（2026-10-31，当前任务）
+
+用户要求左右移动时镜头微倾，急刹有动态反馈。ATLAS将本轮理解为轻微侧移roll与
+停步的短促惯性回摆，中心瞄准方向/玩家物理不受表现倾斜改变。不做性能基准。
+CAMERA-LEAN唯一实现入口为VECTOR临时tripo_import：独占Camera、App相机接入、
+必要GameConfig字段、对应测试/Makefile；ATLAS维护本记录与交付说明。若需要
+修改角色viewmodel代码先交接所有权。现有src/player/weapon.cpp中子弹速度195
+为本轮前已有改动，必须保留；所有地图/资源/敌人/音频改动保持，不提交推送。
+验收左右方向、平滑回摆、帧率适应、暂停/重启复位与中心射线一致性，短GL确认。
+
+CAMERA-LEAN已完成：Camera视图独立roll，实际侧移±3°、停步轻微回摆，暂停冻结/重启归零。
+VECTOR实现与构建冻结；Debug/Release完整测试和短GL5项通过，ATLAS审阅左右图并确认9份
+保护文件哈希保持。实际调参入口为CameraConfig默认字段，不宣称JSON自动加载。
+详见[摄像机侧移倾斜](camera-movement-lean.md)。未做性能测试、未提交推送。
+
+## 森林巨晶竞技场（2026-10-31，当前任务）
+
+已批准概念图实施，范围见plan/forest-crystal-arena.md；取代Crystal旧布局。旧图保留独立文件。
+| 任务 | 唯一执行入口 | 独占文件/职责 |
+| --- | --- | --- |
+| FOREST-ENV | NEBULA tripo_art | Crystal地图与旧图备份、forest场景生成器、environment代码/着色器、map_renderer场景渲染、场景预览；消费已交付Tripo模型 |
+| FOREST-CORE | VECTOR tripo_import | 共享Map/配置/App/空间接口/导入工具、Makefile/tests、必要editor兼容；地图导航/出生建议交NEBULA写 |
+| FOREST-ASSETS | NEBULA bounded forest_assets | tools/tripo/forest-prompts/**；批准生成后res/models/tripo/forest/**模型离线导入、尺寸/碰撞/来源记录 |
+| FOREST-ATLAS | ATLAS | plan/docs、asset-plan、Tripo在线调用/余额/下载、审核与最终验收 |
+
+先提供接口契约、模型尺寸/方向，再并行实现。只有ATLAS可发Tripo请求；保留用户先审
+全部prompt的要求。前三类树+中央晶柱首批，云眼/图腾按渲染表达，不盲目增加收费建模。
+不运行性能基准。现有未提交工作和子弹速度195、camera lean保留。GPU时段由ATLAS串行分配。
+
+FOREST已完成并冻结：四件已批准Tripo模型真实生成/导入，共160 credits，余额640；
+48株三类松树、140米巨晶、森林边界、云眼与图腾接入。最终96项功能、编辑器往返、
+App流程10项与实际GL检查通过；修复可见根丛斜肩导致的跳跃越界，未改玩家物理。
+ATLAS审阅正式游戏与环境截图、核对原图/保护文件与提示词哈希。详情见
+[森林巨晶竞技场交付](forest-crystal-arena.md)。所有写入任务关闭、GPU已释放。
+不做性能测试，未提交推送；树根站立覆盖与大场地战斗压力保留人工试玩边界。
+
+## 森林外围加密（2026-10-31）
+
+FOREST-OUTER-RINGS唯一实现入口NEBULA临时tripo_art：独占forest场景generator、
+Crystal地图JSON、layout-state/该资源README，必要environment远林布局与专属预览。
+在已验收林缘之外添加三圈错落松树林，复用现有三件真实模型；保留现有61个模型、
+碰撞边界、导航、出生、天空、巨晶和玩法。不调用Tripo、不做性能测试、不提交推送。
+ATLAS维护本索引/交付文档并审图；NEBULA验证外圈纯装饰、原碰撞数据不变及实际视角。
+
+FOREST-OUTER-RINGS已完成：新增三圈216株真实松树，总264株；原61模型及碰撞/
+导航/出生与其他map字段保持。生成器重复一致、实际加载和前后三视角GL通过，
+ATLAS审图并独立核对原记录与保护资源哈希。无需重编，无API消费、性能测试或推送。
+NEBULA写入结束，GPU释放。
+
+## 森林材质表现修订（2026-10-31）
+
+用户要求星云渐变巨眼、半透明自发光及内部散射感水晶、扭曲像素符文，允许扩充引擎。
+FOREST-MATERIAL-ENV：NEBULA tripo_art独占forest_sky.frag、forest_map.frag（地面符文）、
+环境专属美术预览；不得并发改map_renderer。
+FOREST-MATERIAL-CRYSTAL：NEBULA forest_assets独占新增forest_crystal透明材质shader；
+与VECTOR约定uniform/pass契约，只做材质/内部发光表现。
+FOREST-MATERIAL-ENGINE：VECTOR tripo_import独占map_renderer.h/.cpp、App/必要PixelRenderer、
+Makefile及针对性透明遮挡/状态/切图检查；公共渲染接入由其集成。
+ATLAS维护范围/证据/文档及串行GPU分配。地图、模型、碰撞、外围三圈森林和玩法保留。
+不调用Tripo、不做性能测试、不提交推送。所有角色保留现有未提交工作，一文件一作者。
+
+FOREST-MATERIAL已完成：NEBULA交付星云渐变云眼、扭曲像素符文及半透明自发光晶体；
+VECTOR集成最近表面透明pass与独立发光。ATLAS审阅最终中近景及实际游戏截图，
+接受蓝色内核和柔和散射层次。Debug/Release构建、14项渲染检查、10项App流程通过，
+51份保护文件保持。所有写入任务关闭，GPU已释放。详见docs/forest-crystal-arena.md
+及artifacts/acceptance/forest-material-pass/final-summary.json。未做性能测试、API生成或提交推送。
+
+## 640×400与森林绘制优化（2026-10-31）
+
+用户要求将离屏buffer改为640×400，并针对树木增加后卡顿优化外围森林。
+FOREST-RENDER-OPT唯一实现入口VECTOR临时tripo_import，独占引擎渲染/配置、必要shader、
+Makefile和针对性诊断/回归工具；先取得固定场景短时基线，再决定共享网格/实例化/裁剪方案。
+ATLAS负责范围、证据和视觉验收；地图布局、模型源文件、碰撞、玩法和现有材质表现保留。
+允许本次卡顿诊断所需短时测量，不运行完整压力测试。GPU独占交VECTOR。
+不调用Tripo、不提交推送；保留全部既有未提交修改。
+
+FOREST-RENDER-OPT已完成：VECTOR统一主游戏640×400，并对264棵松树共享三份GPU网格、
+实例化绘制及保守视锥裁剪。固定场景索引draw279→18、buffer申请140→4.12MB（不含贴图
+或总显存）；Debug/Release构建、资源14项和透明切图14项通过。ATLAS已审阅实际截图、
+代码与原始测量，独立确认62份保护文件未变。短测不等同整局FPS；详见森林交付文档。
+任务关闭，GPU释放，无完整压力测试、API消费或提交推送。
+
+## 离屏分辨率微调为480×300（2026-10-31）
+
+RESOLUTION-480唯一执行入口VECTOR临时tripo_import：仅调整RenderConfig与PixelRenderer
+默认尺寸为480×300，重建Debug/Release并确认App读取实际尺寸。保留森林实例化和所有
+现有改动；不运行性能测试、不提交推送。ATLAS负责交付记录。
+
+RESOLUTION-480已完成：两个默认入口和说明注释已同步；App沿用实际尺寸接口。
+Debug/Release增量构建成功，diff检查通过。未追加GL或性能测试，任务关闭。
+
+## 水晶不透明度与红点开镜（2026-11-12）
+
+用户要求晶体更实、暂时隐藏手部、放大武器并加入红点开镜。默认按住右键开镜，
+松开平滑退出；可移动开镜，不额外改移动速度、射速或伤害。480×300和森林优化保留。
+
+| 任务 | 唯一入口 | 独占文件/职责 |
+| --- | --- | --- |
+| CRYSTAL-DENSITY | NEBULA forest_assets | forest_crystal.frag及其材质说明；提高不透明度，保留内发光与有限透射 |
+| RIFLE-ADS-ART | KINETIC 临时子agent | include/src/character、character shaders、weapon_presentation.json；无手、大枪、红点镜体与对中动画 |
+| RIFLE-ADS-CORE | VECTOR tripo_import | App/输入/瞄准状态、必要Camera/Weapon、HUD最小集成、Makefile/tests；开镜FOV/灵敏度、生命周期与射击对中 |
+| ADS-ACCEPT | ATLAS | 文档、基线、接口与GPU协调、实际画面验收 |
+
+角色接口：FirstPersonView新增aimBlend（0..1），KINETIC唯一作者；VECTOR产生并传入。
+KINETIC拥有镜体和红点表现，VECTOR只在ADS期间淡出普通准星。暂停冻结，重开/切图清空，
+死亡解除；焦点恢复读取实际右键状态。共享文件由VECTOR集成，一文件一作者。
+先CPU并行，GPU先KINETIC短预览，再VECTOR正式App；不做性能测试、Tripo调用或提交推送。
+
+## Crimson Carapace程序步枪（2026-11-12）
+
+用户批准最终黑红概念图，含顶部开放的\\_/镜框及中央悬浮红点，开始程序实现。
+设计依据保存至artifacts/acceptance/procedural-rifle/approved-concept.png。
+本轮替换默认第一人称步枪：分片黑甲、红色能量缝、曲弹匣、尖锐枪托/枪口、开放镜架，
+无手；网格与材质全部由代码生成，默认路径不得依赖Tripo模型或贴图。
+
+| 任务 | 唯一入口 | 独占写入范围 |
+| --- | --- | --- |
+| CRIMSON-ART | KINETIC rifle_ads_art | include/src/character、character shaders、weapon_presentation.json；新增程序网格、发光、必要局部bloom与持枪/ADS拟合 |
+| CRIMSON-INTEGRATE | VECTOR tripo_import | Makefile/tests、必要App共享接入；Debug/Release和实际App验收，不改角色专属文件 |
+| CRIMSON-ACCEPT | ATLAS | 文档、概念图/保护基线、视觉审核与GPU时段 |
+
+保留480×300、森林优化、水晶不透明度、现有ADS控制/射击/移动/敌人/音频。
+不做性能测试，不调用任何建模API，不提交推送。CPU可并行，GPU先KINETIC预览、
+ATLAS审图后再VECTOR实际游戏。新模块接口先交接，避免重复实现与同文件多作者。
+
+CRIMSON已完成：默认与缺配置路径均为纯代码新枪，1222tri/8材质/117312静态VBO字节，
+程序黑甲、亮红芯/局部halo、开放U框及中央4像素红点均接入。ATLAS审初版并要求一轮
+脊面叠甲/倒角/能量芯强化，最终专属图和正式App持枪/ADS/连射图均接受。
+Debug/Release、实际builder/selector与ADS CPU通过，正式隐藏App合成路线17/17通过；
+新材质160×100→480×300私有target resize/depth/state也通过。ATLAS独立核对128份保护
+文件保持。详情见docs/procedural-crimson-rifle.md。代码任务关闭、GPU释放；没有性能测试、
+建模服务调用或提交推送。
+
+## 缩小瞄具与连续能量线（2026-11-12）
+
+用户依据两张实机标注要求：整套瞄准镜尺寸缩小40%（保留60%），绿色圈内断续红槽
+连成连续、自发光的能量线。红点保持相机中心和低分辨率可读性，枪身主体大小不变。
+CRIMSON-REFINE-ART唯一入口KINETIC rifle_ads_art：独占character程序几何/瞄具拟合、
+必要shader和专属预览；先复现标注断线，再修补连通与表面遮挡。
+CRIMSON-REFINE-VERIFY唯一入口VECTOR tripo_import：独占tests/Makefile及共享集成，
+验证新瞄具比例、红点中心、能量线连续性和最终App。ATLAS维护证据、审图与本记录。
+保留现有所有改动；不改枪身比例、射击/移动/敌人/地图/音频，480×300不变。
+先KINETIC专属GPU复现与预览，后VECTOR正式App，不做性能测试/API/提交推送。
+
+CRIMSON-REFINE完成：原瞄具主体缩.6、窄支撑接枪、红点不漂；实际框宽57.65→34.03px。
+修正独立端点和甲片遮挡，hip/ADS亮线8连通检查从19/63px缺口变为0，材质/bloom/depth
+均未改。当前1288tri/8材质/123648静态VBO字节，枪身护甲三角集合保持。
+模型对照5/5、程序枪/ADS CPU与Debug/Release、正式App17/17通过；ATLAS审正式图并独立
+确认128保护文件保持。初次灰边分类误报已按真实scope几何排除并归档，不改生产代码迎合
+测试。任务关闭，GPU释放，无性能测试/API/提交推送；详见程序步枪文档及本轮验收目录。
+
+## 瞄具横向加宽35%与版本提交（2026-11-12）
+
+用户要求当前瞄具宽度增加35%，测试后提交一个版本。本轮由接任ATLAS的当前聊天
+`01a1d063-069e-7c42-93b4-186792653d6f`负责统筹，原ATLAS聊天和历史保留。
+以当前已缩小的瞄具为基线，只将横向尺寸乘1.35，保留高度、纵深、红点形状/中心、
+枪身及连续能量线、ADS控制和全部既有成果。用户本轮明确授权本地Git提交。
+
+| 任务 | 唯一执行入口 | 独占写入范围 / 验收 |
+| --- | --- | --- |
+| SIGHT-WIDTH-ART | KINETIC临时sight_width_art | src/character/procedural_rifle.cpp；必要专属preview代码；对称横向加宽与实际hip/ADS图 |
+| SIGHT-WIDTH-VERIFY | VECTOR临时sight_width_verify | tests/Makefile必要验证改动及本轮artifacts；另负责forest_map.vert提交前尾随空格清理；几何比例、红点、Debug/Release、现有CPU与实际App流程 |
+| SIGHT-WIDTH-ACCEPT | 当前ATLAS | docs/plan、保护基线、审图与Git提交；沿用源码交付规则，模型/贴图/音频和构建产物留本地 |
+
+KINETIC先运行专属GL，交付后VECTOR独占正式App检查；CPU可并行。不得覆盖现有未提交
+成果，不新增API消费或性能基准。证据目录：artifacts/acceptance/crimson-sight-width/。
+
+SIGHT-WIDTH已完成并关闭写入：瞄具投影宽34.03395→45.94584px（×1.35），高度/纵深/
+红点不变，枪身3570顶点及连续能量线保持。几何8/8、Debug/Release构建与完整测试、
+程序枪/ADS CPU及正式App17/17通过；ATLAS审阅专属对照和正式hip/ADS/移动连射图。
+基线1049文件中仅7个已分派源码/文档有变化，其余1042个保持。GPU释放。
+本次本地版本收录当前森林/巨构/导入、camera lean、ADS和程序步枪源码及验收记录；
+模型/贴图/音频/构建产物留本地，未推送远端。无关面试笔记保持未跟踪。
+精简证据：docs/acceptance/sight-width-2026-11-12.json；人工试玩边界继续保留。

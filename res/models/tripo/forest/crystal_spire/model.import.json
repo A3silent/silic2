@@ -1,0 +1,115 @@
+{
+  "format": "silic2-static-model",
+  "schemaVersion": 1,
+  "source": {
+    "file": "model.glb",
+    "sha256": "9ab535cb5c20ea59cb7f88b77dedbab3f82d82dab44df40e475b11b7023f1142",
+    "bytes": 964460,
+    "producer": "tripo-api",
+    "taskId": "a8f83362-b472-471c-9e03-2215f29483fd",
+    "promptFile": "prompt.en.txt",
+    "promptSha256": "18fbb61b818760eb14cd998827dcbe736b42f96727a07a67dc4fbd9c159e1a65"
+  },
+  "normalization": {
+    "rotationDegreesXYZ": [
+      0,
+      0,
+      0
+    ],
+    "scale": 140.27397260273972,
+    "pivot": "floor",
+    "sourcePivotAfterRotation": [
+      0.0,
+      -0.4990234375,
+      -2.9802322387695312e-08
+    ],
+    "sourceBounds": {
+      "min": [
+        -0.2822265625,
+        -0.4990234375,
+        -0.2958984673023224
+      ],
+      "max": [
+        0.2822265625,
+        0.4990234375,
+        0.2958984076976776
+      ]
+    },
+    "coordinates": "right-handed +Y up; caller chooses forward using rotation",
+    "uvConvention": "OBJ bottom-left; GLB V flipped for vertically-flipped engine texture loader"
+  },
+  "bounds": {
+    "min": [
+      -8.107260726914191,
+      0.0,
+      -8.499999996914191
+    ],
+    "max": [
+      8.107260726914191,
+      140.0,
+      8.499999996914191
+    ]
+  },
+  "parts": [
+    {
+      "baseColorFactor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "baseColorTexture": "textures/basecolor-000.jpg",
+      "doubleSided": true,
+      "obj": "parts/part-000.obj",
+      "bounds": {
+        "min": [
+          -8.107260726914191,
+          0.0,
+          -8.499999996914191
+        ],
+        "max": [
+          8.107260726914191,
+          140.0,
+          8.499999996914191
+        ]
+      },
+      "sourceNode": 0,
+      "sourceMesh": 0,
+      "textureSha256": "bc10c60d2f65f63d0081457b167c5ec883dbb714111708c76b230b0b7be21b23",
+      "vertices": 24390,
+      "triangles": 8130,
+      "sha256": "1b2beb3e0e78430b206e782ea7454ff2a550e94b3d527349131b52c47f3ed70e"
+    }
+  ],
+  "warnings": [
+    "Double-sided primitives were expanded with reversed faces/normals; triangle budget includes both sides.",
+    "Silic2 uses its own lighting/nearest texture filtering, not glTF PBR; base-color factors are retained.",
+    "Visual mesh is not an approved collision proxy; author collision separately and validate routes before placement.",
+    "Art-directed nonuniform XZ narrowing applied after importer uniform normalization; see artisticDerivation. Collision must use same final coordinate frame."
+  ],
+  "triangles": 8130,
+  "vertices": 24390,
+  "artisticDerivation": {
+    "approvedBy": "ATLAS 2026-10-31",
+    "reason": "Generated source proportions are too broad: uniform 140m height produces ~83m base, not approved slender spire. Locally narrow XZ to17m maximum while preserving source GLB, height, UVs and source-face count.",
+    "afterUniformNormalizationScaleXYZ": [
+      0.20478547854785478,
+      1,
+      0.20478547854785478
+    ],
+    "sourceUniform140mBounds": {
+      "min": [
+        -39.58904109589041,
+        0.0,
+        -41.50684931506849
+      ],
+      "max": [
+        39.58904109589041,
+        140.0,
+        41.50684931506849
+      ]
+    },
+    "normalTransform": "inverse transpose of positive diagonal scale, then normalize",
+    "changesToSourceFile": false
+  }
+}

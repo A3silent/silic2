@@ -1,0 +1,14 @@
+{
+  "status": "user_approved_and_submitted",
+  "approved_date": "2026-10-31",
+  "approval": "User confirmed four prompts in current chat 2026-10-31",
+  "submission_record": "artifacts/tripo/forest/generation-manifest.json",
+  "submitted_tasks": {
+    "01_pine_sparse": "0b9c16cb-207c-4431-88f0-45b1fd3f7d60",
+    "02_pine_dense": "5304ca19-f99d-43fc-8ca9-419111dcc291",
+    "03_pine_crooked": "b71418ec-5e12-403f-9441-af9dd575f4c1",
+    "04_crystal_spire": "a8f83362-b472-471c-9e03-2215f29483fd"
+  },
+  "online_owner": "ATLAS",
+  "online_calls_by_forest_assets": 0
+}

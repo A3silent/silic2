@@ -1,0 +1,114 @@
+{
+  "status": "actual_assets_imported_and_collision_frozen_for_runtime_checks",
+  "date": "2026-10-31",
+  "assets": [
+    {
+      "id": "pine_sparse",
+      "source_task_id": "0b9c16cb-207c-4431-88f0-45b1fd3f7d60",
+      "source_glb_sha256": "f8d4bc396aed76c8711e4d8faff4833d966b8783299a2adb7a01c724a9fa3558",
+      "source_unique_triangles": 1976,
+      "runtime_triangles": 3952,
+      "runtime_dimensions_xyz_m": [
+        11.839530332681017,
+        22.0,
+        12.700587084148728
+      ],
+      "parts": 1,
+      "material": "OPAQUE doubleSided; preserved UV/baseColorFactor; source JPEG2048x2048 retained byte-for-byte",
+      "collision_triangles": 320,
+      "collision_closed_components": 1,
+      "collision_all_edges_degree2_and_opposed": true,
+      "manifest_sha256": "f176be5a30c3d4135b9ead05fa5f6c1ba9334ba5b28f971ec813f9ebff37f4f5",
+      "collision_sha256": "08e64872b2e836a37fd46e4a04e6165db9214a816f62efda68e586906b308a4b",
+      "preview_review": "Genuine downloaded preview inspected: single pine species silhouette or singular dominant mineral peak; no scenic ground platform.",
+      "derivation": null
+    },
+    {
+      "id": "pine_dense",
+      "source_task_id": "5304ca19-f99d-43fc-8ca9-419111dcc291",
+      "source_glb_sha256": "7ecb4fd06d1f2d4e0328bd29fd37fa86e0787f23d50c36986ec672cd9d9a9bf4",
+      "source_unique_triangles": 2461,
+      "runtime_triangles": 4922,
+      "runtime_dimensions_xyz_m": [
+        13.13894324853229,
+        18.0,
+        12.927592954990214
+      ],
+      "parts": 1,
+      "material": "OPAQUE doubleSided; preserved UV/baseColorFactor; source JPEG2048x2048 retained byte-for-byte",
+      "collision_triangles": 256,
+      "collision_closed_components": 1,
+      "collision_all_edges_degree2_and_opposed": true,
+      "manifest_sha256": "5604057f1a3db1da6962463ab14139c471fdced3e6eb4a423315f79d9c1edb8e",
+      "collision_sha256": "d81c24b5c66aa164eb36f437f20a613ffb4fb27298618a1c72b62b2a135fa8a1",
+      "preview_review": "Genuine downloaded preview inspected: single pine species silhouette or singular dominant mineral peak; no scenic ground platform.",
+      "derivation": null
+    },
+    {
+      "id": "pine_crooked",
+      "source_task_id": "b71418ec-5e12-403f-9441-af9dd575f4c1",
+      "source_glb_sha256": "071c7948296b791a16230ae701398ce65cd2556d2af9503ce9cd4714c987bead",
+      "source_unique_triangles": 2793,
+      "runtime_triangles": 5586,
+      "runtime_dimensions_xyz_m": [
+        17.10371819960861,
+        20.0,
+        16.555772994129157
+      ],
+      "parts": 1,
+      "material": "OPAQUE doubleSided; preserved UV/baseColorFactor; source JPEG2048x2048 retained byte-for-byte",
+      "collision_triangles": 256,
+      "collision_closed_components": 1,
+      "collision_all_edges_degree2_and_opposed": true,
+      "manifest_sha256": "e1935b5870bb6cca98e2d6c2ee5530ca6304384aefbae87e9203402c93bd828f",
+      "collision_sha256": "a46e1c76d4c7bdba3fa102f892170ccb3dff5d478efc5bed82186be0ea0fd0d6",
+      "preview_review": "Genuine downloaded preview inspected: single pine species silhouette or singular dominant mineral peak; no scenic ground platform.",
+      "derivation": null
+    },
+    {
+      "id": "crystal_spire",
+      "source_task_id": "a8f83362-b472-471c-9e03-2215f29483fd",
+      "source_glb_sha256": "9ab535cb5c20ea59cb7f88b77dedbab3f82d82dab44df40e475b11b7023f1142",
+      "source_unique_triangles": 4065,
+      "runtime_triangles": 8130,
+      "runtime_dimensions_xyz_m": [
+        16.214521453828382,
+        140.0,
+        16.999999993828382
+      ],
+      "parts": 1,
+      "material": "OPAQUE doubleSided; preserved UV/baseColorFactor; source JPEG2048x2048 retained byte-for-byte",
+      "collision_triangles": 4120,
+      "collision_closed_components": 1,
+      "collision_all_edges_degree2_and_opposed": true,
+      "manifest_sha256": "208e60ff6b40cba6bbe202d3f76b4486f25a3a8b9ada58618c0d37a3244d6f7e",
+      "collision_sha256": "b94720623e34194aa0dbbc16be6049dd44c55a752e613aa5659e3be7924ced21",
+      "preview_review": "Genuine downloaded preview inspected: single pine species silhouette or singular dominant mineral peak; no scenic ground platform.",
+      "derivation": {
+        "approvedBy": "ATLAS 2026-10-31",
+        "reason": "Generated source proportions are too broad: uniform 140m height produces ~83m base, not approved slender spire. Locally narrow XZ to17m maximum while preserving source GLB, height, UVs and source-face count.",
+        "afterUniformNormalizationScaleXYZ": [
+          0.20478547854785478,
+          1,
+          0.20478547854785478
+        ],
+        "sourceUniform140mBounds": {
+          "min": [
+            -39.58904109589041,
+            0.0,
+            -41.50684931506849
+          ],
+          "max": [
+            39.58904109589041,
+            140.0,
+            41.50684931506849
+          ]
+        },
+        "normalTransform": "inverse transpose of positive diagonal scale, then normalize",
+        "changesToSourceFile": false
+      }
+    }
+  ],
+  "gpu_runtime_validation": "Owned by NEBULA/VECTOR; not claimed by this offline report.",
+  "performance_tests": "Not run, per user instruction."
+}

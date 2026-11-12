@@ -190,13 +190,15 @@ void buildHudGeometry(HudBatch& b,const HudViewModel& m,int logicalWidth,int log
         text(b,"ESC  PAUSE",w-margin-118,h-margin-14,1,muted);
         const float cy=h*0.5f;
         const glm::vec4 cross=fade(m.killAge,0.35f)>0 ? feedback:bone;
-        for(int s:{-1,1}) {
-            b.rect(cx+s*8-1,cy-1,2,2,ink);
-            b.rect(cx-1,cy+s*8-1,2,2,ink);
-            b.line({cx+s*5,cy},{cx+s*10,cy},3,ink);
-            b.line({cx,cy+s*5},{cx,cy+s*10},3,ink);
-            b.line({cx+s*5,cy},{cx+s*10,cy},1,cross);
-            b.line({cx,cy+s*5},{cx,cy+s*10},1,cross);
+        if(m.crosshairOpacity>0) for(int s:{-1,1}) {
+            const float alpha=glm::clamp(m.crosshairOpacity,0.f,1.f);
+            const glm::vec4 outline(ink.r,ink.g,ink.b,ink.a*alpha),reticle(cross.r,cross.g,cross.b,cross.a*alpha);
+            b.rect(cx+s*8-1,cy-1,2,2,outline);
+            b.rect(cx-1,cy+s*8-1,2,2,outline);
+            b.line({cx+s*5,cy},{cx+s*10,cy},3,outline);
+            b.line({cx,cy+s*5},{cx,cy+s*10},3,outline);
+            b.line({cx+s*5,cy},{cx+s*10,cy},1,reticle);
+            b.line({cx,cy+s*5},{cx,cy+s*10},1,reticle);
         }
         const float hit=std::max(fade(m.hitAge,0.16f),fade(m.killAge,0.32f));
         if(hit>0) {
@@ -224,7 +226,7 @@ void buildHudGeometry(HudBatch& b,const HudViewModel& m,int logicalWidth,int log
         if(m.phase==HudPhase::Ready) {
             text(b,hudReadyObjective(m),x+26,y+123,p);
             text(b,"WASD     MOVE",x+26,y+161,p,muted);
-            text(b,"MOUSE    AIM / LEFT CLICK FIRE",x+26,y+186,p,muted);
+            text(b,"LMB FIRE / HOLD RMB AIM",x+26,y+186,p,muted);
             text(b,"SHIFT    TOGGLE SPRINT",x+26,y+211,p,muted);
             text(b,"CTRL     CROUCH / SLIDE",x+26,y+236,p,muted);
             text(b,"SPACE    JUMP       ESC  PAUSE",x+26,y+261,p,muted);

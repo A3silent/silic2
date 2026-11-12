@@ -76,6 +76,10 @@ bool GameConfig::loadFromFile(const std::string& filename) {
             camera.pitch = (float)cameraObj.getNumber("pitch", camera.pitch);
             camera.minPitch = (float)cameraObj.getNumber("minPitch", camera.minPitch);
             camera.maxPitch = (float)cameraObj.getNumber("maxPitch", camera.maxPitch);
+            camera.leanMaxDegrees = (float)cameraObj.getNumber("leanMaxDegrees", camera.leanMaxDegrees);
+            camera.leanReferenceSpeed = (float)cameraObj.getNumber("leanReferenceSpeed", camera.leanReferenceSpeed);
+            camera.leanFrequency = (float)cameraObj.getNumber("leanFrequency", camera.leanFrequency);
+            camera.leanDamping = (float)cameraObj.getNumber("leanDamping", camera.leanDamping);
         }
         
         // Parse effects config
@@ -142,7 +146,11 @@ bool GameConfig::saveToFile(const std::string& filename) const {
         file << "    \"yaw\": " << camera.yaw << ",\n";
         file << "    \"pitch\": " << camera.pitch << ",\n";
         file << "    \"minPitch\": " << camera.minPitch << ",\n";
-        file << "    \"maxPitch\": " << camera.maxPitch << "\n";
+        file << "    \"maxPitch\": " << camera.maxPitch << ",\n";
+        file << "    \"leanMaxDegrees\": " << camera.leanMaxDegrees << ",\n";
+        file << "    \"leanReferenceSpeed\": " << camera.leanReferenceSpeed << ",\n";
+        file << "    \"leanFrequency\": " << camera.leanFrequency << ",\n";
+        file << "    \"leanDamping\": " << camera.leanDamping << "\n";
         file << "  },\n";
         
         file << "  \"effects\": {\n";

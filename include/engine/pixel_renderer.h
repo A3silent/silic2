@@ -13,7 +13,7 @@ public:
     PixelRenderer();
     ~PixelRenderer();
     
-    // Initialize with target resolution (e.g., 320x200)
+    // Initialize with target resolution (default game target: 480x300)
     bool init(int pixelWidth, int pixelHeight);
     
     // Begin rendering to low-res buffer

@@ -17,7 +17,7 @@ int main(int argc,char** argv){
  assert(glfwInit());glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR,3);glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR,3);glfwWindowHint(GLFW_OPENGL_PROFILE,GLFW_OPENGL_CORE_PROFILE);glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT,GL_TRUE);glfwWindowHint(GLFW_VISIBLE,GL_FALSE);
  auto*w=glfwCreateWindow(640,360,"Crystal combat environment evidence",nullptr,nullptr);assert(w);glfwMakeContextCurrent(w);assert(gladLoadGLLoader((GLADloadproc)glfwGetProcAddress));glEnable(GL_DEPTH_TEST);glEnable(GL_CULL_FACE);
  {
- silic2::Map map;assert(map.loadFromFile("res/maps/starry_crystal_arena.json"));assert(map.getSpatialDiagnostics().empty());const auto document=map.toJson().toString();
+ silic2::Map map;assert(map.loadFromFile("res/maps/crystal_megastructure_arena.json"));assert(map.getSpatialDiagnostics().empty());const auto document=map.toJson().toString();
  silic2::MapRenderer renderer;assert(renderer.loadMap(map));silic2::PixelRenderer pixel;assert(pixel.init(320,200));int width,height;glfwGetFramebufferSize(w,&width,&height);
  auto render=[&](glm::vec3 eye,glm::vec3 target,float seconds,const std::string& name,float fov=45.f){
   renderer.setEnvironmentTime(seconds);pixel.beginPixelRender();

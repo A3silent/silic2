@@ -1,0 +1,100 @@
+{
+  "format": "silic2-static-model",
+  "schemaVersion": 1,
+  "source": {
+    "file": "model.glb",
+    "sha256": "3b973e5d90bafefe543643c06425b1a19ddd7eb8a8900d422d6b19d1ce435c92",
+    "bytes": 1770396,
+    "producer": "tripo-api",
+    "taskId": "e13f3d53-15e1-43b8-b781-13f2bfef1a51",
+    "promptFile": "prompt.en.txt",
+    "promptSha256": "82e58e6a55938991cc7668a14249850139cfd2f705e86d2d1e0fdc2e38ca8098"
+  },
+  "normalization": {
+    "rotationDegreesXYZ": [
+      0,
+      0,
+      0
+    ],
+    "scale": 32.06262230919765,
+    "pivot": "floor",
+    "sourcePivotAfterRotation": [
+      0.0,
+      -0.2919921875,
+      0.0
+    ],
+    "sourceBounds": {
+      "min": [
+        -0.4248046875,
+        -0.2919921875,
+        -0.4990234375
+      ],
+      "max": [
+        0.4248046875,
+        0.2919921875,
+        0.4990234375
+      ]
+    },
+    "coordinates": "right-handed +Y up; caller chooses forward using rotation",
+    "uvConvention": "OBJ bottom-left; GLB V flipped for vertically-flipped engine texture loader"
+  },
+  "bounds": {
+    "min": [
+      -4.4148728,
+      8.01565534,
+      -9.73776908
+    ],
+    "max": [
+      11.1154599,
+      18.7240705,
+      7.9843449
+    ]
+  },
+  "parts": [
+    {
+      "baseColorFactor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "baseColorTexture": "textures/basecolor-000.jpg",
+      "doubleSided": true,
+      "obj": "parts/torso-derived.obj",
+      "bounds": {
+        "min": [
+          -4.4148728,
+          8.01565534,
+          -9.73776908
+        ],
+        "max": [
+          11.1154599,
+          18.7240705,
+          7.9843449
+        ]
+      },
+      "sourceNode": 0,
+      "sourceMesh": 0,
+      "textureSha256": "be6ce25cb3577c68a2dbc972d04b9ceae333c607c10e6910fa5bda1ca86ab3bb",
+      "vertices": 21186,
+      "triangles": 7062,
+      "sha256": "f7e51224861b2d14c7a9a0c96882bfab24ac30f2bf6c5800f90e551a1391ab53"
+    }
+  ],
+  "warnings": [
+    "Double-sided primitives were expanded with reversed faces/normals; triangle budget includes both sides.",
+    "Silic2 uses its own lighting/nearest texture filtering, not glTF PBR; base-color factors are retained.",
+    "Visual mesh is not an approved collision proxy; author collision separately and validate routes before placement.",
+    "Derived fragment has deliberately open cut edges; decorative only, not a collision mesh."
+  ],
+  "triangles": 7062,
+  "vertices": 21186,
+  "derivation": {
+    "operation": "Select original triangles where every vertex Y>=8m and Z<=8m in normalized original bundle coordinates. No new geometry; preserve UVs/normals/double-sided faces.",
+    "sourceObj": "parts/part-000.obj",
+    "sourceObjSha256": "1c32e8d711f8a7e8a1f06d2aa21fe4d80be63ad42cf965e03d4d61939dff0f98",
+    "removedTriangles": 12794,
+    "retainedTriangles": 7062,
+    "purpose": "Remove recognizable skull and legs; display incomplete ribs/spine, bury cut roots in inaccessible outer structure."
+  }
+}

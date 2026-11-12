@@ -11,20 +11,18 @@ dark atmosphere. Move fast, aim manually, survive
 seconds the sky and ossified structures transform over four seconds. The sample includes one
 primary weapon, first-person presentation, directional sound, an English bitmap HUD,
 pause/results and same-seed restart. Weapon abilities and progression are later work.
-The Crystal map is now a larger **Crystal Combat World**: five connected regions
-inside a crystal-invaded orbital megastructure, with curved upper walks, wide ramps,
-a real bridge underpass, leaning supports and a crystal vault. It uses the same
-90-second arrivals and cleanup victory as Hollow Orbit. The previous observation
-puzzle is no longer part of this map. Both maps share the current enemies, weapon
-and audio. See the [confirmed plan](plan/crystal-combat-world.md),
-[acceptance evidence](docs/crystal-combat-acceptance.md),
-[spatial authoring contract](docs/crystal-spatial-contract.md) and
-[reference study](docs/crystal-world-references.md).
-Four original 64×64 material textures now add metal, mineralized ceramic,
-weathered shell and crystal detail; see the [texture pass](docs/crystal-texture-pass.md).
+The Crystal entry is now a **Forest Crystal Arena**: an approximately 200m clearing,
+a 140m central crystal, 264 pine instances, engraved ground and a cloud-veiled eye.
+It keeps the same 90-second arrivals and cleanup victory. The prior megastructure
+map remains available as `res/maps/crystal_megastructure_arena.json`. See the
+[forest plan](plan/forest-crystal-arena.md) and [delivery record](docs/forest-crystal-arena.md).
+Both maps share the procedural black/red **Crimson Carapace** rifle, with continuous
+glowing channels and an open red-dot sight. Hold the right mouse button to aim.
+The current sight is 35% wider than the previous reduced version, with unchanged
+height and centered dot. See [weapon details](docs/procedural-crimson-rifle.md).
 
 Launch from the repository root so shader, map and sound paths resolve. Default seed
-is **42**, default VSync is on, and rendering uses a 320×200 scene with a native
+is **42**, default VSync is on, and rendering uses a 480×300 scene with a native
 resolution HUD. This is a sample under acceptance, not a released game; actual
 checks and outstanding human playtests are tracked in
 [sample acceptance](docs/sample-acceptance.md) and the current
@@ -37,11 +35,11 @@ checks and outstanding human playtests are tracked in
 - **Retro Pixel Aesthetics** - Low-resolution rendering creates authentic 90s FPS atmosphere
 - **Fast-Paced Combat** - Doom-style fluid movement and intense battles
 - **Companion Map Editor** - `tools/map_editor` shares the game's map data module; see [upgrade details](docs/map-editor-upgrade.md).
-- **Primary Weapon** - Projectile shooting with dynamic lighting and a worn mechanical view model
+- **Primary Weapon** - Procedural black/red rifle, glowing channels and right-button red-dot aiming
 
 ### 🔧 Technical Features
 - **OpenGL 3.3 Core Profile** - Modern graphics API achieving retro visual effects
-- **Pixel-Perfect Rendering** - 320x200 default low-resolution render target (configurable)
+- **Pixel-Perfect Rendering** - 480x300 default low-resolution render target (configurable)
 - **Particle Effect System** - Advanced particle effects for explosions, smoke, muzzle flash
 - **Dynamic Lighting** - Real-time lighting with up to 128 light sources
 - **JSON Map Format** - Flexible level data storage and loading
@@ -54,7 +52,7 @@ stay local, as do build outputs. Third-party build dependencies remain included.
 Historical evidence images and asset hashes describe the full local version; media
 links will be absent in a source-only clone. Existing remote history is not rewritten.
 
-Before running or testing a fresh clone, regenerate the required Crystal geometry
+Before running or testing a fresh clone, regenerate the original Crystal geometry
 and audio from the repository root:
 
 ```bash
@@ -65,7 +63,13 @@ python3 tools/audio/generate.py
 The four AI textures require a separate local asset backup in
 `res/texture/crystal_combat/`; the Crystal renderer falls back to procedural
 materials when they are missing. Restore textures referenced by other old maps
-separately. Asset extensions are ignored; do not force-add them to future commits.
+separately. The forest and archived megastructure also require the local imported
+model/texture/collision bundles under `res/models/tripo/`, plus generated geometry
+under `res/models/forest_arena/`. Restore these from the local asset backup; the
+commands above do not recreate the imported assets. See the [forest asset notes](res/models/tripo/forest/README.md)
+and [layout generator](res/models/forest_arena/README.md). The default procedural
+rifle needs no external model or texture. Asset extensions are ignored; do not
+force-add them to future commits.
 
 ## Build and Run
 
@@ -91,8 +95,11 @@ make -f Makefile.map -j8
 ./silic2 --seed 42
 ./silic2 res/maps/test_room.json --seed 42
 
-# Crystal Combat World: connected regions, ramps and two walkable levels
+# Forest Crystal Arena (requires local asset bundles)
 ./silic2 res/maps/starry_crystal_arena.json --seed 42
+
+# Archived Crystal megastructure
+./silic2 res/maps/crystal_megastructure_arena.json --seed 42
 
 # Space-horror environment (default)
 ./silic2 res/maps/hollow_orbit_arena.json --seed 42
@@ -144,6 +151,7 @@ a header rebuilds only the source files that include it.
 - **WASD** - Character movement
 - **Mouse** - Camera view control
 - **Left Mouse Button** - Fire weapon
+- **Right Mouse Button (hold)** - Aim through the red-dot sight
 - **Space** - Jump
 - **Shift** - Toggle sprint
 - **Ctrl** - Crouch / slide

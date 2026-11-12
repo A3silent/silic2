@@ -12,8 +12,8 @@
 #include <algorithm>
 #include <filesystem>
 int main(int argc,char** argv) {
- using namespace silic2;const std::string output=argc>1?argv[1]:"artifacts/acceptance/crystal-combat/cpu";std::filesystem::create_directories(output);
- Map map;if(!map.loadFromFile("res/maps/starry_crystal_arena.json")){std::cerr<<map.getLastError()<<'\n';return 1;}
+ using namespace silic2;bool functionalOnly=false;std::string mapPath="res/maps/starry_crystal_arena.json";for(int i=2;i<argc;++i){const std::string arg=argv[i];if(arg=="--functional-only")functionalOnly=true;else if(arg=="--map"&&i+1<argc)mapPath=argv[++i];}const std::string output=argc>1?argv[1]:"artifacts/acceptance/crystal-combat/cpu";std::filesystem::create_directories(output);
+ Map map;if(!map.loadFromFile(mapPath)){std::cerr<<map.getLastError()<<'\n';return 1;}
  auto world=map.getSpatialWorld();if(!world)return 2;int failures=0;
  auto check=[&](const std::string& name,bool passed){std::cout<<"CHECK "<<name<<" "<<(passed?"PASS":"FAIL")<<std::endl;if(!passed)++failures;};
  for(const auto& issue:map.getSpatialDiagnostics())std::cout<<"DIAGNOSTIC "<<issue<<'\n';check("map_diagnostics",map.getSpatialDiagnostics().empty());
@@ -29,9 +29,11 @@ int main(int argc,char** argv) {
  EnemyProjectileSystem shots;shots.spawn({0,1,-26},{0,0,1},1);bool projectileHit=false;for(int i=0;i<80;++i)projectileHit|=!shots.update(.01f,&map,AABB({-.5f,.1f,-21},{.5f,1.8f,-20})).empty();check("projectile_through_vault",projectileHit);
  auto definition=std::make_shared<ArenaDefinition>(ArenaDefinition::fromMap(map));
  std::vector<Enemy> enemies;for(int i=0;i<18;++i){enemies.emplace_back(map.getArenaLayout().rifts[i%4]);enemies.back().setArenaDefinition(definition);enemies.back().setId(i+1);}
+ if(!functionalOnly) {
  std::ofstream csv(output+"/enemy18-frames.csv");csv<<"frame,cpu_ms\n";std::vector<double> times;
  for(int frame=0;frame<180;++frame){auto start=std::chrono::steady_clock::now();for(auto& e:enemies)e.update(1.f/60.f,{0,6.015f,-15},&map);auto elapsed=std::chrono::duration<double,std::milli>(std::chrono::steady_clock::now()-start).count();times.push_back(elapsed);csv<<frame<<','<<elapsed<<'\n';}
  std::sort(times.begin(),times.end());std::cout<<"CPU18_DIAGNOSTIC median="<<times[times.size()/2]<<" p95="<<times[size_t((times.size()-1)*.95)]<<" max="<<times.back()<<" nodes="<<map.getSpatialSettings().nodes.size()<<" triangles="<<world->triangles().size()<<std::endl;
+ }
  // Actual sprint + jump directed outward from the elevated ring; static shell must retain the actor.
  player.respawn({0,6.015f,-15});camera.setDirection({0,0,-1});PlayerInput keys;keys.forward=true;keys.sprint=true;
  for(int frame=0;frame<350;++frame){keys.sprint=frame==0;keys.jump=frame>=5&&frame<12;player.processInput(keys,&camera,.01f);player.update(.01f,&map);}

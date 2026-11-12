@@ -13,8 +13,8 @@ struct WindowConfig {
 };
 
 struct RenderConfig {
-    int pixelWidth = 320;
-    int pixelHeight = 200;
+    int pixelWidth = 480;
+    int pixelHeight = 300;
     float nearPlane = 0.1f;
     float farPlane = 100.0f;
     bool enableVSync = true;
@@ -68,6 +68,11 @@ struct CameraConfig {
     float minPitch = -89.0f;
     float maxPitch = 89.0f;
     glm::vec3 worldUp = glm::vec3(0.0f, 1.0f, 0.0f);
+    // Presentation only. Set leanMaxDegrees to 0 to disable movement roll.
+    float leanMaxDegrees = 3.0f;
+    float leanReferenceSpeed = 5.0f;
+    float leanFrequency = 18.0f; // Natural angular frequency, radians/second.
+    float leanDamping = 0.55f;   // Underdamped return gives a small braking rebound.
 };
 
 struct EffectsConfig {

@@ -36,7 +36,7 @@ int main(int argc,char**argv){
  require(glfwInit(),"glfw");glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR,3);glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR,3);glfwWindowHint(GLFW_OPENGL_PROFILE,GLFW_OPENGL_CORE_PROFILE);glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT,GL_TRUE);glfwWindowHint(GLFW_VISIBLE,GL_FALSE);
  auto*w=glfwCreateWindow(640,360,"Texture validation",nullptr,nullptr);require(w,"window");glfwMakeContextCurrent(w);require(gladLoadGLLoader((GLADloadproc)glfwGetProcAddress),"GL loader");glEnable(GL_DEPTH_TEST);glEnable(GL_CULL_FACE);
  try {
-  Map map;require(map.loadFromFile("res/maps/starry_crystal_arena.json"),"map");auto document=map.toJson().toString();
+  Map map;require(map.loadFromFile("res/maps/crystal_megastructure_arena.json"),"map");auto document=map.toJson().toString();
   MapRenderer renderer;require(renderer.loadMap(map),"renderer");PixelRenderer pixel;require(pixel.init(320,200),"pixel");CharacterPresentation characters;require(characters.init(),"characters");
   FirstPersonView player;player.feet={7,0,15};player.forward={0,0,-1};characters.update(.125f,player);
   CharacterView chaser;chaser.position={6,0,10.5};chaser.heading={0,0,1};chaser.movement=.65f;

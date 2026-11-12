@@ -5,7 +5,7 @@
 using namespace silic2;
 int main(){
     Map crystal,horror;
-    assert(crystal.loadFromFile("res/maps/starry_crystal_arena.json"));
+    assert(crystal.loadFromFile("res/maps/crystal_megastructure_arena.json"));
     assert(horror.loadFromFile("res/maps/hollow_orbit_arena.json"));
     assert(crystal.getEnvironmentPreset()==EnvironmentPreset::StarryCrystal);
     assert(horror.getEnvironmentPreset()==EnvironmentPreset::HollowOrbit);

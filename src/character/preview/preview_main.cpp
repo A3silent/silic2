@@ -28,7 +28,7 @@ int main(int argc, char** argv) {
     glRenderbufferStorage(GL_RENDERBUFFER,GL_DEPTH_COMPONENT24,320,200);
     glFramebufferRenderbuffer(GL_FRAMEBUFFER,GL_DEPTH_ATTACHMENT,GL_RENDERBUFFER,depth);
     require(glCheckFramebufferStatus(GL_FRAMEBUFFER)==GL_FRAMEBUFFER_COMPLETE);
-    CharacterPresentation p; require(p.init());
+    CharacterPresentation p; require(p.init(argc > 2 ? argv[2] : "res/config/weapon_presentation.json"));
     FirstPersonView player; player.speed=6; player.sliding=false;
     const auto projection=glm::perspective(glm::radians(45.0f),1.6f,.05f,100.f);
     const auto view=glm::lookAt(glm::vec3(0,1.3f,5),glm::vec3(0,.9f,0),glm::vec3(0,1,0));

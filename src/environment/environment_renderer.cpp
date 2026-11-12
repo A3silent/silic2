@@ -59,7 +59,8 @@ void EnvironmentRenderer::buildCrystals() {
 void EnvironmentRenderer::setObservatoryUniforms(Shader& shader) const {
     shader.setBool("observatory",scene_.observatory);
     shader.setBool("combatWorld",scene_.combatWorld);
-    if (!scene_.observatory && !scene_.combatWorld) return;
+    shader.setBool("forestWorld",scene_.forestWorld);
+    if (!scene_.observatory && !scene_.combatWorld && !scene_.forestWorld) return;
     shader.setFloat("observationProgress",observationProgress_);
     shader.setBool("calibrated",observationComplete_);
     shader.setVec3("observerEye",scene_.observerEye);

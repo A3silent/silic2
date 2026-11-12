@@ -119,7 +119,7 @@ GAME_SRCS := src/game/seed_service.cpp \
              src/game/encounter_director.cpp \
              src/game/exploration_controller.cpp
 
-PRESENTATION_SRCS := src/environment/environment_scene.cpp src/environment/environment_renderer.cpp src/character/character_presentation.cpp src/audio/audio_system.cpp src/audio/miniaudio_impl.cpp
+PRESENTATION_SRCS := src/environment/environment_scene.cpp src/environment/environment_renderer.cpp src/character/character_presentation.cpp src/character/imported_weapon.cpp src/character/weapon_asset.cpp src/character/procedural_rifle.cpp src/audio/audio_system.cpp src/audio/miniaudio_impl.cpp
 
 CPP_SRCS := $(ENGINE_SRCS) $(PLAYER_SRCS) $(ENEMY_SRCS) $(EFFECTS_SRCS) $(HUD_SRCS) $(GAME_SRCS) $(PRESENTATION_SRCS)
 C_SRCS := $(ENGINE_C_SRCS)
@@ -128,6 +128,7 @@ C_OBJS := $(patsubst src/%.c,$(OBJ_DIR)/%.o,$(C_SRCS))
 APP_OBJS := $(CPP_OBJS) $(C_OBJS)
 
 TEST_SRCS := tests/test_main.cpp \
+             tests/camera_lean_test.cpp \
              tests/simple_json_test.cpp \
              tests/map_test.cpp \
              tests/map_navigation_test.cpp \
@@ -252,3 +253,86 @@ $(SPATIAL_PROBE_TARGET): $(SPATIAL_PROBE_OBJ) $(GAME_OBJS) $(TEST_SUPPORT_OBJS)
 spatial-probe: $(SPATIAL_PROBE_TARGET)
 
 .PHONY: spatial-probe
+
+# Offline static import checks: real temporary GLBs -> OBJ -> actual CPU engine loader.
+# No OpenGL context, Tripo request, account credentials, or generated art required.
+ASSET_CHECK_TARGET := $(BUILD_DIR)/verify-static-bundle
+$(ASSET_CHECK_TARGET): tools/assets/verify_bundle.cpp $(OBJ_DIR)/engine/mesh_asset.o $(OBJ_DIR)/engine/simple_json.o
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $^ -o $@
+
+asset-import-test: $(ASSET_CHECK_TARGET)
+	SILIC2_BUNDLE_CHECK="$(abspath $(ASSET_CHECK_TARGET))" python3 -m unittest discover -s tools/assets -p 'test_*.py' -v
+
+.PHONY: asset-import-test
+
+# Actual imported interior cover/proxy validation, CPU only (assets stay local).
+INTERIOR_PROBE_OBJ := $(OBJ_DIR)/tests/interior_collision_probe.o
+INTERIOR_PROBE_TARGET := $(BUILD_DIR)/interior-collision-probe
+$(INTERIOR_PROBE_OBJ): | $(OBJ_DIR)/tests
+-include $(INTERIOR_PROBE_OBJ:.o=.d)
+$(INTERIOR_PROBE_TARGET): $(INTERIOR_PROBE_OBJ) $(GAME_OBJS) $(TEST_SUPPORT_OBJS)
+	$(CXX) $^ -o $@ $(LDFLAGS) $(LIBS)
+interior-probe: $(INTERIOR_PROBE_TARGET)
+.PHONY: interior-probe
+
+# Authored giant-wall collision and near-wall movement, without performance sampling.
+MEGA_PROBE_OBJ := $(OBJ_DIR)/tests/mega_structure_probe.o
+MEGA_PROBE_TARGET := $(BUILD_DIR)/mega-structure-probe
+$(MEGA_PROBE_OBJ): | $(OBJ_DIR)/tests
+-include $(MEGA_PROBE_OBJ:.o=.d)
+$(MEGA_PROBE_TARGET): $(MEGA_PROBE_OBJ) $(GAME_OBJS) $(TEST_SUPPORT_OBJS)
+	$(CXX) $^ -o $@ $(LDFLAGS) $(LIBS)
+mega-probe: $(MEGA_PROBE_TARGET)
+.PHONY: mega-probe
+
+# Forest large-map traversal/contact checks; no performance sampling.
+FOREST_PROBE_OBJ := $(OBJ_DIR)/tests/forest_arena_probe.o
+FOREST_PROBE_TARGET := $(BUILD_DIR)/forest-arena-probe
+$(FOREST_PROBE_OBJ): | $(OBJ_DIR)/tests
+-include $(FOREST_PROBE_OBJ:.o=.d)
+$(FOREST_PROBE_TARGET): $(FOREST_PROBE_OBJ) $(GAME_OBJS) $(TEST_SUPPORT_OBJS)
+	$(CXX) $^ -o $@ $(LDFLAGS) $(LIBS)
+forest-probe: $(FOREST_PROBE_TARGET)
+.PHONY: forest-probe
+
+# Functional transparency/occlusion/state checks; requires a serial GPU slot.
+FOREST_GL_CHECK_OBJ := $(OBJ_DIR)/tests/forest_translucency_check.o
+FOREST_GL_CHECK_TARGET := $(BUILD_DIR)/forest-translucency-check
+$(FOREST_GL_CHECK_OBJ): | $(OBJ_DIR)/tests
+-include $(FOREST_GL_CHECK_OBJ:.o=.d)
+$(FOREST_GL_CHECK_TARGET): $(FOREST_GL_CHECK_OBJ) $(filter-out $(OBJ_DIR)/engine/main.o $(OBJ_DIR)/engine/app.o,$(APP_OBJS))
+	$(CXX) $^ -o $@ $(LDFLAGS) $(LIBS)
+forest-translucency-check: $(FOREST_GL_CHECK_TARGET)
+.PHONY: forest-translucency-check
+
+# Short frozen-scene diagnosis; explicit invocation only, no stress benchmark.
+FOREST_RENDER_PROBE_OBJ := $(OBJ_DIR)/tests/forest_render_probe.o
+FOREST_RENDER_PROBE_TARGET := $(BUILD_DIR)/forest-render-probe
+$(FOREST_RENDER_PROBE_OBJ): | $(OBJ_DIR)/tests
+-include $(FOREST_RENDER_PROBE_OBJ:.o=.d)
+$(FOREST_RENDER_PROBE_TARGET): $(FOREST_RENDER_PROBE_OBJ) $(filter-out $(OBJ_DIR)/engine/main.o $(OBJ_DIR)/engine/app.o,$(APP_OBJS))
+	$(CXX) $^ -o $@ $(LDFLAGS) $(LIBS)
+forest-render-probe: $(FOREST_RENDER_PROBE_TARGET)
+.PHONY: forest-render-probe
+
+# ADS behavior integration without a GL context (actual Player/Weapon/HUD paths).
+ADS_CHECK_OBJ := $(OBJ_DIR)/tests/aim_state_test.o
+ADS_CHECK_TARGET := $(BUILD_DIR)/aim-state-check
+$(ADS_CHECK_OBJ): | $(OBJ_DIR)/tests
+-include $(ADS_CHECK_OBJ:.o=.d)
+$(ADS_CHECK_TARGET): $(ADS_CHECK_OBJ) $(filter-out $(OBJ_DIR)/engine/main.o $(OBJ_DIR)/engine/app.o,$(APP_OBJS))
+	$(CXX) $^ -o $@ $(LDFLAGS) $(LIBS)
+ads-check: $(ADS_CHECK_TARGET)
+	./$(ADS_CHECK_TARGET)
+.PHONY: ads-check
+
+# Actual procedural rifle CPU geometry/asset contract, without a GL context.
+PROCEDURAL_RIFLE_CHECK_OBJ := $(OBJ_DIR)/tests/procedural_rifle_test.o
+PROCEDURAL_RIFLE_CHECK_TARGET := $(BUILD_DIR)/procedural-rifle-check
+$(PROCEDURAL_RIFLE_CHECK_OBJ): | $(OBJ_DIR)/tests
+-include $(PROCEDURAL_RIFLE_CHECK_OBJ:.o=.d)
+$(PROCEDURAL_RIFLE_CHECK_TARGET): $(PROCEDURAL_RIFLE_CHECK_OBJ) $(OBJ_DIR)/character/procedural_rifle.o $(OBJ_DIR)/character/weapon_asset.o $(OBJ_DIR)/engine/mesh_asset.o $(OBJ_DIR)/engine/simple_json.o
+	$(CXX) $^ -o $@ $(LDFLAGS) $(LIBS)
+procedural-rifle-check: $(PROCEDURAL_RIFLE_CHECK_TARGET)
+	./$(PROCEDURAL_RIFLE_CHECK_TARGET)
+.PHONY: procedural-rifle-check

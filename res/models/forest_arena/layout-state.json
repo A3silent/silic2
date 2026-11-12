@@ -1,0 +1,24 @@
+{
+  "seed": 3102026,
+  "developmentPlaceholders": false,
+  "radius": 100,
+  "spireHeight": 140,
+  "nearTreeCount": 48,
+  "outerTreeCount": 216,
+  "outerRings": [
+    {
+      "radius": 132,
+      "count": 60
+    },
+    {
+      "radius": 155,
+      "count": 72
+    },
+    {
+      "radius": 180,
+      "count": 84
+    }
+  ],
+  "edgeSectors": 12,
+  "note": "Actual approved Tripo sources and per-bundle local collision."
+}

@@ -19,7 +19,7 @@ J read(const std::string &path) {
 void legacyAndMigration() {
     Map map;
     for (const auto *file : {"complex_base", "kailiang_room", "simple_corridor", "test_room",
-                             "textured_room", "hollow_orbit_arena", "starry_crystal_arena"}) {
+                             "textured_room", "hollow_orbit_arena", "starry_crystal_arena", "crystal_megastructure_arena"}) {
         const std::string path = std::string("res/maps/") + file + ".json";
         require(map.loadFromFile(path), "load existing map " + path + ": " + map.getLastError());
         const auto snapshot = map.toJson().toString();
@@ -72,6 +72,29 @@ void dualPresets() {
         require(roundtrip.setEnvironment(env) && roundtrip.getEnvironmentPreset()==env.preset,"editor can switch either preset");
         require(roundtrip.getGameMode()==GameMode::ArenaSurvival && roundtrip.getArenaLayout().rifts==input->getArenaLayout().rifts,"environment change preserves gameplay/layout");
     }
+}
+void forestViewSettings() {
+    Map map;
+    require(map.loadFromFile("tests/fixtures/starry_crystal_arena_v2.json"), "forest settings base fixture");
+    require(map.getWorldSettings().farPlane==0 && !map.toJson()["worldSettings"].hasKey("farPlane"),
+            "absent distance retains legacy global fallback without rewriting old documents");
+    auto doc=map.toJson();doc["environmentPreset"]=J("forest_crystal");doc["worldSettings"]["farPlane"]=J(600.0);
+    require(map.loadFromJson(doc), "forest preset and distance accepted");
+    require(map.getEnvironmentPreset()==EnvironmentPreset::ForestCrystal &&
+            std::string(map.getDisplayName())=="FOREST CRYSTAL", "forest identity distinct from archived crystal");
+    Map copy;require(copy.loadFromJson(map.toJson()), "forest metadata roundtrip");
+    require(copy.getWorldSettings().farPlane==600 && copy.getEnvironmentPreset()==EnvironmentPreset::ForestCrystal,
+            "roundtrip retains map viewing distance and preset");
+    const auto snapshot=map.toJson().toString();
+    for(double invalid:{-1.0,1.0,2001.0}) {
+        auto bad=map.toJson();bad["worldSettings"]["farPlane"]=J(invalid);
+        require(!map.loadFromJson(bad) && map.toJson().toString()==snapshot, "invalid distance rejected transactionally");
+    }
+    auto ws=map.getWorldSettings();ws.farPlane=-1;
+    require(!map.setWorldSettings(ws) && map.toJson().toString()==snapshot,"editor invalid distance preserves map");
+    ws.farPlane=0;require(map.setWorldSettings(ws) && map.getWorldSettings().farPlane==0,"explicit global fallback accepted");
+    require(map.loadFromFile("res/maps/hollow_orbit_arena.json") && map.getWorldSettings().farPlane==0,
+            "reusing Map for Hollow clears forest distance");
 }
 void transactionsAndStrictness() {
     Map m;
@@ -199,6 +222,7 @@ void roundtripAndDerived() {
 void runMapTests() {
     legacyAndMigration();
     dualPresets();
+    forestViewSettings();
     transactionsAndStrictness();
     roundtripAndDerived();
 }

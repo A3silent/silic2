@@ -65,7 +65,7 @@ int main(int argc,char** argv){
         render(0,view,projection);assert(before==pixels(width,height));
         silic2::Map other;
         const char* otherPath=map.getEnvironmentPreset()==silic2::EnvironmentPreset::HollowOrbit?
-            "res/maps/starry_crystal_arena.json":"res/maps/hollow_orbit_arena.json";
+            "res/maps/crystal_megastructure_arena.json":"res/maps/hollow_orbit_arena.json";
         assert(other.loadFromFile(otherPath));assert(renderer.loadMap(other));
         assert(renderer.getEnvironmentTime()==0);
         assert(renderer.getEnvironmentParticleCount()==other.getEnvironment().particleCount);

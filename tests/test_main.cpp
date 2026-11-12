@@ -2,6 +2,7 @@
 #include <iostream>
 
 void runSpatialWorldTests();
+void runCameraLeanTests();
 void runExplorationTests();
 void runSimpleJsonTests();
 void runMapTests();
@@ -19,6 +20,7 @@ void runPlayerDamageTests();
 
 int main() {
     try {
+        runCameraLeanTests();
         runSpatialWorldTests();
         runExplorationTests();
         runSimpleJsonTests();

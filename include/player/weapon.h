@@ -23,6 +23,7 @@ struct Bullet {
     glm::vec3 prevPosition;  // Position last frame — used for swept collision
     glm::vec3 velocity;
     glm::vec3 direction;
+    bool cameraCentered = false; // ADS sweeps from the eye immediately, without muzzle grace.
     float lifetime;
     float maxLifetime;
     float speed;
@@ -97,8 +98,8 @@ public:
                               EnemyManager* enemies = nullptr);
     void render(const glm::mat4& view, const glm::mat4& projection);
     
-    // Fire bullet from screen bottom-right towards center
-    bool fire(const Camera& camera);
+    // Hip fire retains its muzzle offset; ADS originates on the camera center ray.
+    bool fire(const Camera& camera, bool centeredAim = false);
     void reset();
     
     // Get active bullets' light source data
@@ -106,6 +107,7 @@ public:
     
     // Get active bullet count
     size_t getActiveBulletCount() const { return bullets.size(); }
+    const std::vector<Bullet>& getBullets() const { return bullets; }
     size_t getActiveImpactLightCount() const { return impactLights.size(); }
     
     // Control bullet lighting effects toggle
