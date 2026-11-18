@@ -1,11 +1,12 @@
 #include "engine/pixel_renderer.h"
+#include "engine/game_config.h"
 #include "engine/shader.h"
 #include <iostream>
 
 namespace silic2 {
 
 PixelRenderer::PixelRenderer()
-    : pixelWidth(480), pixelHeight(300),
+    : pixelWidth(RenderConfig{}.pixelWidth), pixelHeight(RenderConfig{}.pixelHeight),
       framebuffer(0), colorTexture(0), depthRenderbuffer(0),
       screenVAO(0), screenVBO(0) {
 }
@@ -99,7 +100,7 @@ void PixelRenderer::beginPixelRender() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
-void PixelRenderer::endPixelRender(int screenWidth, int screenHeight) {
+void PixelRenderer::endPixelRender(int screenWidth, int screenHeight, const ViewLens& lens) {
     // Bind default framebuffer
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glViewport(0, 0, screenWidth, screenHeight);
@@ -112,6 +113,8 @@ void PixelRenderer::endPixelRender(int screenWidth, int screenHeight) {
     pixelShader->use();
     pixelShader->setInt("screenTexture", 0);
     pixelShader->setVec2("resolution", pixelWidth, pixelHeight);
+    pixelShader->setFloat("lensStrength", lens.strength);
+    pixelShader->setVec2("lensRadiusWeights", lens.radiusWeights);
     
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, colorTexture);

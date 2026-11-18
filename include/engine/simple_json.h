@@ -44,6 +44,8 @@ public:
 
     // Serialize to string (throws for nonfinite numbers or invalid UTF-8).
     std::string toString() const;
+    // Human-editable JSON with indentation and shortest round-trip decimals.
+    std::string toPrettyString() const;
 
     // Type checking
     Type getType() const;
@@ -82,7 +84,7 @@ public:
 private:
     Value value_;
     
-    std::string valueToString(size_t depth = 0) const;
+    std::string valueToString(size_t depth, bool pretty) const;
     std::string escapeString(const std::string& str) const;
 };
 

@@ -3,6 +3,7 @@
 #include <glad/glad.h>
 #include <glm/glm.hpp>
 #include <memory>
+#include "engine/view_lens.h"
 
 namespace silic2 {
 
@@ -13,14 +14,14 @@ public:
     PixelRenderer();
     ~PixelRenderer();
     
-    // Initialize with target resolution (default game target: 480x300)
+    // Allocate the scene buffer at the caller's configured internal resolution.
     bool init(int pixelWidth, int pixelHeight);
     
     // Begin rendering to low-res buffer
     void beginPixelRender();
     
     // End rendering and display to screen
-    void endPixelRender(int screenWidth, int screenHeight);
+    void endPixelRender(int screenWidth, int screenHeight, const ViewLens& lens = {});
     
     // Get the low-res dimensions
     int getPixelWidth() const { return pixelWidth; }

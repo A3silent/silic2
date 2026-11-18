@@ -5,6 +5,8 @@ in vec2 TexCoords;
 
 uniform sampler2D screenTexture;
 uniform vec2 resolution;
+uniform float lensStrength;
+uniform vec2 lensRadiusWeights;
 
 // Sixteen perceptually spaced levels retain the limited palette while giving
 // dark mineral surfaces and the sky more than one usable shadow step.
@@ -42,10 +44,16 @@ vec3 applyCRTEffect(vec3 color, vec2 uv) {
 }
 
 void main() {
-    vec3 color = texture(screenTexture, TexCoords).rgb;
+    // Inverse barrel projection. The metric is circular in display pixels and
+    // reaches one at the corners, keeping the entire rectangle inside the capture.
+    vec2 p = TexCoords * 2.0 - 1.0;
+    float radiusSquared = dot(p * p, lensRadiusWeights);
+    float scale = (1.0 + lensStrength * radiusSquared) / (1.0 + lensStrength);
+    vec2 sourceUV = TexCoords + 0.5 * p * (scale - 1.0);
+    vec3 color = texture(screenTexture, sourceUV).rgb;
     
     // Apply color quantization with dithering
-    vec2 fragCoord = TexCoords * resolution;
+    vec2 fragCoord = sourceUV * resolution;
     color = quantizeColor(color, fragCoord);
     
     // Apply CRT effect (optional, subtle)

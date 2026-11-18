@@ -7,13 +7,14 @@
 90 秒停止生成敌人，清场获胜；第 45 秒开始一次四秒视听异变。
 本阶段验证移动、主动瞄准、威胁识别和短局节奏，武器能力奖励留到下一里程碑。
 
-Crystal 现为森林巨晶竞技场：约 200 米宽的林间空地、140 米中央晶柱、264 株松树、
-地面符文与云雾巨眼。沿用 90 秒敌潮＋清场；上一版巨构地图保留为
+Crystal 竞技场是一片约 200 米宽的板岩空地。140 米高的中央晶柱旁，一只蓝色巨眼在冷色云雾中微微颤动。
+沿用 90 秒敌潮＋清场。上一版巨构地图保留为
 `res/maps/crystal_megastructure_arena.json`。范围见[森林方案](plan/forest-crystal-arena.md)，
 验证与限制见[交付记录](docs/forest-crystal-arena.md)。Hollow Orbit 仍是默认入口。
 
 两图共用黑红程序步枪 Crimson Carapace：连续发光能量槽、开放镜框与中央红点，
 按住右键开镜。当前瞄具在上一版缩小后的基础上横向加宽 35%，高度及红点中心保持。
+第一人称视野带有鱼眼弯曲，开镜时画面边缘的弯曲逐渐减弱。
 默认武器不依赖外部模型或贴图，详见[程序步枪记录](docs/procedural-crimson-rifle.md)。
 
 当前美术改造见[太空恐怖验收记录](docs/cosmic-horror-acceptance.md)，
@@ -74,7 +75,7 @@ make -f Makefile.map BUILD=release test
 ```
 
 Windows 可执行文件带 `.exe`。默认地图是 `res/maps/hollow_orbit_arena.json`，
-默认 seed 为 42，VSync 开启。场景分辨率 480×300，HUD 在后处理之后按逻辑
+默认 seed 为 42，VSync 开启。场景分辨率 640×400，HUD 在后处理之后按逻辑
 窗口尺寸布局、在 Retina framebuffer 绘制。可用 `--width 800 --height 600`
 调整启动尺寸，`--vsync off` 关闭垂直同步，`--help` 查看命令。
 
@@ -86,11 +87,27 @@ Windows 可执行文件带 `.exe`。默认地图是 `res/maps/hollow_orbit_arena
 | 移动 / 瞄准 | WASD / 鼠标 |
 | 开火 | 按住左键 |
 | 红点开镜 | 按住右键 |
+| 鱼眼总开关（腰射和开镜） | V |
+| 降低 / 提高腰射鱼眼强度 | `[` / `]`，每次 0.05 |
 | 切换奔跑 | Shift |
 | 蹲下 / 滑铲 | Ctrl |
 | 跳跃 | Space |
 | 暂停 / 恢复 | Esc；失去焦点自动暂停 |
 | 死亡 / 胜利后同 seed 重开 | 等待一秒后按 R 或重新单击左键 |
+
+鱼眼默认开启。腰射强度默认 `0.33`，可在 `0.00–1.50` 之间调整；开启时完全开镜的强度为 `0.08`。
+游玩中或暂停时都可以调节，暂停页会显示当前数值。
+
+本地设置保存在项目根目录的 `generalconfig.local.json`。要在启动前调整鱼眼，可以编辑其中的 `fisheye` 分组。
+
+```json
+{
+  "fisheye": { "enabled": true, "hipStrength": 0.33 }
+}
+```
+
+以后可以把其他设置加在与 `fisheye` 同级的位置。使用鱼眼热键时，游戏会保留其他字段。
+如果启动时只有旧版 `fisheye.local.json`，游戏会自动迁移已保存的数值。
 
 READY 阅读时间不计入战斗；暂停冻结战斗与表现。按住开火不能跳过结算锁。
 保留开发用 G 自由飞行/无碰撞开关，正式试玩和正常验收不要启用。

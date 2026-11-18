@@ -322,7 +322,7 @@ void CharacterPresentation::renderWorld(const glm::mat4& view, const glm::mat4& 
     draw(view, projection, false);
 }
 
-void CharacterPresentation::renderFirstPerson(const glm::mat4& projection) {
+void CharacterPresentation::renderFirstPerson(const glm::mat4& projection, float projectionOverscan) {
     if (!shader) return;
     vertices.clear();
     const glm::mat4 root = firstPersonWeaponRoot(stepPhase, playerState.speed,
@@ -331,7 +331,7 @@ void CharacterPresentation::renderFirstPerson(const glm::mat4& projection) {
     // procedural fallback. Only the visual muzzle moves; gameplay aim does not.
     glm::mat4 weaponProjection = projection;
     const float aspect = projection[1][1] / projection[0][0];
-    weaponProjection[1][1] = 1.0f / std::tan(glm::radians(35.0f));
+    weaponProjection[1][1] = 1.0f / (projectionOverscan * std::tan(glm::radians(35.0f)));
     weaponProjection[0][0] = weaponProjection[1][1] / aspect;
     if (importedWeapon && importedWeapon->render(root, weaponProjection)) {
         if (muzzle > 0) {

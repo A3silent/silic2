@@ -655,3 +655,104 @@ SKY-MOTION 已集成，写入关闭，GPU 已释放。GLSL 链接及实际 App 8
 动态预览在 `artifacts/acceptance/sky-motion/crystal-sky.gif`。
 SKY-TUNE 由 NEBULA 提供单文件候选，ATLAS 集成并复验：眼睛动效速率和幅度
 均降至初版 20%，初始画面和测试星区逐像素一致，实际 App 8/8 通过。
+
+## 水晶蓝黑洞（2026-11-18）
+
+NEBULA（BLACK-HOLE-SKY）负责 `res/shaders/forest_sky.frag` 候选，按第二版概念图制作黑洞与流动吸积盘。
+VECTOR（BLACK-HOLE-QA）负责本地游戏实拍与动效检查。ATLAS 集成生产补丁、复核画面并维护设计记录。
+
+已完成。最终 shader 通过 GLSL 链接和 16 项实际 App 检查。6 秒固定镜头实拍确认
+盘带纹理沿右上方向移动，暗影中心保持稳定。实际画面与像素记录见
+`artifacts/acceptance/black-hole-sky/qa/r3/`。
+
+## 倾斜吸积盘与独立天体绘制（2026-11-19）
+
+| 任务 | 唯一写入范围 | 负责人及验收 |
+| --- | --- | --- |
+| BH-DISK | `res/shaders/forest_black_hole.frag` | NEBULA，圆形暗影、倾斜亮盘、绕行气流与连续光环 |
+| BH-SKY | `include/environment/environment_renderer.h`、`src/environment/environment_renderer.cpp`、`res/shaders/forest_black_hole.vert`、`res/shaders/forest_sky.frag` | VECTOR，独立天体绘制、森林限定、锚点与渲染状态 |
+| BH-CAPTURE | `artifacts/acceptance/tilted-black-hole/` | 验证 agent，同机位实拍、运动、遮挡及生命周期检查 |
+
+ATLAS 协调接口并验收画面。保留其余工作区修改。
+
+已完成。ATLAS 审阅两轮同机位实拍，第二轮收紧远侧光环并提亮近侧气流。
+Debug/Release 构建和测试通过，最终版通过 17 项实际 OpenGL 检查，包含暂停、
+重开、反向视角和切换 Hollow。画面对照与量化结果见 `artifacts/acceptance/tilted-black-hole/r2/`。
+
+### 黑洞像素颗粒与盘面动态（2026-11-19）
+
+RETRO-DISK 由 NEBULA（disk_art）独占 `res/shaders/forest_black_hole.frag`，加强气流的位移、颗粒和局部错位。
+RETRO-QA 由 sky_capture 独占 `artifacts/acceptance/retro-black-hole/`，负责同机位动图、盘面动态与暂停复位检查。ATLAS 复核实拍。
+
+已完成。480×300 同机位 6 秒实拍中，近侧亮带的典型摆幅从 0.33 增至 6.15 像素，
+右翼颗粒的局部明暗对比约为原来的 5.2 倍。最终材质通过 17 项实际 OpenGL 检查。
+
+RETRO-MID 由 disk_art 调整 `res/shaders/forest_black_hole.frag` 的颗粒强度，保留盘面动画；
+sky_capture 在 `artifacts/acceptance/retro-black-hole/midpoint/` 同机位复测并输出三版对照，ATLAS 验收。
+
+RETRO-MID 已完成。同机位六秒实拍中，右翼颗粒相对局部亮度的对比从平滑档 0.089、
+强档 0.526 调到 0.307。17 项实机检查通过。
+
+RETRO-SOFT 由 disk_art 独占黑洞片元材质中的颗粒系数，sky_capture 在
+`artifacts/acceptance/retro-black-hole/soft/` 验证平滑档与上轮中档之间的新取值，ATLAS 对照实拍。
+已完成。最终版实测相对颗粒对比为 0.197，处于两档之间的 49.8%；盘带摆幅约 6.6 个原生像素。
+
+## 恢复并缩小天眼（2026-11-19）
+
+| 任务 | 唯一写入范围 | 验收 |
+| --- | --- | --- |
+| EYE-RESTORE | NEBULA / disk_art，`res/shaders/forest_sky.frag` | 取回发布版眼球、沿原锚点整体缩小 15% |
+| EYE-RENDER | VECTOR / sky_render，环境 renderer 头文件与实现、两个 `forest_black_hole` shader | 恢复单次星空绘制，归档黑洞试作材质 |
+| EYE-QA | sky_capture，`artifacts/acceptance/restored-eye/` 和构建产物 | 实机同机位比较原眼和当前眼、大小、动效与时钟 |
+
+ATLAS 同步当前地图说明并复核实机画面。
+
+已完成。渲染器恢复到 `82c815f` 的单次天空绘制，天眼着色器相对此提交仅增加整体缩放。
+Debug、Release 构建及现有测试通过，同镜头实拍与 15 项 OpenGL 检查见 `artifacts/acceptance/restored-eye/final/`。
+
+## 蓝色天眼与鱼眼视野（2026-11-19）
+
+| 任务 | 负责人和独占写入范围 | 验收 |
+| --- | --- | --- |
+| IRIS-BLUE | NEBULA / disk_art，`res/shaders/forest_sky.frag` | 调整虹膜与眼周云雾的色彩 |
+| PLAYER-LENS | VECTOR / sky_render，`res/shaders/pixel.frag`、PixelRenderer、App、第一人称武器投影与必要的投影模块 | 第一人称桶形畸变、准星与敌人标记对齐 |
+| LENS-QA | sky_capture，`artifacts/acceptance/blue-eye-fisheye/` 和构建产物 | 同机位对照、腰射与开镜、画面边缘与 HUD |
+| LENS-AIM | 镜头投影测试 agent，`tests/aim_state_test.cpp` | 回归检查准星中心、偏轴投影和开镜过渡 |
+
+ATLAS 复核原生画面与投影映射。
+
+已完成。480×300 实机标定中，同一条直线在腰射、开镜过渡中点和完全开镜时分别弯曲
+6、4、1 像素，三个状态下敌人血条锚点与画面位置相差均小于 0.5 像素。
+Debug/Release 构建、测试及开镜回归通过。对照画面与测量见 `artifacts/acceptance/blue-eye-fisheye/final/`。
+
+HIP-LENS 由 VECTOR / sky_render 调整 `include/engine/view_lens.h` 的腰射强度；
+sky_capture 在 `artifacts/acceptance/stronger-hip-fisheye/` 实拍腰射并逐像素比对开镜画面，ATLAS 验收。
+已完成。480×300 标定线的腰射弯曲量从 6 增至 8.5 像素；完全开镜时的 960×600 实机画面逐像素一致。
+
+## 游戏内鱼眼调节（2026-11-19）
+
+| 任务 | 独占写入范围 | 验收 |
+| --- | --- | --- |
+| LENS-CONTROL | VECTOR / sky_render，App、镜头参数、偏好读写及关联测试 | 热键调整、独立总开关、设置保存与恢复 |
+| LENS-HUD | PRISM，`include/hud`、`src/hud` 及必要的 HUD 测试 | 暂停页提示、调整时的即时数值 |
+| LENS-VERIFY | sky_capture，`artifacts/acceptance/fisheye-controls/` 及构建产物 | 开关生效、数值微调、跨启动保持、开镜投影与界面实测 |
+
+ATLAS 维护玩家操作说明及本地设置文件的忽略规则。
+已完成。Debug、Release 构建与测试通过。43 项实机检查覆盖热键、总开关、强度上下限和重启恢复，
+关闭时腰射、开镜均与直线投影逐像素一致。暂停页与测量见 `artifacts/acceptance/fisheye-controls/r1/`。
+
+## 双倍场景分辨率与鱼眼默认值（2026-11-19）
+
+HIRES-LENS 由 VECTOR / sky_render 独占渲染配置、PixelRenderer 默认值、鱼眼设置及相应测试；
+PRISM / lens_hud_controls 对齐 HUD 的缺省读数。sky_capture 独占 `artifacts/acceptance/hires-fisheye/`
+及构建产物，实测缓冲区尺寸与调节按键。ATLAS 同步本地选值和当前运行说明。
+已完成。实机读回的场景和枪械颜色、深度缓冲区以及后处理采样尺寸均为 960×600。
+默认腰射 0.33、完全开镜 0.08、V 与方括号热键及已存自定义值均通过检查。
+
+## 通用本地配置（2026-11-19）
+
+GENERAL-CONFIG 由 VECTOR / sky_render 负责引擎配置读写与 App 接入。
+lens_aim_regression 负责 `tests/aim_state_test.cpp` 的迁移与字段保留回归。
+sky_capture 负责构建、测试和隔离目录中的启动验证。ATLAS 负责本地文件迁移、忽略规则及中英文使用说明。
+已完成。Debug 和 Release 构建与测试通过。6 次实机启动通过 39 项检查，覆盖旧配置迁移、
+新旧文件并存时的优先级，以及使用热键后保留手动添加的字段。记录见 `artifacts/acceptance/general-config/final/results.json`。

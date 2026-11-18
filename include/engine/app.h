@@ -7,6 +7,7 @@
 #include "engine/app_options.h"
 #include "engine/run_state.h"
 #include "engine/aim_state.h"
+#include "engine/view_lens.h"
 #include "game/gameplay_types.h"
 struct GLFWwindow;
 namespace silic2 {
@@ -24,6 +25,9 @@ public:
     bool loadMap(const std::string& mapFile);
 private:
     AppOptions options;
+    FisheyeSettings fisheye;
+    std::filesystem::path generalConfigFile;
+    float fisheyeFeedbackSeconds = 0.f;
     AimState aim;
     bool aimHeld=false;
     float adsFrozenBlend=0;
@@ -89,7 +93,8 @@ private:
     void restartCurrentRun();
     void resetRuntimeState();
     glm::vec3 getPlayerStartPosition() const;
-    HudViewModel makeHud(const glm::mat4& view,const glm::mat4& projection) const;
+    HudViewModel makeHud(const glm::mat4& view, const glm::mat4& projection,
+                         const ViewLens& lens = {}) const;
     bool visible(const glm::vec3& from,const glm::vec3& to) const;
     void applyDamage(float amount,DamageSource source,const glm::vec3& origin,bool newEvent=true);
     void firePrimary();
@@ -101,6 +106,7 @@ private:
     void logReset();
     void renderProjectiles(const glm::mat4& view,const glm::mat4& projection);
     static void framebufferSizeCallback(GLFWwindow*,int,int);
+    static void keyCallback(GLFWwindow*,int,int,int,int);
     static void mouseCallback(GLFWwindow*,double,double);
     static void scrollCallback(GLFWwindow*,double,double);
     static void focusCallback(GLFWwindow*,int);

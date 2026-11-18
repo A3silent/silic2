@@ -13,8 +13,8 @@ struct WindowConfig {
 };
 
 struct RenderConfig {
-    int pixelWidth = 480;
-    int pixelHeight = 300;
+    int pixelWidth = 640;
+    int pixelHeight = 400;
     float nearPlane = 0.1f;
     float farPlane = 100.0f;
     bool enableVSync = true;

@@ -79,3 +79,22 @@ time so pause freezes them and a restart reproduces their starting frame.
 Follow-up: run the eye motion at 20% of its previous rate and use 20% of the
 previous translation and contraction amplitudes, for movement that is barely
 perceptible. Keep its resting size and star twinkling unchanged.
+
+User revision 2026-11-18: replace the eye with the ice-blue black hole in
+concept V2. A thin accretion disk rises from left to right in the arrival view,
+crossing the lower portion of the dark shadow. Its far side forms a broad upper
+arc and a finer lower arc. Gas flows slowly along the disk on the combat clock.
+
+User revision 2026-11-19: keep the black hole beside the crystal at its existing
+sky direction and reduce its apparent size slightly. Keep the disk tilted in the
+arrival view. Give the icy gas a brighter near side and visible orbital bands
+that curve around a round shadow. The circular rim and the flowing gas should
+remain distinguishable after the game's pixel post-processing.
+
+User revision 2026-11-19: restore the cloud-veiled eye from the November 18
+release. Scale the pupil, iris and surrounding vapor together to 85% of their
+released size around the same sky direction. Keep the original slow tremor and
+independent star twinkle.
+
+The 960×600 fisheye trial was followed by a 640×400 default for the published build. Start hip fire
+at strength 0.33 and fully aimed fire at 0.08. Keep the V toggle and bracket adjustments.

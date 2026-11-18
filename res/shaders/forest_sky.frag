@@ -28,9 +28,11 @@ void main(){
  vec3 axis=normalize(vec3(.36,.25,-1.));
  vec3 right=normalize(cross(axis,vec3(0,1,0))),up=cross(axis,right);
  float front=dot(d,axis);vec2 q=vec2(dot(d,right),dot(d,up))/max(front,.1);
+ // Scale the entire eye, including its stationary vapor, about the sky anchor.
+ q /= 0.85;
  // Slow and soften the eye motion independently of stars and clouds.
  float eyeTime=time*.20;
- const float eyeAmplitude=.40;
+ const float eyeAmplitude=.66;
  vec2 tremble=eyeAmplitude*vec2(.0043*sin(eyeTime*4.3)+.0025*sin(eyeTime*8.7),
                                .0032*sin(eyeTime*5.7)+.0019*sin(eyeTime*11.3));
  vec2 contraction=vec2(.012*sin(eyeTime*4.4),.009*sin(eyeTime*3.5))
@@ -48,15 +50,15 @@ void main(){
  float strands=pow(1.-abs(noise(strandDomain)*2.-1.),2.4);
  float veil=fbm(vec3(eyeP*32.,4.));
  float gradient=clamp(normalized+(cloudSeed-.5)*.12,0.,1.);
- vec3 ivory=vec3(.57,.48,.48),rose=vec3(.27,.14,.32),indigo=vec3(.045,.085,.20);
- vec3 iris=mix(ivory,rose,smoothstep(.32,.71,gradient));
- iris=mix(iris,indigo,smoothstep(.68,.99,gradient));
- iris=mix(iris,vec3(.09,.20,.26),smoothstep(.60,.88,gradient)*smoothstep(.54,.78,veil)*.6);
+ vec3 ice=vec3(.29,.57,.84),cobalt=vec3(.048,.23,.61),sapphire=vec3(.018,.062,.23);
+ vec3 iris=mix(ice,cobalt,smoothstep(.32,.71,gradient));
+ iris=mix(iris,sapphire,smoothstep(.68,.99,gradient));
+ iris=mix(iris,vec3(.035,.20,.41),smoothstep(.60,.88,gradient)*smoothstep(.54,.78,veil)*.6);
  float cyanRibbon=exp(-pow((normalized-(.70+.09*sin(a*2.+1.)))/.13,2.));
  cyanRibbon*=smoothstep(.42,.69,fbm(vec3(eyeP*13.+5.,6.)));
- iris=mix(iris,vec3(.10,.24,.30),cyanRibbon*.42);
+ iris=mix(iris,vec3(.065,.34,.57),cyanRibbon*.42);
  iris*=.61+.39*strands;
- iris+=exp(-abs(normalized-.335)*21.)*vec3(.065,.055,.07);
+ iris+=exp(-abs(normalized-.335)*21.)*vec3(.052,.085,.105);
  iris*=1.-smoothstep(.88,1.06,normalized);
  // Compress iris highlights without clipping their hue or lifting the pupil.
  float irisPeak=max(iris.r,max(iris.g,iris.b));
@@ -78,9 +80,9 @@ void main(){
  float frontVeil=smoothstep(.222*.85,.277*.85,cloudR);
  float folds=smoothstep(.30,.64,rolling)*envelope*frontVeil;
  folds=max(folds,filament*.22*envelope*frontVeil);
- vec3 vapor=mix(vec3(.018,.026,.052),vec3(.17,.11,.23),smoothstep(.29,.65,depth));
- vapor=mix(vapor,vec3(.11,.21,.28),smoothstep(.59,.80,rolling)*.65);
- vapor+=pow(max(filament-.55,0.)*2.2,2.)*vec3(.08,.065,.11)*envelope;
+ vec3 vapor=mix(vec3(.012,.024,.055),vec3(.048,.14,.30),smoothstep(.29,.65,depth));
+ vapor=mix(vapor,vec3(.055,.22,.35),smoothstep(.59,.80,rolling)*.65);
+ vapor+=pow(max(filament-.55,0.)*2.2,2.)*vec3(.027,.085,.15)*envelope;
  if(front>0.)color=mix(color,vapor*.34,clamp(folds*.91,0.,.90));
  color*=mix(vec3(1.),vec3(1.05,.91,1.12),phase);
  FragColor=vec4(clamp(color,0.,1.),1.);

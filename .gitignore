@@ -26,6 +26,12 @@ build/
 # Local editor window/layout state.
 imgui.ini
 
+# Local player settings, including profiles awaiting migration.
+/generalconfig.local.json
+/generalconfig.local.json.tmp-*
+/fisheye.local.json
+/fisheye.local.json.tmp-*
+
 # IDE files
 .vscode/
 *.swp

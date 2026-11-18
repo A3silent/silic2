@@ -1,5 +1,6 @@
 #include "engine/simple_json.h"
 
+#include <charconv>
 #include <cmath>
 #include <cstdint>
 #include <iomanip>
@@ -210,7 +211,8 @@ private:
 SimpleJson SimpleJson::parse(const std::string& input) { return Parser(input).document(); }
 SimpleJson SimpleJson::object() { SimpleJson result; result.value_ = std::map<std::string, SimpleJson>(); return result; }
 SimpleJson SimpleJson::array() { SimpleJson result; result.value_ = std::vector<SimpleJson>(); return result; }
-std::string SimpleJson::toString() const { return valueToString(); }
+std::string SimpleJson::toString() const { return valueToString(0, false); }
+std::string SimpleJson::toPrettyString() const { return valueToString(0, true); }
 
 SimpleJson::Type SimpleJson::getType() const { return static_cast<Type>(value_.index()); }
 bool SimpleJson::getBool() const {
@@ -287,7 +289,7 @@ bool SimpleJson::getBool(const std::string& key, bool fallback) const {
     return value.isBool() ? value.getBool() : fallback;
 }
 
-std::string SimpleJson::valueToString(size_t depth) const {
+std::string SimpleJson::valueToString(size_t depth, bool pretty) const {
     if ((isArray() || isObject()) && depth >= maxDepth)
         throw std::runtime_error("JSON serialization exceeds maximum nesting depth (128)");
     switch (getType()) {
@@ -295,6 +297,12 @@ std::string SimpleJson::valueToString(size_t depth) const {
         case BOOL: return getBool() ? "true" : "false";
         case NUMBER: {
             if (!std::isfinite(getNumber())) throw std::runtime_error("JSON cannot serialize a nonfinite number");
+            if (pretty) {
+                char digits[64];
+                const auto result = std::to_chars(digits, digits + sizeof digits, getNumber());
+                if (result.ec != std::errc()) throw std::runtime_error("Cannot serialize JSON number");
+                return std::string(digits, result.ptr);
+            }
             std::ostringstream output;
             output.imbue(std::locale::classic());
             output << std::setprecision(std::numeric_limits<double>::max_digits10) << getNumber();
@@ -307,8 +315,10 @@ std::string SimpleJson::valueToString(size_t depth) const {
             for (const auto& entry : std::get<std::vector<SimpleJson>>(value_)) {
                 if (!first) result += ',';
                 first = false;
-                result += entry.valueToString(depth + 1);
+                if (pretty) result += '\n' + std::string((depth + 1) * 2, ' ');
+                result += entry.valueToString(depth + 1, pretty);
             }
+            if (pretty && !first) result += '\n' + std::string(depth * 2, ' ');
             return result + ']';
         }
         case OBJECT: {
@@ -317,8 +327,11 @@ std::string SimpleJson::valueToString(size_t depth) const {
             for (const auto& entry : std::get<std::map<std::string, SimpleJson>>(value_)) {
                 if (!first) result += ',';
                 first = false;
-                result += '"' + escapeString(entry.first) + "\":" + entry.second.valueToString(depth + 1);
+                if (pretty) result += '\n' + std::string((depth + 1) * 2, ' ');
+                result += '"' + escapeString(entry.first) + (pretty ? "\": " : "\":");
+                result += entry.second.valueToString(depth + 1, pretty);
             }
+            if (pretty && !first) result += '\n' + std::string(depth * 2, ' ');
             return result + '}';
         }
     }

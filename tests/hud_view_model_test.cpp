@@ -55,6 +55,13 @@ void runHudViewModelTests() {
     buildHudGeometry(visible,model,800,600);
     require(visible.vertices.size()>hidden.vertices.size(),"visible contact produced no geometry");
 
+    model.fisheyeEnabled = false;
+    model.fisheyeHipStrength = 1.50f;
+    model.showFisheyeFeedback = true;
+    HudBatch lensFeedback;
+    buildHudGeometry(lensFeedback,model,800,600);
+    require(lensFeedback.vertices.size()>visible.vertices.size(),"toggle-off feedback missing during play");
+
     for(auto phase:{HudPhase::Ready,HudPhase::Playing,HudPhase::Paused,HudPhase::Won,HudPhase::Dead}) {
         model.phase=phase;model.audioStatus=HudAudioStatus::Unavailable;model.resultLockRemaining=0.75f;
         model.fatalSource="ENEMY_PROJECTILE";model.kills=32;model.combatSeconds=123;

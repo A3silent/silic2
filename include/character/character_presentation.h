@@ -58,7 +58,7 @@ public:
                      const std::vector<CharacterView>& characters);
     // Draw after world transparencies, before post-processing/HUD; uses camera
     // local coordinates with a fixed 70-degree lens and preserves the world depth buffer and all touched GL state.
-    void renderFirstPerson(const glm::mat4& projection);
+    void renderFirstPerson(const glm::mat4& projection, float projectionOverscan = 1.f);
     size_t activeEffectCount() const;
     static constexpr size_t EffectCapacity = 256;
 

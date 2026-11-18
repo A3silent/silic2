@@ -91,6 +91,7 @@ ENGINE_SRCS := src/engine/main.cpp \
                src/engine/spatial_world.cpp \
                src/engine/map_renderer.cpp \
                src/engine/pixel_renderer.cpp \
+               src/engine/fisheye_settings.cpp \
                src/engine/simple_json.cpp \
                src/engine/game_config.cpp
 

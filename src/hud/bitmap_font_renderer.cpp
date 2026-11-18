@@ -2,6 +2,8 @@
 #include <algorithm>
 #include <cmath>
 #include <cctype>
+#include <iomanip>
+#include <sstream>
 
 namespace silic2 {
 
@@ -110,6 +112,14 @@ const glm::vec4 feedback(0.88f,0.95f,1.0f,1.0f);
 const glm::vec4 warm(1.0f,0.48f,0.28f,1.0f);
 float ratio(float hp,float maxHp) { return maxHp>0 ? std::clamp(hp/maxHp,0.0f,1.0f):0; }
 std::string integer(float number) { return std::to_string(static_cast<int>(std::ceil(std::max(number,0.0f)))); }
+std::string fisheyeReadout(const HudViewModel& m, bool includeKeys = false) {
+    std::ostringstream line;
+    if (includeKeys) line << "V  ";
+    line << "FISHEYE " << (m.fisheyeEnabled ? "ON" : "OFF") << "    ";
+    if (includeKeys) line << "[ ]  ";
+    line << "HIP STRENGTH " << std::fixed << std::setprecision(2) << m.fisheyeHipStrength;
+    return line.str();
+}
 float fade(float age,float lifetime) { return age>=0 && age<lifetime ? 1-age/lifetime:0; }
 void text(HudBatch& b,std::string_view value,float x,float y,float p,const glm::vec4& color=bone) {
     BitmapFontRenderer::append(b,value,std::round(x),std::round(y),p,color);
@@ -187,6 +197,12 @@ void buildHudGeometry(HudBatch& b,const HudViewModel& m,int logicalWidth,int log
         text(b,integer(m.hp)+" / "+integer(m.maxHp),margin+55,h-margin-55,p);
         b.rect(margin+12,h-margin-25,194,10,{0.19f,0.21f,0.20f,1});
         b.rect(margin+12,h-margin-25,194*ratio(m.hp,m.maxHp),10,m.hp<=m.maxHp*0.3f?warm:bone);
+        if (m.phase == HudPhase::Playing && m.showFisheyeFeedback) {
+            const std::string readout = fisheyeReadout(m);
+            const float top = h - margin - 103;
+            panel(b, margin, top, BitmapFontRenderer::width(readout,p)+24, 29);
+            text(b, readout, margin+12, top+8, p);
+        }
         text(b,"ESC  PAUSE",w-margin-118,h-margin-14,1,muted);
         const float cy=h*0.5f;
         const glm::vec4 cross=fade(m.killAge,0.35f)>0 ? feedback:bone;
@@ -216,7 +232,7 @@ void buildHudGeometry(HudBatch& b,const HudViewModel& m,int logicalWidth,int log
     if(m.phase!=HudPhase::Playing) {
         b.rect(0,0,w,h,{0.018f,0.023f,0.022f,live?0.72f:0.62f});
         const bool result=m.phase==HudPhase::Won || m.phase==HudPhase::Dead;
-        const float pw=std::min(560.0f,w-48),ph=result?390.0f:m.phase==HudPhase::Ready?352.0f:220.0f;
+        const float pw=std::min(560.0f,w-48),ph=result?390.0f:m.phase==HudPhase::Ready?352.0f:272.0f;
         const float x=cx-pw*0.5f,y=(h-ph)*0.5f;
         panel(b,x,y,pw,ph);
         text(b,(m.arenaSurvival||m.exploration)?"SILIC2 / "+m.mapName:"SILIC2 / MAP",x+26,y+22,1,amber);
@@ -230,10 +246,13 @@ void buildHudGeometry(HudBatch& b,const HudViewModel& m,int logicalWidth,int log
             text(b,"SHIFT    TOGGLE SPRINT",x+26,y+211,p,muted);
             text(b,"CTRL     CROUCH / SLIDE",x+26,y+236,p,muted);
             text(b,"SPACE    JUMP       ESC  PAUSE",x+26,y+261,p,muted);
+            text(b,fisheyeReadout(m,true),x+26,y+286,p,muted);
             text(b,"ENTER  BEGIN",x+26,y+309,p,amber);
         } else if(m.phase==HudPhase::Paused) {
             text(b,"COMBAT AND SOUND ARE FROZEN",x+26,y+124,p,muted);
-            text(b,"ESC  RESUME",x+26,y+177,p,amber);
+            text(b,fisheyeReadout(m),x+26,y+160,p);
+            text(b,"V  TOGGLE    [  DECREASE    ]  INCREASE",x+26,y+186,p,muted);
+            text(b,"ESC  RESUME",x+26,y+232,p,amber);
         } else {
             const std::string labels[]={"TIME","KILLS","ACCURACY","HP LOST","FATAL SOURCE"};
             std::string fatal=m.phase==HudPhase::Won?"NONE":hudFatalSource(m.fatalSource);

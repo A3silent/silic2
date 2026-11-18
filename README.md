@@ -11,18 +11,19 @@ dark atmosphere. Move fast, aim manually, survive
 seconds the sky and ossified structures transform over four seconds. The sample includes one
 primary weapon, first-person presentation, directional sound, an English bitmap HUD,
 pause/results and same-seed restart. Weapon abilities and progression are later work.
-The Crystal entry is now a **Forest Crystal Arena**: an approximately 200m clearing,
-a 140m central crystal, 264 pine instances, engraved ground and a cloud-veiled eye.
+The **Forest Crystal Arena** is an open slate clearing about 200m across.
+A blue, cloud-veiled eye trembles beside its 140m crystal spire.
 It keeps the same 90-second arrivals and cleanup victory. The prior megastructure
 map remains available as `res/maps/crystal_megastructure_arena.json`. See the
 [forest plan](plan/forest-crystal-arena.md) and [delivery record](docs/forest-crystal-arena.md).
 Both maps share the procedural black/red **Crimson Carapace** rifle, with continuous
 glowing channels and an open red-dot sight. Hold the right mouse button to aim.
+The first-person view curves at the edges and straightens as you aim down sights.
 The current sight is 35% wider than the previous reduced version, with unchanged
 height and centered dot. See [weapon details](docs/procedural-crimson-rifle.md).
 
 Launch from the repository root so shader, map and sound paths resolve. Default seed
-is **42**, default VSync is on, and rendering uses a 480×300 scene with a native
+is **42**, default VSync is on, and rendering uses a 640×400 scene with a native
 resolution HUD. This is a sample under acceptance, not a released game; actual
 checks and outstanding human playtests are tracked in
 [sample acceptance](docs/sample-acceptance.md) and the current
@@ -39,7 +40,7 @@ checks and outstanding human playtests are tracked in
 
 ### 🔧 Technical Features
 - **OpenGL 3.3 Core Profile** - Modern graphics API achieving retro visual effects
-- **Pixel-Perfect Rendering** - 480x300 default low-resolution render target (configurable)
+- **Pixel-Perfect Rendering** - 640×400 default internal render target (configurable)
 - **Particle Effect System** - Advanced particle effects for explosions, smoke, muzzle flash
 - **Dynamic Lighting** - Real-time lighting with up to 128 light sources
 - **JSON Map Format** - Flexible level data storage and loading
@@ -152,12 +153,31 @@ a header rebuilds only the source files that include it.
 - **Mouse** - Camera view control
 - **Left Mouse Button** - Fire weapon
 - **Right Mouse Button (hold)** - Aim through the red-dot sight
+- **V** - Toggle the fisheye for both hip fire and aiming down sights
+- **[ / ]** - Decrease / increase hip-fire distortion by 0.05
 - **Space** - Jump
 - **Shift** - Toggle sprint
 - **Ctrl** - Crouch / slide
 - **Escape** - Pause/resume
 - **R or Left Mouse Button** - Restart one second after death or room clear
 - **G** - Toggle god mode (free flight + noclip)
+
+Tune the lens while playing or paused. Hip-fire strength ranges from `0.00` to `1.50`
+and starts at `0.33`. The pause screen shows the saved value. With the lens on,
+fully aiming down sights uses `0.08`.
+
+Local settings live in `generalconfig.local.json` in the project root. You can
+edit the `fisheye` section before launching the game.
+
+```json
+{
+  "fisheye": { "enabled": true, "hipStrength": 0.33 }
+}
+```
+
+Add future settings alongside `fisheye`. Using the lens hotkeys preserves other
+fields. On first launch with only the old `fisheye.local.json`, the game migrates
+your saved values automatically.
 
 ### God Mode Controls
 - **WASD** - Horizontal movement

@@ -27,6 +27,7 @@
 #include <filesystem>
 #include <iostream>
 #include <iomanip>
+#include <optional>
 #include <stdexcept>
 #ifdef __APPLE__
 #include <mach/mach.h>
@@ -45,6 +46,16 @@ AABB brushBounds(const Brush& b) {
     glm::vec3 low=b.vertices.front(),high=low;
     for(const auto& v:b.vertices){low=glm::min(low,v);high=glm::max(high,v);} return {low,high};
 }
+std::optional<glm::vec2> hudPosition(const glm::mat4& viewProjection,
+                                     const glm::vec3& position, const ViewLens& lens) {
+    const glm::vec4 clip = viewProjection * glm::vec4(position, 1.f);
+    if (clip.w <= 0.f || glm::any(glm::greaterThan(glm::abs(glm::vec3(clip)), glm::vec3(clip.w))))
+        return std::nullopt;
+    const glm::vec2 display = lens.displayNdc(glm::vec2(clip) / clip.w);
+    if (std::abs(display.x) > 1.f || std::abs(display.y) > 1.f)
+        return std::nullopt;
+    return glm::vec2(.5f + .5f * display.x, .5f - .5f * display.y);
+}
 }
 App::App(uint64_t seed):App([&]{AppOptions o;o.seed=seed;return o;}()){}
 App::App(const AppOptions& config):options(config) {
@@ -55,6 +66,10 @@ App::App(const AppOptions& config):options(config) {
         std::cout<<"OpenGL "<<glGetString(GL_VERSION)<<'\n';
         glEnable(GL_DEPTH_TEST);
         std::filesystem::create_directories(options.outputDirectory);
+        generalConfigFile = "generalconfig.local.json";
+        if (!options.acceptance.empty())
+            generalConfigFile = std::filesystem::path(options.outputDirectory) / generalConfigFile;
+        fisheye = FisheyeSettings::load(generalConfigFile);
         runLog.open(options.outputDirectory+"/runs.jsonl",std::ios::app);
         if(!runLog) throw std::runtime_error("Cannot open run log");
         if(!options.acceptance.empty()) {
@@ -86,6 +101,7 @@ App::App(const AppOptions& config):options(config) {
         glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,6*sizeof(float),nullptr);glEnableVertexAttribArray(0);
         glVertexAttribPointer(1,3,GL_FLOAT,GL_FALSE,6*sizeof(float),reinterpret_cast<void*>(3*sizeof(float)));glEnableVertexAttribArray(1);glBindVertexArray(0);
         glfwSetWindowUserPointer(window,this);glfwSetFramebufferSizeCallback(window,framebufferSizeCallback);
+        glfwSetKeyCallback(window, keyCallback);
         glfwSetCursorPosCallback(window,mouseCallback);glfwSetScrollCallback(window,scrollCallback);
         // This hidden synthetic route invokes focusCallback explicitly; OS focus
         // delivery is covered by ordinary gameplay, not this deterministic harness.
@@ -224,6 +240,7 @@ void App::processInput(){
 }
 void App::firePrimary(){if(weapon->fire(*camera,aimHeld || aim.blend()>0)){runController->stats().recordShot();characters->onPrimaryShot();audio->play(AudioCue::PlayerShot,{},0,false);}}
 void App::update(float dt){
+    fisheyeFeedbackSeconds = std::max(0.f, fisheyeFeedbackSeconds - dt);
     if(gameState!=GameState::PAUSED)stateTimer+=dt;
     if(gameState==GameState::PLAYING){runController->tick(dt,true);updatePlaying(dt);}
     audio->setListener(camera->getPosition(),camera->getFront(),camera->getUp());
@@ -343,7 +360,8 @@ void App::restartCurrentRun(){
     if(runController->state().active){runController->endRoom(RoomResult::Abandoned);runController->endRun(RunEndReason::Restarted);runLog<<runController->stats().formatRunResult()<<'\n';}
     runController->restartRun(currentMapFile);resetRuntimeState();setState(GameState::PLAYING);
 }
-HudViewModel App::makeHud(const glm::mat4& view,const glm::mat4& projection)const{
+HudViewModel App::makeHud(const glm::mat4& view, const glm::mat4& projection,
+                          const ViewLens& lens) const {
     HudViewModel vm;const auto& s=runController->stats().snapshot();
     vm.arenaSurvival=arena;vm.mapName=currentMap->getDisplayName();
     vm.hasTransformation=!exploration&&currentMap->getEnvironmentPreset()!=EnvironmentPreset::None;
@@ -354,6 +372,9 @@ HudViewModel App::makeHud(const glm::mat4& view,const glm::mat4& projection)cons
     vm.hp=player->getHp();vm.maxHp=player->getMaxHp();vm.combatSeconds=s.runTime;vm.cleanup=arena&&director->generationFinished();vm.livingEnemies=static_cast<int>(enemyManager->getLiveCount());
     vm.resultLockRemaining=std::max(0.f,1-stateTimer);vm.kills=s.kills;vm.shotsFired=s.shotsFired;vm.shotsHit=s.shotsHit;vm.actualHpLoss=s.damageTaken;vm.fatalSource=toString(s.fatalSource);vm.seed=s.seed;vm.audioStatus=!audio->available()?HudAudioStatus::Unavailable:(audio->muted()?HudAudioStatus::Muted:HudAudioStatus::Available);
     vm.crosshairOpacity=1.f-aim.blend();
+    vm.fisheyeEnabled = fisheye.enabled;
+    vm.fisheyeHipStrength = static_cast<float>(fisheye.hipStrength);
+    vm.showFisheyeFeedback = gameState == GameState::PLAYING && fisheyeFeedbackSeconds > 0.f;
     vm.hitAge=hitAge;vm.killAge=killAge;vm.damageAge=damageAge;vm.damageDirectionRadians=damageDirection;
     auto p=player->getPosition(),f=camera->getFront();vm.playerXZ={p.x,p.z};vm.playerForwardXZ={f.x,f.z};
     bool bounds=false;
@@ -371,12 +392,14 @@ HudViewModel App::makeHud(const glm::mat4& view,const glm::mat4& projection)cons
     const auto& layout=currentMap->getArenaLayout();
     if(layout.hasFloor){vm.mapMinXZ=layout.minXZ;vm.mapMaxXZ=layout.maxXZ;}
     if(arena){auto warnings=director->warningProgress();for(size_t i=0;i<4;++i){auto r=layout.rifts[i];vm.rifts.push_back({{r.x,r.z},warnings[i]>=0});}}
+    const glm::mat4 viewProjection = projection * view;
     for(const auto& enemy:enemyManager->getEnemies()){
         HudEnemy e;auto pos=enemy.getPosition(),center=enemy.getAABB().getCenter();e.worldXZ={pos.x,pos.z};e.hp=enemy.getHp();e.maxHp=enemy.getMaxHp();e.alive=!enemy.isDead();e.sentry=enemy.getType()==EnemyType::Sentry;e.secondsSinceDamage=enemy.getSecondsSinceDamage();
-        auto clip=projection*view*glm::vec4(center,1);e.inView=clip.w>0&&std::abs(clip.x)<=clip.w&&std::abs(clip.y)<=clip.w&&clip.z>=-clip.w&&clip.z<=clip.w;
+        e.inView = hudPosition(viewProjection, center, lens).has_value();
         e.unobstructed=e.inView&&visible(camera->getPosition(),center);
-        auto anchor=projection*view*glm::vec4(pos+glm::vec3(0,enemy.getAABB().getSize().y+.2f,0),1);
-        if(anchor.w>0)e.healthAnchor={anchor.x/anchor.w*.5f+.5f,.5f-anchor.y/anchor.w*.5f};vm.enemies.push_back(e);
+        const auto above = pos + glm::vec3(0, enemy.getAABB().getSize().y + .2f, 0);
+        e.healthAnchor = hudPosition(viewProjection, above, lens).value_or(glm::vec2(-1.f));
+        vm.enemies.push_back(e);
     }return vm;
 }
 void App::renderProjectiles(const glm::mat4& view,const glm::mat4& projection){
@@ -392,7 +415,11 @@ void App::render(){
         while(hostileProjectiles->size()<32) hostileProjectiles->spawn({float(hostileProjectiles->size()%8)-4,1,-8},{0,0,1});
     }
     pixelRenderer->beginPixelRender();glEnable(GL_DEPTH_TEST);glDepthMask(GL_TRUE);
-    const auto view=camera->getViewMatrix(),projection=camera->getProjectionMatrix(float(pixelRenderer->getPixelWidth())/pixelRenderer->getPixelHeight(),aim.fov(player->getCurrentFov()),currentMap->getWorldSettings().farPlane);
+    const float aspect = static_cast<float>(fw) / fh;
+    const auto lens = ViewLens::forPlayer(aim.blend(), aspect, fisheye);
+    const auto view = camera->getViewMatrix();
+    const auto projection = lens.overscan(camera->getProjectionMatrix(
+        aspect, aim.fov(player->getCurrentFov()), currentMap->getWorldSettings().farPlane));
     const auto& ws=currentMap->getWorldSettings();glClearColor(ws.backgroundColor.r,ws.backgroundColor.g,ws.backgroundColor.b,1);glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
     mapRenderer->clearDynamicLights();for(const auto& light:weapon->getActiveLights())mapRenderer->addDynamicLight(light.first,light.second,1,3);
     // Continuous self-emission in Forest; distant visibility remains ambient-lit.
@@ -412,10 +439,10 @@ void App::render(){
         mapRenderer->renderTranslucent(view,projection);weapon->render(view,projection);
         groundParticles->render(view,projection);
     }
-    characters->renderFirstPerson(projection);
+    characters->renderFirstPerson(projection, lens.overscanFactor());
     if(!pendingScreenshot.empty())captureScreenshot(pendingScreenshot+"-scene",pixelRenderer->getPixelWidth(),pixelRenderer->getPixelHeight());
-    pixelRenderer->endPixelRender(fw,fh);
-    hudRenderer->render(makeHud(view,projection),lw,lh,fw,fh);
+    pixelRenderer->endPixelRender(fw,fh,lens);
+    hudRenderer->render(makeHud(view,projection,lens),lw,lh,fw,fh);
     if(!pendingScreenshot.empty()){captureScreenshot(pendingScreenshot);pendingScreenshot.clear();}
     if((options.acceptance=="flow"||options.acceptance=="screenshots"||options.acceptance=="spatial-combat"||options.acceptance=="camera-lean"||options.acceptance=="rifle-ads")&&glGetError()!=GL_NO_ERROR)
         throw std::runtime_error("OpenGL error during runtime acceptance render");
@@ -714,6 +741,28 @@ void App::framebufferSizeCallback(GLFWwindow*,int w,int h){glViewport(0,0,w,h);}
 void App::mouseCallback(GLFWwindow* window,double x,double y){
     auto* app=static_cast<App*>(glfwGetWindowUserPointer(window));if(!app||app->gameState!=GameState::PLAYING||!app->options.acceptance.empty())return;
     app->processMousePosition(x,y);
+}
+void App::keyCallback(GLFWwindow* window, int key, int, int action, int) {
+    if (action != GLFW_PRESS) return;
+    auto* app = static_cast<App*>(glfwGetWindowUserPointer(window));
+    if (!app || (app->gameState != GameState::PLAYING && app->gameState != GameState::PAUSED &&
+                 app->gameState != GameState::READY)) return;
+
+    bool changed = true;
+    switch (key) {
+        case GLFW_KEY_V: app->fisheye.enabled = !app->fisheye.enabled; break;
+        case GLFW_KEY_LEFT_BRACKET: changed = app->fisheye.adjustHip(false); break;
+        case GLFW_KEY_RIGHT_BRACKET: changed = app->fisheye.adjustHip(true); break;
+        default: return;
+    }
+    app->fisheyeFeedbackSeconds = 2.f;
+    if (changed) {
+        try {
+            app->fisheye.save(app->generalConfigFile);
+        } catch (const std::exception& e) {
+            std::cerr << "Could not save " << app->generalConfigFile << ": " << e.what() << '\n';
+        }
+    }
 }
 void App::processMousePosition(double x,double y){
     if(camera->isFirstMouse()){camera->setLastMousePos(x,y);camera->setFirstMouse(false);return;}
