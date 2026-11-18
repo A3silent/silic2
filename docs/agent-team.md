@@ -588,3 +588,70 @@ PUBLISH验收完成：最终源码Debug/Release构建、程序枪/ADS CPU通过�
 609份源码/配置在验证期间哈希保持；ATLAS复核最终ADS图、源码与二进制hash。
 正式精简记录：docs/acceptance/weapon-tuning-2026-11-13.json。提交仅包含本轮5份已有
 源码/文档及新验收记录；上次本地eadd26b随同普通推送发布，不改写历史。
+
+## 黑暗水晶与玩家自发光（2026-11-13）
+
+范围按plan/forest-crystal-arena.md最新用户追加：移除地面全部黑色符文，压暗森林地图、
+突出中央巨晶；枪/弹体/玩家近身光与上升粒子统一浅蓝水晶色。保留大范围微弱可见度，
+不做仅一小圈可见的硬遮罩。用户当前未要求新手部模型、改玩法或上传版本。
+
+为完整展示当前聊天的源码改动，本轮各专业角色仅在独占artifacts目录写候选源码/
+apply_patch格式补丁，由ATLAS应用到下列生产文件；实现和接口设计仍各由专业角色负责。
+
+| 任务 | 唯一执行入口 | 候选文件/责任，生产补丁由ATLAS应用 |
+| --- | --- | --- |
+| DARK-ENV | NEBULA临时dark_crystal_environment | res/shaders/forest_*.frag、include/src/environment；必要Crystal JSON/worldSettings与forest_arena/generate.py仅照明内容；去地面符文、暗场与巨晶表现 |
+| DARK-CHAR | KINETIC临时sight_width_art续作 | include/src/character、character shaders与专属preview；蓝色流光/反光/halo/瞄点，保持当前枪形和瞄具参数 |
+| DARK-CORE | VECTOR临时sight_width_verify续作 | App/必要MapRenderer公共接入、include/src/effects、include/player/weapon.h、相关tests/Makefile；蓝弹、玩家持续光、近身上升粒子、暂停/重开/切图与最终集成 |
+| DARK-ACCEPT | ATLAS | plan/docs、保护基线、应用专业补丁、GPU协调与正式画面验收 |
+
+共享色彩目标：流光/玩家输出为浅水晶蓝约(0.28,0.72,1)，亮芯约(0.75,0.94,1)，
+各角色按自己的发光强度换算底色，避免RGB夹断成整片纯白。敌方预警维持暖色。
+NEBULA拥有地图和生成器，VECTOR不编辑它们；KINETIC不编辑Weapon/App。公共接口先交接。
+三角色CPU可并行；只有VECTOR可写公共build/bin，其他preview构建限定各自artifacts。
+GPU先NEBULA、再KINETIC、最终VECTOR；NEBULA/KINETIC释放后才进入下一阶段。
+证据目录：artifacts/acceptance/dark-crystal-pass/；保留两份现有未跟踪研究/面试文档，
+不追加素材/API消费，不运行性能基准，不提交推送。实际GL和人类试玩区分记录。
+
+DARK已完成，三专业候选全部由ATLAS在当前聊天应用，写入冻结、GPU释放。
+地面图腾代码移除，森林压暗并突出中央晶蓝；枪/弹/近身光与上升粒子统一晶蓝。
+实际玩家光0.9/18m，粒子18/s、3s、上限96；最终一次微调提高粒子可见度并重新验证。
+场景GL/角色GL与几何6/6、Debug/Release、相关CPU、最终App aura12/12通过；ADS17/17
+和蓝弹三姿态结果在仅粒子可见度参数微调后复用，明确保存版本边界。ATLAS已审最终
+idle/俯视/侧向、场景和武器对照及蓝弹；654份最终源码/配置与二进制哈希独立核对。
+1052份初始文件中24份分派文件有改动，其余1028份保持；新增粒子测试及文字验收记录。
+两份原有未跟踪文档、Hollow/归档地图与武器运动/伤害源码保持。本轮未提交或推送。
+精简验收：docs/acceptance/dark-crystal-2026-11-13.json；完整diff在本轮artifacts/changes.patch。
+
+## 明亮天眼、开放地表与新纹理（2026-11-13）
+
+当前 Crystal 地图保留巨晶、暗色调、玩家晶蓝光和敌潮，提亮天眼和星星，
+移除树木及附属植被、相关碰撞和生成入口，并接入可平铺的矿物地面纹理。
+保留已修改工作区和其他地图。本轮候选补丁由 ATLAS 统一应用，验收集中运行 GL。
+
+| 任务 | 负责人 | 独占候选范围 |
+| --- | --- | --- |
+| OPEN-SKY | NEBULA | forest_sky.frag；眼睛和星点的曝光与可见度 |
+| OPEN-LAYOUT | VECTOR | starry_crystal_arena.json、forest_arena/generate.py、layout-state.json、forest_arena_probe.cpp；移除植被与其物理占用、保留竞技场 |
+| OPEN-GROUND | 地表 agent | 新地面图像及素材生成记录、forest_map.frag；地面采样方案 |
+| OPEN-INTEGRATE | ATLAS | map_renderer.h/.cpp 纹理接入、environment_scene.cpp 和 environment_renderer.cpp 远景树影移除、候选集成、文档和实际画面验收 |
+
+OPEN 已集成，写入关闭，GPU 已释放。移除 264 棵树、12 个根丛区块和 384 个
+远景树影；矿岩边沿与碰撞共用同一几何。内置 imagegen 板岩已由实际 App 加载，
+缺图时保留程序化地面。Debug/Release、完整 CPU 套件、竞技场 94/94、实际 App
+17/17、纹理缺失和资源释放各 14/14 通过。证据见
+`artifacts/acceptance/open-crystal/atlas-verification.json`，纹理提示词见
+`res/models/forest_arena/slate-texture.md`。未提交或推送。
+
+## 动态水晶天空（2026-11-17）
+
+| 任务 | 负责人 | 独占范围 |
+| --- | --- | --- |
+| SKY-MOTION | NEBULA 临时 open_sky 续作 | forest_sky.frag 候选：眼睛略缩小、有机颤动、星点独立闪烁 |
+| SKY-MOTION-QA | ATLAS | 生产补丁、实际 GL 与暂停/重开检查、文档 |
+
+SKY-MOTION 已集成，写入关闭，GPU 已释放。GLSL 链接及实际 App 8/8 通过；
+72 帧像素后处理输出确认瞳孔约缩小 15%、轻颤和星点不同步闪烁。
+动态预览在 `artifacts/acceptance/sky-motion/crystal-sky.gif`。
+SKY-TUNE 由 NEBULA 提供单文件候选，ATLAS 集成并复验：眼睛动效速率和幅度
+均降至初版 20%，初始画面和测试星区逐像素一致，实际 App 8/8 通过。

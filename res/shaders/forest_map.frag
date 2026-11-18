@@ -9,6 +9,7 @@ uniform vec3 cameraPosition;
 uniform bool lightingEnabled;
 uniform bool useTexture;
 uniform sampler2D texture1;
+uniform bool useForestGroundTexture;
 uniform int materialKind;
 uniform float phase;
 uniform float time;
@@ -35,48 +36,6 @@ float glyph(vec2 p,float seed){
  if(h>.65)d=min(d,abs(length(p-vec2(.02,-.45))-.23));
  return lineInk(d,.045);
 }
-float totem(vec2 p){
- // Fixed world-space texel cells create chipped staircase edges, never screen swimming.
- vec2 cell=floor(p*4.5);
- vec2 stone=(cell+.5)/4.5;
- vec2 warp=vec2(noise(stone*.047+7.),noise(stone*.051-13.))-.5;
- vec2 bent=stone+warp*3.5+vec2(sin(stone.y*.12),sin(stone.x*.10))*.65;
- float r=length(bent),a=atan(bent.y,bent.x);
- float winding=a+.023*r+.09*sin(r*.19)+.07*sin(a*5.);
- float aa=(winding+PI)/(2.*PI);
- float ink=0.;
- // Uneven ring lanes, wandering runes and tiny broken seals remain one ritual system.
- for(int k=0;k<6;++k){
-  float band=float(k),radius=12.+band*11.;
-  float offset=.75*sin(a*(5.+mod(band,3.))+band*1.7)+.28*sin(a*13.+band);
-  float dr=r-radius-offset;
-  ink=max(ink,lineInk(abs(dr),.13));
-  ink=max(ink,lineInk(abs(dr-1.15-.17*sin(a*19.)),.10));
-  ink=max(ink,lineInk(abs(dr-5.9),.115));
-  float count=23.+band*11.;float symbol=floor(aa*count);
-  vec2 local=vec2((fract(aa*count)-.5)*2.,(dr-3.4)/1.65);
-  vec2 twisted=local+vec2(.21*sin(local.y*3.+symbol),.16*sin(local.x*3.+band));
-  twisted=floor(twisted*7.+.5)/7.;
-  float letter=glyph(twisted,symbol+band*71.);
-  ink=max(ink,letter*(1.-step(1.1,abs(local.y))));
-  float bead=abs(fract(aa*count*1.6)-.5);
-  float beadsInk=lineInk(abs(length(vec2(bead*2.,(dr-7.1)*.6))-.15),.055);
-  ink=max(ink,beadsInk*(1.-step(.65,abs(dr-7.1))));
- }
- // Short coiling bridges replace the previous long radial compass/grid spokes.
- float curl=abs(sin(a*9.+r*.23+1.4*sin(r*.071)))*max(r,.1);
- float bridges=lineInk(curl,.15)*step(13.,r)*(1.-step(76.,r));
- bridges*=1.-step(.42,fract((r+noise(stone*.1)*2.)/9.));
- ink=max(ink,bridges);
- float seal=abs(r-(22.+3.*cos(a*7.+sin(a*3.))));
- ink=max(ink,lineInk(seal,.14));
- float outerArc=abs(r-81.-.8*sin(a*23.+.4*sin(a*7.)));
- ink=max(ink,lineInk(outerArc,.13));
- float chips=step(.08,hash(cell+42.));
- float footprint=max(length(dFdx(p)),length(dFdy(p)));
- float distantContrast=mix(1.,.55,smoothstep(.4,2.5,footprint));
- return ink*chips*distantContrast*(1.-smoothstep(83.,85.,r));
-}
 vec3 illumination(vec3 n){
  vec3 light=ambientLight*(.68+.32*max(n.y,0.));
  for(int i=0;i<min(numLights,128);++i){
@@ -89,18 +48,23 @@ vec3 illumination(vec3 n){
 }
 void main(){
  vec3 n=normalize(Normal);vec3 base=objectColor;
- if(useTexture)base*=texture(texture1,TexCoord).rgb;
+ bool sampleSlate=materialKind==20 && useTexture && useForestGroundTexture;
+ if(useTexture && !sampleSlate)base*=texture(texture1,TexCoord).rgb;
  vec3 emission=vec3(0.);
  if(materialKind==20){
-  // Limestone mineral plates, embedded grit and fractured sand; completely flat.
-  float broad=noise(FragPos.xz*.17),grain=noise(FragPos.xz*3.7);
-  float fine=hash(floor(FragPos.xz*12.));
-  float veins=pow(1.-abs(sin(FragPos.x*.29+FragPos.z*.18+broad*7.)),14.);
-  base*=.78+.25*broad+.12*grain;
-  base=mix(base,base*.58,veins*.35);
-  base*=1.-step(.965,fine)*.19;
-  float engraving=totem(FragPos.xz);
-  base=mix(base,vec3(.065,.055,.075),engraving*.70);
+  if(sampleSlate){
+   // Repeat every 10 world units, including across adjacent floor brushes.
+   // Normalize the dark image to the authored floor tint before lighting.
+   base*=texture(texture1,FragPos.xz*.10).rgb*4.;
+  }else{
+   // Original limestone when the built-in slate asset isn't available.
+   float broad=noise(FragPos.xz*.17),grain=noise(FragPos.xz*3.7);
+   float fine=hash(floor(FragPos.xz*12.));
+   float veins=pow(1.-abs(sin(FragPos.x*.29+FragPos.z*.18+broad*7.)),14.);
+   base*=.78+.25*broad+.12*grain;
+   base=mix(base,base*.58,veins*.35);
+   base*=1.-step(.965,fine)*.19;
+  }
   // Rifts retain their existing warm combat warning; no extra scenery lamp.
   for(int i=0;i<4;++i)if(riftActive[i] && riftWarnings[i]>=0.){
    vec3 p=(riftWorldToLocal[i]*vec4(FragPos,1)).xyz;
@@ -138,6 +102,6 @@ void main(){
  color*=mix(vec3(1.),vec3(1.05,.90,1.10),phase);
  // Cool sky haze belongs to ambience, not a hidden directional light.
  float distance=length(FragPos.xz);float fog=smoothstep(108.,220.,distance)*.68;
- color=mix(color,vec3(.028,.035,.051),fog);
+ color=mix(color,vec3(.004,.008,.017),fog);
  FragColor=vec4(clamp(color,0.,.92),1.);
 }

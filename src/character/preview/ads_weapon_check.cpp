@@ -41,7 +41,7 @@ int main(int argc,char** argv) {
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR,3);glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR,3);
     glfwWindowHint(GLFW_OPENGL_PROFILE,GLFW_OPENGL_CORE_PROFILE);glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT,GL_TRUE);
     glfwWindowHint(GLFW_VISIBLE,GL_FALSE);
-    auto* window=glfwCreateWindow(480,300,"KINETIC red-dot acceptance",nullptr,nullptr);require(window,"window");
+    auto* window=glfwCreateWindow(480,300,"KINETIC crystal-dot acceptance",nullptr,nullptr);require(window,"window");
     glfwMakeContextCurrent(window);require(gladLoadGLLoader((GLADloadproc)glfwGetProcAddress),"GLAD");
     GLuint fbo,color,depth;
     glGenFramebuffers(1,&fbo);glBindFramebuffer(GL_FRAMEBUFFER,fbo);glGenTextures(1,&color);glBindTexture(GL_TEXTURE_2D,color);
@@ -76,12 +76,12 @@ int main(int argc,char** argv) {
             glGetIntegerv(GL_BLEND_EQUATION_RGB,&state);require(state==GL_FUNC_REVERSE_SUBTRACT,"blend state restored");
             std::vector<unsigned char> image(480*300*3);glReadPixels(0,0,480,300,GL_RGB,GL_UNSIGNED_BYTE,image.data());
             if(frame>=2) {
-                int red=0;double sumX=0,sumY=0;
+                int blue=0;double sumX=0,sumY=0;
                 for(int y=146;y<154;++y)for(int x=236;x<244;++x){const auto n=(y*480+x)*3;
-                    if(image[n]>240&&image[n+1]<25&&image[n+2]<15){++red;sumX+=x+.5;sumY+=y+.5;}}
-                require(red>=2&&red<=16,"visible compact emissive red dot");
-                require(std::abs(sumX/red-240)<.01&&std::abs(sumY/red-150)<.01,"rendered red dot centered exactly");
-                std::cout<<(fallback?"fallback":"actual")<<" frame="<<frame<<" red="<<red<<" center="<<sumX/red<<","<<sumY/red<<"\n";
+                    if(image[n+2]>240&&image[n+1]>160&&image[n]<130){++blue;sumX+=x+.5;sumY+=y+.5;}}
+                require(blue>=2&&blue<=16,"visible compact emissive crystal-blue dot");
+                require(std::abs(sumX/blue-240)<.01&&std::abs(sumY/blue-150)<.01,"rendered crystal-blue dot centered exactly");
+                std::cout<<(fallback?"fallback":"actual")<<" frame="<<frame<<" blue="<<blue<<" center="<<sumX/blue<<","<<sumY/blue<<"\n";
             }
             std::ofstream f(out/((fallback?"fallback-":"actual-")+std::to_string(frame)+".ppm"),std::ios::binary);
             f<<"P6\n480 300\n255\n";for(int y=299;y>=0;--y)f.write((char*)image.data()+y*480*3,480*3);

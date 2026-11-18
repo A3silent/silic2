@@ -1,8 +1,9 @@
 # Forest crystal arena authoring
 
-This directory owns the deterministic layout, original woodland boundary and
-explicit development fallbacks. The four actual Tripo bundles and their collision
-provenance belong to `res/models/tripo/forest/`; fallback meshes are not Tripo assets.
+This directory owns the deterministic Crystal layout and its explicit development
+fallback. The current map is treeless: a low mineral rim contains the arena, the
+original central crystal remains, and the renderer adds the [slate tile](slate-texture.md)
+to the floor. `forest_crystal` remains the serialized preset for compatibility.
 
 ## Rebuild
 
@@ -12,9 +13,9 @@ Run from the repository root:
 python3 res/models/forest_arena/generate.py
 ```
 
-The default generator requires all four actual Tripo manifests and collision files.
-It checks these before writing anything and refuses to overwrite the map if any
-are missing. Only explicit `--development` permits placeholder output. During
+The default generator requires the central crystal Tripo manifest and collision
+file. It checks these before writing anything and refuses to overwrite the map
+if either is missing. Only explicit `--development` permits placeholder output. During
 asset authoring, wait for the asset owner's approval of collision files: file
 existence alone does not certify that a proxy has been accepted.
 
@@ -24,7 +25,10 @@ megastructure is preserved byte-for-byte in `res/maps/crystal_megastructure_aren
 (SHA256 `2fe44617d6aa298ac4be2b05f62e35f17c4b6b4a55e7744b04d219eb10710f14`).
 Both maps share a directory so the archived map's relative assets remain valid.
 
-## Scene and provenance
+## Historical forest scene and provenance
+
+The following describes the earlier wooded revision. The live map and generator
+no longer reference the trees, roots, or forest silhouettes.
 
 - Open limestone clearing radius approximately 100m; flat floor 220 × 220m.
 - Real central crystal 140m high, 16.2145 × 17m footprint. The approved local

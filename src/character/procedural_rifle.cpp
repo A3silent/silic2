@@ -11,11 +11,11 @@
 namespace silic2 {
 namespace {
 constexpr float Pi=3.14159265359f;
-enum Material : size_t { Armor, Facet, Edge, Cavity, RedReflect, Energy, Core, Optic, Reticle, Count };
+enum Material : size_t { Armor, Facet, Edge, Cavity, EnergyReflect, Energy, Core, Optic, Reticle, Count };
 const std::array<glm::vec3,Count> Palette={
-    glm::vec3(.065f,.060f,.078f),glm::vec3(.17f,.163f,.20f),glm::vec3(.34f,.33f,.39f),
-    glm::vec3(.014f,.012f,.019f),glm::vec3(.23f,.018f,.035f),
-    glm::vec3(1,.008f,.025f),glm::vec3(1,.42f,.43f),glm::vec3(.11f,.10f,.14f),glm::vec3(1,.035f,.012f)};
+    glm::vec3(.060f,.070f,.085f),glm::vec3(.145f,.18f,.22f),glm::vec3(.29f,.38f,.46f),
+    glm::vec3(.012f,.018f,.026f),glm::vec3(.032f,.13f,.20f),
+    glm::vec3(.28f,.72f,1),glm::vec3(.75f,.94f,1),glm::vec3(.09f,.13f,.18f),glm::vec3(.28f,.72f,1)};
 struct Builder {
     std::array<StaticModelPart,Count> parts;
     Builder(){for(size_t i=0;i<Count;++i)parts[i].baseColorFactor=glm::vec4(Palette[i],1);}
@@ -121,11 +121,11 @@ void sight(Builder& b) {
     for(size_t i=1;i<rim.size();++i)b.beam(rim[i-1],rim[i],.0163f,.033f,Optic);
     b.beam({-.027f,.054f,z},{.027f,.054f,z},.014f,.053f,Armor);
     b.beam({0,.027f,z},{0,.052f,z},.032f,.035f,Optic);
-    // Rear-facing red inset; narrow, with a low-bloom region around the dot.
-    std::vector<glm::vec3> red;
-    for(const auto p:rim)red.push_back(p+glm::vec3(0,0,.0172f));
-    b.ribbon(red,.00432f,{0,0,1},Energy);
-    b.ribbon(red,.00145f,{0,0,1},Core);
+    // Rear-facing crystal-blue inset; leave the small aiming dot out of bloom.
+    std::vector<glm::vec3> inset;
+    for(const auto p:rim)inset.push_back(p+glm::vec3(0,0,.0172f));
+    b.ribbon(inset,.00432f,{0,0,1},Energy);
+    b.ribbon(inset,.00145f,{0,0,1},Core);
     // Tiny split bevels at the two tips preserve the pointed silhouette.
     for(int sign:{-1,1})b.tri({sign*.042f,.130f,z+.018f},{sign*.051f,.140f,z+.005f},{sign*.056f,.126f,z+.010f},Edge);
     // Keep the established eyeline and complete gun pose. Only the original
@@ -171,7 +171,7 @@ WeaponAsset buildProceduralRifle() {
     Builder b;
     // Narrow internal chassis: it never fills the gaps between the outer gills.
     b.plate({{-.425f,.004f},{-.365f,.026f},{-.10f,.030f},{.14f,.030f},{.165f,-.022f},{.02f,-.045f},{-.35f,-.034f}},.025f,.004f);
-    // Six separated swept gill/shutter shards on BOTH sides. Red chambers remain
+    // Six separated swept gill/shutter shards on BOTH sides. Blue chambers remain
     // visible between their diagonals; each shard tapers into a sharp front tooth.
     for(int i=0;i<6;++i) {
         const float z=-.350f+i*.046f;
@@ -195,7 +195,7 @@ WeaponAsset buildProceduralRifle() {
     // Main receiver-to-stock channel is emitted after all armor below.
     // Zigzag dorsal channel is visible from hip and rear three-quarter views.
     const std::vector<glm::vec3> dorsal={{-.014f,.059f,-.274f},{.007f,.058f,-.210f},{-.010f,.054f,-.169f},{.018f,.050f,-.112f},{0,.062f,-.013f},{.016f,.053f,.043f},{0,.050f,.125f}};
-    b.ribbon(dorsal,.007f,{0,1,0},RedReflect);
+    b.ribbon(dorsal,.007f,{0,1,0},EnergyReflect);
     auto top=dorsal;for(auto& p:top)p.y+=.0005f;b.ribbon(top,.0052f,{0,1,0},Energy);
     for(auto& p:top)p.y+=.0003f;b.ribbon(top,.0025f,{0,1,0},Core);
     // Curved forward-swept detachable magazine, four broad bends, split side armor.
@@ -203,7 +203,7 @@ WeaponAsset buildProceduralRifle() {
     for(float sign:{-1.f,1.f}) {
         const float x=sign*.036f;
         std::vector<glm::vec3> line={{x,-.055f,-.008f},{x,-.110f,-.023f},{x,-.143f,-.053f},{x,-.170f,-.067f},{x,-.202f,-.103f}};
-        b.ribbon(line,.009f,{sign,0,0},RedReflect);
+        b.ribbon(line,.009f,{sign,0,0},EnergyReflect);
         for(auto& p:line)p.x+=sign*.0004f;b.ribbon(line,.0054f,{sign,0,0},Energy);
         for(auto& p:line)p.x+=sign*.0002f;b.ribbon(line,.0025f,{sign,0,0},Core);
     }
@@ -233,7 +233,7 @@ WeaponAsset buildProceduralRifle() {
             {sign*.0559f,-.018f,-.005f},{sign*.0559f,.007f,.064f},{sign*.0559f,.010f,.114f},
             {sign*.0559f,.026f,.149f},{sign*.051f,.034f,.167f},{sign*.0465f,.021f,.183f},
             {sign*.0465f,-.001f,.258f},{sign*.0465f,-.024f,.297f},{sign*.0465f,-.095f,.315f}};
-        b.ribbon(route,.010f,{sign,0,0},RedReflect);
+        b.ribbon(route,.010f,{sign,0,0},EnergyReflect);
         for(auto& p:route)p.x+=sign*.0003f;b.ribbon(route,.0057f,{sign,0,0},Energy);
         for(auto& p:route)p.x+=sign*.0002f;b.ribbon(route,.0025f,{sign,0,0},Core);
     }
@@ -248,7 +248,7 @@ WeaponAsset buildProceduralRifle() {
         const float z=.337f+(.322f-.337f)*((.011f-xy.y)/.127f)+.0075f;
         back.emplace_back(xy.x,xy.y,z);normals.emplace_back(0,0,1);
     }
-    b.foldedRibbon(back,.012f,normals,RedReflect);
+    b.foldedRibbon(back,.012f,normals,EnergyReflect);
     for(size_t i=0;i<back.size();++i)back[i]+=normals[i]*.0004f;
     b.foldedRibbon(back,.0058f,normals,Energy);
     for(size_t i=0;i<back.size();++i)back[i]+=normals[i]*.0003f;

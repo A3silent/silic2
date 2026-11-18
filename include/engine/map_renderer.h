@@ -105,6 +105,7 @@ private:
     bool lightingEnabled = true;
     unsigned crystalTextureMask = 15u;
     GLuint forestNeutralTexture = 0;
+    std::unique_ptr<Texture> forestGroundTexture;
     std::array<std::shared_ptr<Texture>, 4> crystalTextures;
 
     // Lighting data

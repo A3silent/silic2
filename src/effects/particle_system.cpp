@@ -109,6 +109,7 @@ void ParticleSystem::initRenderingResources() {
     glEnableVertexAttribArray(1);
     
     glVertexAttribPointer(2, 1, GL_FLOAT, GL_FALSE, 7 * sizeof(float), (void*)(6 * sizeof(float)));
+    glEnableVertexAttribArray(2);
 
     
     glBindVertexArray(0);
@@ -251,7 +252,8 @@ void ParticleSystem::update(float deltaTime) {
             int idxCurr = std::max(0, std::min(fadeOutSmoothness, int(lifeRatio  * fadeOutSmoothness)));
             int idxNext = std::max(0, std::min(fadeOutSmoothness, int(nextRatio * fadeOutSmoothness)));
 
-            particle.pColor *= fadeLUT[idxNext] / fadeLUT[idxCurr];
+            // The last LUT cell is zero; avoid 0/0 in short-lived soft motes.
+            particle.pColor *= fadeLUT[idxCurr]>0 ? fadeLUT[idxNext] / fadeLUT[idxCurr] : 0.f;
             
         }
             
@@ -309,7 +311,13 @@ void ParticleSystem::render(const glm::mat4& view, const glm::mat4& projection) 
         glBindBuffer(GL_ARRAY_BUFFER, VBO);
         glBufferData(GL_ARRAY_BUFFER, vertexData.size() * sizeof(float), vertexData.data(), GL_DYNAMIC_DRAW);
         
-        // Enable blending for particles
+        const bool wasBlend=glIsEnabled(GL_BLEND), wasPointSize=glIsEnabled(GL_PROGRAM_POINT_SIZE);
+        GLboolean oldDepthMask;glGetBooleanv(GL_DEPTH_WRITEMASK,&oldDepthMask);
+        GLint srcRGB,dstRGB,srcAlpha,dstAlpha;
+        glGetIntegerv(GL_BLEND_SRC_RGB,&srcRGB);glGetIntegerv(GL_BLEND_DST_RGB,&dstRGB);
+        glGetIntegerv(GL_BLEND_SRC_ALPHA,&srcAlpha);glGetIntegerv(GL_BLEND_DST_ALPHA,&dstAlpha);
+        glEnable(GL_PROGRAM_POINT_SIZE);
+        // Existing soft point shader, with depth testing but no depth writes.
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         
@@ -318,9 +326,10 @@ void ParticleSystem::render(const glm::mat4& view, const glm::mat4& projection) 
         
         glDrawArrays(GL_POINTS, 0, static_cast<GLsizei>(vertexData.size() / 7));
         
-        // Restore depth writing
-        glDepthMask(GL_TRUE);
-        glDisable(GL_BLEND);
+        glDepthMask(oldDepthMask);
+        glBlendFuncSeparate(srcRGB,dstRGB,srcAlpha,dstAlpha);
+        if(!wasBlend)glDisable(GL_BLEND);
+        if(!wasPointSize)glDisable(GL_PROGRAM_POINT_SIZE);
         
         glBindVertexArray(0);
     }
@@ -451,6 +460,7 @@ GroundParticleSystem::~GroundParticleSystem() = default;
 
 void GroundParticleSystem::reset() {
     emissionTimer = 0.0f;
+    crystalSeed = 42;
     if (particleSystem) {
         particleSystem->reset();
     }
@@ -462,7 +472,37 @@ void GroundParticleSystem::initialize(const Map& map) {
               << " floor spawn points" << std::endl;
 }
 
+void GroundParticleSystem::setEmitterPosition(const glm::vec3& feet) {
+    if(currentMode==GParticleMode::CRYSTAL) {
+        if(glm::length(feet-emitterPosition)>8.f)reset();
+        // A bounded local wake, not a persistent trail across the arena.
+        for(auto& p:particleSystem->particles)
+            if(glm::length(glm::vec2(p.pPosition.x-feet.x,p.pPosition.z-feet.z))>7.f)p.pLife=0;
+    }
+    emitterPosition=feet;
+}
+
+void GroundParticleSystem::updateCrystal(float dt) {
+    if(dt<=0)return;
+    particleSystem->update(dt);
+    if(!particleSystemEnabled || emissionRate<=0)return;
+    emissionTimer+=dt;
+    const float interval=1.f/emissionRate;
+    // Never turn a long frame into an unbounded catch-up loop.
+    const size_t count=std::min<size_t>(96,static_cast<size_t>(emissionTimer/interval));
+    emissionTimer=std::fmod(emissionTimer,interval);
+    auto unit=[&](){crystalSeed=1664525u*crystalSeed+1013904223u;return float(crystalSeed>>8)*(1.f/16777216.f);};
+    for(size_t i=0;i<count && particleSystem->getActiveParticles()<96;++i) {
+        const float angle=unit()*6.2831853f,radius=std::sqrt(.81f+unit()*(17.64f-.81f));
+        const auto position=emitterPosition+glm::vec3(std::cos(angle)*radius,.12f+unit()*.58f,std::sin(angle)*radius);
+        const auto velocity=glm::vec3((unit()-.5f)*.12f,.65f+unit()*.45f,(unit()-.5f)*.12f);
+        // Existing point shader amplifies color about four times; size is pixels/20.
+        particleSystem->emit(position,velocity,{.06f,.15f,.21f},3.f,.15f+unit()*.05f,0,1.5f);
+    }
+}
+
 void GroundParticleSystem::update(float deltaTime) {
+    if(currentMode==GParticleMode::CRYSTAL){updateCrystal(deltaTime);return;}
     if (!particleSystemEnabled || floorPositions.empty()) {
         particleSystem->update(deltaTime);
         return;
@@ -482,6 +522,7 @@ void GroundParticleSystem::update(float deltaTime) {
                 config = fireConfig;
                 break;
             }
+            case GParticleMode::CRYSTAL: return; // handled by the local emitter above
             case GParticleMode::DUST:{
                 config = dustConfig;
                 break;
@@ -515,6 +556,7 @@ void GroundParticleSystem::update(float deltaTime) {
                 pcolor = calculateFireColor(1.0f);  // Start with full intensity color
                 break;
             }
+            case GParticleMode::CRYSTAL: return;
             case GParticleMode::DUST:{
                 pcolor = glm::vec3(0.3f, 0.3f, 0.5f);  // Start with full intensity color
                 break;
@@ -529,6 +571,7 @@ void GroundParticleSystem::update(float deltaTime) {
 }
 
 void GroundParticleSystem::render(const glm::mat4& view, const glm::mat4& projection) {
+    if(currentMode==GParticleMode::CRYSTAL){if(particleSystemEnabled)particleSystem->render(view,projection);return;}
     if (particleSystemEnabled) {
         // Enable additive blending for glowing fire effect
         glEnable(GL_BLEND);

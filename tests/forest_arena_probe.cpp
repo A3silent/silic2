@@ -37,7 +37,29 @@ int main(int argc,char** argv) {
     try {
         Map map;if(!map.loadFromFile(argv[1]))throw std::runtime_error(map.getLastError());auto world=map.getSpatialWorld();if(!world)throw std::runtime_error("Spatial world required");
         auto arena=std::make_shared<ArenaDefinition>(ArenaDefinition::fromMap(map));
-        check("forest_identity",map.getEnvironmentPreset()==EnvironmentPreset::ForestCrystal);
+        check("open_crystal_identity",map.getEnvironmentPreset()==EnvironmentPreset::ForestCrystal &&
+              map.getGameMode()==GameMode::ArenaSurvival);
+        check("spire_is_only_model",!map.getModels().empty() &&
+              std::all_of(map.getModels().begin(),map.getModels().end(),[](const auto& m) {
+                  return m.material=="forest_spire";
+              }));
+        const auto isRim=[](const Brush& b){return b.material=="forest_rim";};
+        const auto knownSurface=[&](const Brush& b) {
+            return isRim(b)||b.material=="forest_ground"||b.material=="forest_spire";
+        };
+        const auto& brushes=map.getBrushes();
+        const auto& collision=map.getCollisionBrushes();
+        check("only_mineral_render_and_collision_surfaces",
+              std::all_of(brushes.begin(),brushes.end(),knownSurface) &&
+              std::all_of(collision.begin(),collision.end(),knownSurface));
+        check("complete_visible_rim",
+              std::count_if(brushes.begin(),brushes.end(),isRim)==12 &&
+              std::count_if(collision.begin(),collision.end(),isRim)==12);
+        const auto rimId=[&](uint32_t id) {
+            return std::any_of(brushes.begin(),brushes.end(),[&](const auto& b) {
+                return b.id==id && isRim(b);
+            });
+        };
         check("far_plane_covers_spire_and_sky",map.getWorldSettings().farPlane>=400);
         check("map_diagnostics_empty",map.getSpatialDiagnostics().empty());for(const auto& d:map.getSpatialDiagnostics())std::cerr<<d<<'\n';
         check("connected_navigation",arena->hasConnectedWaypoints(.34f));
@@ -50,14 +72,36 @@ int main(int argc,char** argv) {
             check("spawn_"+std::to_string(i)+"_clear_and_connected",world->isWalkable(starts[i],.65f)&&linked);
         }
         SpatialWorld visible(map.getBrushes(),{},{});
-        // Independent eyes-height radial samples must hit visible thicket as well
-        // as physics. The same sampled ray need not have identical hit distance.
+        // At player height the visible mineral lip is the physical boundary.
+        // Above it the horizon stays open in every direction.
+        bool openHorizon=true;
         for(int i=0;i<48;++i) {
-            const float angle=float(i)*6.28318530718f/48;glm::vec3 direction(std::cos(angle),0,std::sin(angle));
-            auto start=direction*90.f+glm::vec3(0,1.1f,0),end=direction*130.f+glm::vec3(0,1.1f,0);
-            auto hit=world->raycast(start,end),vh=visible.raycast(start,end);J entry=J::object();entry["angle_degrees"]=J(i*7.5);entry["physics_hit"]=J(hit.hit);entry["visual_hit"]=J(vh.hit);entry["physics_position"]=vector(hit.position);entry["visual_position"]=vector(vh.position);entry["object_id"]=J(double(hit.objectId));report["boundaries"].push_back(entry);
-            check("woodland_boundary_"+std::to_string(i),hit.hit&&vh.hit&&glm::length(glm::vec2(hit.position.x,hit.position.z))>=95);
+            const float angle=float(i)*6.28318530718f/48;
+            const glm::vec3 direction(std::cos(angle),0,std::sin(angle));
+            const auto start=direction*90.f+glm::vec3(0,1.1f,0);
+            const auto end=direction*130.f+glm::vec3(0,1.1f,0);
+            const auto hit=world->raycast(start,end),vh=visible.raycast(start,end);
+            const auto highStart=direction*90.f+glm::vec3(0,3.5f,0);
+            const auto highEnd=direction*225.f+glm::vec3(0,3.5f,0);
+            const bool highClear=!world->raycast(highStart,highEnd).hit &&
+                                 !visible.raycast(highStart,highEnd).hit;
+            openHorizon &= highClear;
+            J entry=J::object();
+            entry["angle_degrees"]=J(i*7.5);
+            entry["physics_hit"]=J(hit.hit);
+            entry["visual_hit"]=J(vh.hit);
+            entry["high_view_clear"]=J(highClear);
+            entry["physics_position"]=vector(hit.position);
+            entry["visual_position"]=vector(vh.position);
+            entry["object_id"]=J(double(hit.objectId));
+            report["boundaries"].push_back(entry);
+            const float radius=glm::length(glm::vec2(hit.position.x,hit.position.z));
+            check("visible_mineral_rim_"+std::to_string(i),
+                  hit.hit && vh.hit && rimId(hit.objectId) && rimId(vh.objectId) &&
+                  glm::length(hit.position-vh.position)<.002f &&
+                  glm::dot(hit.normal,direction)<-.9f && radius>98 && radius<104);
         }
+        check("horizon_clear_above_rim",openHorizon);
         auto centerHit=world->raycast({-20,1.2f,0},{20,1.2f,0});
         check("central_spire_visible_solid",centerHit.hit&&visible.raycast({-20,1.2f,0},{20,1.2f,0}).hit);
         check("central_spire_blocks_both_LOS",!enemyGeometry::clear({-20,1.2f,0},{20,1.2f,0},&map)&&!enemyGeometry::clear({20,1.2f,0},{-20,1.2f,0},&map));
@@ -78,49 +122,42 @@ int main(int argc,char** argv) {
         Enemy chaser({-20,.015f,0});chaser.setArenaDefinition(arena);int frame=0;
         for(;frame<3000&&glm::length(chaser.getPosition()-glm::vec3(20,.015f,0))>.8f;++frame)chaser.update(.01f,{20,.015f,0},&map);
         check("chaser_detours_central_spire",glm::length(chaser.getPosition()-glm::vec3(20,.015f,0))<=.8f);report["chaser_end"]=vector(chaser.getPosition());
-        // Jump near the visible edge must not bypass the wooded boundary.
+        // Check real player sprint-jumps at both sector seams and face interiors.
         report["jump_boundaries"]=J::array();
-        for(int i=0;i<8;++i) {
-            const float angle=i*6.28318530718f/8;const glm::vec3 direction(std::cos(angle),0,std::sin(angle));
-            Player player;Camera camera;const auto start=direction*95.f+glm::vec3(0,.015f,0);player.respawn(start);camera.setDirection(direction);float maximumHeight=0;
-            for(int f=0;f<400;++f){PlayerInput input;input.forward=true;input.sprint=f==0;input.jump=f>=15&&f<25;player.processInput(input,&camera,.01f);player.update(.01f,&map);maximumHeight=std::max(maximumHeight,player.getPosition().y);}
-            const auto p=player.getPosition();J jumpEvidence=J::object();jumpEvidence["angle_degrees"]=J(double(i*45));jumpEvidence["start_clear"]=J(world->isWalkable(start,.3f));jumpEvidence["start"]=vector(start);jumpEvidence["end"]=vector(p);jumpEvidence["highest_feet"]=J(double(maximumHeight));report["jump_boundaries"].push_back(jumpEvidence);check("sprint_jump_kept_inside_"+std::to_string(i),std::isfinite(p.y)&&p.y>-.1f&&glm::length(glm::vec2(p.x,p.z))<110);
-        }
-        // Authored inner-edge trees are tested individually from the clearing.
-        // A thicket blocking the approach is recorded, never counted as tree contact.
-        report["tree_approaches"]=J::array();size_t trees=0,contacts=0;
-        for(const auto& model:map.getModels()) {
-            if(model.name.find("Tripo pine_")!=0 || model.collisionAsset.empty() || glm::length(glm::vec2(model.position.x,model.position.z))>=104)continue;
-            ++trees;auto brush=std::find_if(map.getCollisionBrushes().begin(),map.getCollisionBrushes().end(),[&](const auto& b){return b.id==model.id;});
-            if(brush==map.getCollisionBrushes().end())throw std::runtime_error("Tree proxy missing");
-            SpatialWorld tree({*brush},{},{});const auto direction=glm::normalize(glm::vec3(model.position.x,0,model.position.z));const glm::vec3 tangent(-direction.z,0,direction.x);
-            float offset=0;bool unobstructed=false;
-            for(float sample:{0.f,-1.5f,1.5f,-3.f,3.f}) {
-                const auto a=direction*90.f+tangent*sample+glm::vec3(0,1.1f,0),b=model.position+direction*5.f+tangent*sample+glm::vec3(0,1.1f,0);
-                if(world->raycast(a,b).objectId==model.id){offset=sample;unobstructed=true;break;}
+        for(int i=0;i<16;++i) {
+            const float angle=i*6.28318530718f/16;
+            const glm::vec3 direction(std::cos(angle),0,std::sin(angle));
+            Player player;Camera camera;
+            const auto start=direction*95.f+glm::vec3(0,.015f,0);
+            player.respawn(start);camera.setDirection(direction);
+            float maximumHeight=0,maximumRadius=0;
+            for(int f=0;f<400;++f) {
+                PlayerInput input;
+                input.forward=true;input.sprint=f==0;input.jump=f>=15&&f<25;
+                player.processInput(input,&camera,.01f);player.update(.01f,&map);
+                const auto p=player.getPosition();
+                maximumHeight=std::max(maximumHeight,p.y);
+                maximumRadius=std::max(maximumRadius,glm::length(glm::vec2(p.x,p.z)));
             }
-            const auto start=direction*90.f+tangent*offset+glm::vec3(0,.015f,0);bool crossed=false,contact=false,rootSupport=false,jumped=false,valid=world->isWalkable(start,.3f);float highest=0;glm::vec3 end=start;
-            for(bool jump:{false,true}) {
-                Player actor;Camera view;actor.respawn(start);view.setDirection(direction);bool requestedJump=false;
-                for(int f=0;f<500;++f) {
-                    auto before=actor.getPosition()+glm::vec3(0,.9f,0);PlayerInput input;input.forward=true;
-                    const auto wall=world->raycast(actor.getPosition()+glm::vec3(0,.8f,0),actor.getPosition()+direction*1.6f+glm::vec3(0,.8f,0));
-                    if(jump&&!requestedJump&&f>10&&(wall.hit||f==150)){input.jump=true;requestedJump=true;}
-                    actor.processInput(input,&view,.01f);actor.update(.01f,&map);auto p=actor.getPosition();auto center=p+glm::vec3(0,.9f,0);
-                    if(glm::length(center-before)>1e-6f)crossed|=tree.raycast(before,center).hit;
-                    contact|=tree.raycast(center,center+direction*.45f).hit;
-                    const auto support=world->support(p,.06f,.08f,.3f);rootSupport|=support.hit&&support.objectId==model.id&&actor.isOnGround();
-                    contact|=rootSupport;highest=std::max(highest,p.y);jumped|=jump&&p.y>start.y+.4f;
-                    valid&=std::isfinite(p.x)&&std::isfinite(p.y)&&std::isfinite(p.z)&&p.y>-.1f&&glm::length(glm::vec2(p.x,p.z))<110;end=p;
-                }
-            }
-            contacts+=contact;check("inner_tree_"+std::to_string(model.id)+"_approach_jump_no_body_crossing",valid&&jumped&&!crossed);
-            J evidence=J::object();evidence["id"]=J(double(model.id));evidence["species"]=J(model.name);evidence["direct_eye_ray_tree_first"]=J(unobstructed);evidence["actual_tree_contact"]=J(contact);evidence["stood_on_tree_root"]=J(rootSupport);evidence["body_center_crossed_tree_surface"]=J(crossed);evidence["highest_feet"]=J(double(highest));evidence["end"]=vector(end);report["tree_approaches"].push_back(evidence);
+            const auto p=player.getPosition();
+            const bool startClear=world->isWalkable(start,.3f);
+            J evidence=J::object();
+            evidence["angle_degrees"]=J(i*22.5);
+            evidence["start_clear"]=J(startClear);
+            evidence["start"]=vector(start);
+            evidence["end"]=vector(p);
+            evidence["highest_feet"]=J(double(maximumHeight));
+            evidence["maximum_radius"]=J(double(maximumRadius));
+            report["jump_boundaries"].push_back(evidence);
+            check("sprint_jump_kept_inside_"+std::to_string(i),startClear &&
+                  maximumHeight>.5f && maximumRadius<104 && std::isfinite(p.y) &&
+                  p.y>-.1f && player.isOnGround());
         }
-        check("twelve_inner_edge_trees_tested",trees==12);check("actual_inner_tree_contacts_observed",contacts>0);report["trees_contacted"]=J(double(contacts));
-        // Short approach uses normal sprint/slide input; must stop at woodland.
-        const auto edge=travel(map,{90,.015f,0},{120,.015f,0},true,true,4);
-        check("slide_contacts_visible_boundary",edge.clear&&edge.slid&&!edge.reached&&edge.end.x<110);report["boundary_slide_end"]=vector(edge.end);
+        // Begin near enough for normal slide input to contact the mineral face.
+        const auto edge=travel(map,{97,.015f,0},{120,.015f,0},true,true,4);
+        check("slide_contacts_visible_boundary",
+              edge.clear && edge.slid && !edge.reached && edge.end.x>98 && edge.end.x<104);
+        report["boundary_slide_end"]=vector(edge.end);
     }catch(const std::exception& e){report["error"]=J(e.what());std::cerr<<e.what()<<'\n';++failures;}
     report["failures"]=J(double(failures));std::ofstream(std::string(argv[2])+"/forest-report.json")<<report.toString()<<'\n';return failures?1:0;
 }

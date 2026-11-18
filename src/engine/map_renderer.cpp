@@ -42,6 +42,7 @@ const CrystalTextureProfile crystalProfiles[] = {
     {"res/texture/crystal_combat/dark_shell-64.png",{.25899f,.20994f,.16303f},8.f,.65f},
     {"res/texture/crystal_combat/crystal_cleavage-64.png",{.29666f,.41174f,.47789f},6.f,.48f}
 };
+constexpr char forestGroundFile[] = "res/texture/forest_arena/crystal_slate_albedo.png";
 int crystalProfile(const std::string& material) {
     if(material=="combat_foundation" || material=="combat_deck") return 0;
     if(material=="combat_ivory") return 1;
@@ -94,6 +95,25 @@ bool MapRenderer::loadMap(const Map& map) {
         glTexImage2D(GL_TEXTURE_2D,0,GL_RGBA,1,1,0,GL_RGBA,GL_UNSIGNED_BYTE,white);
         glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
         glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+
+        // Local material asset is optional in source-only checkouts.
+        std::error_code error;
+        if(std::filesystem::is_regular_file(forestGroundFile,error) &&
+           std::any_of(brushes.begin(),brushes.end(),[](const Brush& brush) {
+               return brush.surfaceType==SurfaceType::FLOOR && brush.texture.empty();
+           })) {
+            auto texture=std::make_unique<Texture>();
+            GLint unpack=4;
+            glGetIntegerv(GL_UNPACK_ALIGNMENT,&unpack);
+            glPixelStorei(GL_UNPACK_ALIGNMENT,1);
+            if(texture->loadFromFile(forestGroundFile)) {
+                glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR_MIPMAP_LINEAR);
+                glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
+                forestGroundTexture=std::move(texture);
+            }
+            glPixelStorei(GL_UNPACK_ALIGNMENT,unpack);
+            glBindTexture(GL_TEXTURE_2D,forestNeutralTexture);
+        }
     }
     if(environment && environment->scene().combatWorld) {
         // Four cache lookups only at map load; failed files leave the original
@@ -181,6 +201,7 @@ void MapRenderer::clearMap() {
     environment.reset();
     arenaShader.reset();
     forestCrystalShader.reset();
+    forestGroundTexture.reset();
     if(forestNeutralTexture){glDeleteTextures(1,&forestNeutralTexture);forestNeutralTexture=0;}
     combinedLights.clear();
     renderableBrushes.clear();
@@ -457,6 +478,7 @@ void MapRenderer::renderBrush(const RenderableBrush& brush, const glm::mat4& mod
     
     shader.setMat4("model", model);
     shader.setVec3("objectColor", brush.color);
+    const Texture* texture=brush.texture.get();
     
     if (environment) {
         shader.setInt("materialKind", brush.surfaceType == SurfaceType::FLOOR ? 1 :
@@ -477,6 +499,9 @@ void MapRenderer::renderBrush(const RenderableBrush& brush, const glm::mat4& mod
             const int kind=brush.surfaceType==SurfaceType::FLOOR?20:
                 brush.material=="forest_spire"?23:brush.material=="forest_thicket"?22:21;
             shader.setInt("materialKind",kind);
+            const bool useGroundTile=kind==20 && !texture && forestGroundTexture;
+            shader.setBool("useForestGroundTexture",useGroundTile);
+            if(useGroundTile) texture=forestGroundTexture.get();
         }
         shader.setVec3("brushMinimum",brush.minimum);
         shader.setVec3("brushSize",glm::max(brush.maximum-brush.minimum,glm::vec3(.001f)));
@@ -484,7 +509,7 @@ void MapRenderer::renderBrush(const RenderableBrush& brush, const glm::mat4& mod
     // Bind texture
     const bool profileEnabled=brush.crystalTextureProfile<0 ||
         (crystalTextureMask & (1u<<brush.crystalTextureProfile));
-    if (brush.texture && profileEnabled) {
+    if (texture && profileEnabled) {
         if(brush.crystalTextureProfile>=0) {
             const auto& profile=crystalProfiles[brush.crystalTextureProfile];
             shader.setVec3("textureMean",profile.mean);
@@ -493,12 +518,14 @@ void MapRenderer::renderBrush(const RenderableBrush& brush, const glm::mat4& mod
         }
         shader.setBool("useTexture", true);
         shader.setInt("texture1", 0);
-        brush.texture->bind(0);
+        texture->bind(0);
     } else {
         shader.setBool("useTexture", false);
-        // Forest ground is untextured; do not leave the previous pixel target
-        // bound to a sampler while it is also the current render attachment.
-        if(environment && environment->scene().forestWorld) glBindTexture(GL_TEXTURE_2D,forestNeutralTexture);
+        // Keep an untextured Forest draw from sampling the current pixel target.
+        if(environment && environment->scene().forestWorld) {
+            glActiveTexture(GL_TEXTURE0);
+            glBindTexture(GL_TEXTURE_2D,forestNeutralTexture);
+        }
     }
     
     glBindVertexArray(brush.VAO);

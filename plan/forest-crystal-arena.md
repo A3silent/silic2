@@ -45,3 +45,37 @@ prefer resource sharing/batching/culling before visual simplification, and repor
 
 Follow-up: user selected480×300 as the next default internal resolution to try; retain the
 completed forest resource-sharing and instancing optimization.
+
+User revision 2026-11-13: remove every decorative black ground rune/totem/pattern,
+retaining the natural floor material. Make the forest arena much darker, with a
+strong luminous central crystal. Preserve distant scene silhouettes rather than
+restricting visibility to a small circular pool. Use matching pale crystal-blue
+weapon energy, player projectiles, player aura and nearby rising particles.
+Restore the earlier upward-floating particle character around the player, with
+bounded emission, pause/reset/map-switch lifecycle and no aiming obstruction.
+Represent first-person self-emission through luminous weapon seams, continuous
+cool light on nearby surfaces and rising blue particles; no new hands/body model
+is requested. This explicitly adds player light to the earlier sky/crystal-only
+lighting direction and supersedes the ground engraving requirement. Keep the
+forest layout/collision/navigation, 480x300 rendering, mesh instancing/culling,
+0.03s firing interval, 0.75m visual bullets, speed195 and existing combat rules.
+Hollow environment remains unchanged; the shared rifle/projectile palette may
+follow the new crystal-blue direction in either map. No paid assets or benchmark.
+
+User revision 2026-11-13: open the skyline completely by removing the authored
+trees, woodland roots and shrubs, and procedural distant pine silhouettes. A
+low visible rock rim preserves arena containment without forest collision.
+Make the eye and stars clearly visible against the dark sky, and frame the
+eye clear of the crystal at arrival. Use an original generated tile of dark
+blue-gray slate on the floor, with no symbols or vegetation. Preserve the
+central crystal, ground dimensions, combat layout, player glow and other maps.
+
+User revision 2026-11-17: make the sky eye about 15% smaller, with a gentle
+local tremor and contraction around its existing anchor. Stars vary their
+brightness independently while staying fixed in the sky. Preserve the eye's
+readability, dark palette and timed transformation. The effects follow combat
+time so pause freezes them and a restart reproduces their starting frame.
+
+Follow-up: run the eye motion at 20% of its previous rate and use 20% of the
+previous translation and contraction amplitudes, for movement that is barely
+perceptible. Keep its resting size and star twinkling unchanged.

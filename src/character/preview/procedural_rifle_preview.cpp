@@ -48,8 +48,8 @@ int main(int argc,char** argv) {
             GLint st;glGetIntegerv(GL_ACTIVE_TEXTURE,&st);require(st==GL_TEXTURE3,"active texture restored");glGetIntegerv(GL_BLEND_EQUATION_RGB,&st);require(st==GL_FUNC_REVERSE_SUBTRACT,"blend equation restored");
             require(glIsEnabled(GL_BLEND)&&glIsEnabled(GL_CULL_FACE)&&glIsEnabled(GL_SCISSOR_TEST)&&!glIsEnabled(GL_DEPTH_TEST),"GL enables restored");
             std::vector<unsigned char> pixels(w*h*3);glReadPixels(0,0,w,h,GL_RGB,GL_UNSIGNED_BYTE,pixels.data());
-            if(frame==1||frame==2){int count=0;double sx=0,sy=0;for(int y=146;y<154;++y)for(int x=236;x<244;++x){size_t n=(y*w+x)*3;if(pixels[n]>240&&pixels[n+1]<25&&pixels[n+2]<15){++count;sx+=x+.5;sy+=y+.5;}}
-                require(count==4&&sx/count==240&&sy/count==150,"tiny reticle remains centered without bloom");std::cout<<name<<" redDot="<<count<<" at "<<sx/count<<","<<sy/count<<"\n";}
+            if(frame==1||frame==2){int count=0;double sx=0,sy=0;for(int y=146;y<154;++y)for(int x=236;x<244;++x){size_t n=(y*w+x)*3;if(pixels[n+2]>240&&pixels[n+1]>160&&pixels[n]<130){++count;sx+=x+.5;sy+=y+.5;}}
+                require(count==4&&sx/count==240&&sy/count==150,"tiny reticle remains centered without bloom");std::cout<<name<<" blueDot="<<count<<" at "<<sx/count<<","<<sy/count<<"\n";}
             std::ofstream image(folder/(std::string(name)+".ppm"),std::ios::binary);image<<"P6\n"<<w<<" "<<h<<"\n255\n";for(int y=h-1;y>=0;--y)image.write((char*)pixels.data()+y*w*3,w*3);
             require(glGetError()==GL_NO_ERROR,"no GL errors");
         }

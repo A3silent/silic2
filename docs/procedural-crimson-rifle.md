@@ -155,6 +155,21 @@ base mesh) and a0.03-second firing interval. Bullet width, speed195, damage and
 swept collision are retained. The interval is half the previous0.06seconds;
 the existing per-frame firing/cooldown sampling is unchanged.
 
+## Crystal-blue presentation revision — 2026-11-13
+
+The later dark-forest direction replaces the red weapon presentation with pale
+crystal-blue energy, brighter cool cores, localized blue reflection and halo,
+including the first-person muzzle flash and small aiming point. The prior red
+concept and measurements above describe earlier iterations. Geometry, UVs,
+normals, indices and current sight dimensions remain identical; the change is
+material/shader presentation. The reticle remains centered and excluded from bloom.
+
+Player projectiles use a blue base color chosen for the existing emission and
+rim intensity so they remain visibly blue rather than clipping to white. Visual
+length0.75m, speed195 and firing interval0.03s are retained. In the forest arena,
+continuous cool light on nearby surfaces and local rising crystal motes reinforce
+first-person self-emission. Evidence: `artifacts/acceptance/dark-crystal-pass/`.
+
 - Shapes and material palette:`src/character/procedural_rifle.cpp`.
 - Facet shading and red bounce:`res/shaders/character_imported.frag`.
 - Local halo radius/strength:`res/shaders/character_overlay.frag`.

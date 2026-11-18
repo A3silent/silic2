@@ -154,7 +154,10 @@ bool App::loadMap(const std::string& path){
     director=std::make_unique<EncounterDirector>(definition?*definition:ArenaDefinition{});
     exploration=candidateExploration?std::make_unique<ExplorationController>(*currentMap):nullptr;
     enemyManager->setArenaDefinition(definition);
-    groundParticles->initialize(*currentMap);groundParticles->setEnabled(!arena&&!exploration&&GameConfig::getInstance().effects.enableGroundParticles);
+    const bool crystalAura=currentMap->getEnvironmentPreset()==EnvironmentPreset::ForestCrystal;
+    groundParticles=createEnhancedGroundParticleSystem(crystalAura?96:2000,crystalAura?GroundParticleSystem::GParticleMode::CRYSTAL:GroundParticleSystem::GParticleMode::FIRE);
+    groundParticles->initialize(*currentMap);
+    groundParticles->setEnabled((crystalAura||(!arena&&!exploration))&&GameConfig::getInstance().effects.enableGroundParticles);
     runController->restartRun(path);resetRuntimeState();setState(GameState::READY);return true;
 }
 
@@ -294,7 +297,9 @@ void App::updatePlaying(float dt){
     const float time=runController->stats().snapshot().runTime;
     if(!exploration&&currentMap->getEnvironmentPreset()!=EnvironmentPreset::None&&!transformationPlayed&&time>=currentMap->getEnvironment().transformationStart){audio->play(AudioCue::Transform,{},0,false);transformationPlayed=true;}
     updateFirstPerson(dt);
-    if(!arena&&!exploration)groundParticles->update(dt);
+    if(currentMap->getEnvironmentPreset()==EnvironmentPreset::ForestCrystal) {
+        groundParticles->setEmitterPosition(player->getPosition());groundParticles->update(dt);
+    } else if(!arena&&!exploration)groundParticles->update(dt);
     if(player->isDead())finishCurrentRun(RoomResult::PlayerDied,RunEndReason::PlayerDied);
     else if((arena&&director->complete(enemyManager->getLiveCount()))||(!arena&&!exploration&&enemyManager->hasSpawnedEnemies()&&enemyManager->allEnemiesDead()))finishCurrentRun(RoomResult::Cleared,RunEndReason::Completed);
 }
@@ -319,6 +324,7 @@ void App::resetRuntimeState(){
     audio->reset();hostileProjectiles->clear();enemyManager->clear();weapon->reset();characters->reset();groundParticles->reset();mapRenderer->resetEnvironment();
     if(exploration)exploration->reset();
     director->reset(runController->state().seed);player->respawn(getPlayerStartPosition());previousPlayerPosition=player->getPosition();
+    groundParticles->setEmitterPosition(player->getPosition());
     camera->resetOrientation();
     if(const auto* start=currentMap->getPlayerStart()) {
         const float yaw=glm::radians(start->rotation.y),pitch=glm::radians(start->rotation.x);
@@ -389,6 +395,9 @@ void App::render(){
     const auto view=camera->getViewMatrix(),projection=camera->getProjectionMatrix(float(pixelRenderer->getPixelWidth())/pixelRenderer->getPixelHeight(),aim.fov(player->getCurrentFov()),currentMap->getWorldSettings().farPlane);
     const auto& ws=currentMap->getWorldSettings();glClearColor(ws.backgroundColor.r,ws.backgroundColor.g,ws.backgroundColor.b,1);glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
     mapRenderer->clearDynamicLights();for(const auto& light:weapon->getActiveLights())mapRenderer->addDynamicLight(light.first,light.second,1,3);
+    // Continuous self-emission in Forest; distant visibility remains ambient-lit.
+    if(currentMap->getEnvironmentPreset()==EnvironmentPreset::ForestCrystal)
+        mapRenderer->addDynamicLight(player->getPosition()+glm::vec3(0,1.4f,0),{.28f,.72f,1.f},.9f,18.f);
     if(exploration)mapRenderer->setObservationState(exploration->snapshot().observationProgress,exploration->snapshot().calibrated);
     mapRenderer->setEnvironmentTime(runController->stats().snapshot().runTime);mapRenderer->setRiftWarnings(arena?director->warningProgress():std::array<float,4>{-1,-1,-1,-1});
     mapRenderer->render(view,projection);
@@ -398,8 +407,11 @@ void App::render(){
         CharacterView c;c.type=e.getType();c.position=e.getPosition();c.heading=e.getHeading();c.dimensions=e.getAABB().getSize();c.charging=e.isCharging();c.chargeProgress=e.getChargeProgress();c.aimLocked=e.isAimLocked();c.hitFlash=e.getHitFlash();c.phase=e.getId()*.731f;c.movement=glm::clamp(e.getMovementSpeed()/3.f,0.f,1.f);cv.push_back(c);
     }
     characters->renderWorld(view,projection,cv);renderProjectiles(view,projection);
-    if(!arena&&!exploration&&GameConfig::getInstance().effects.enableGroundParticles)groundParticles->render(view,projection);
-    if(translucentForest){mapRenderer->renderTranslucent(view,projection);weapon->render(view,projection);}
+    if(!translucentForest&&!arena&&!exploration&&GameConfig::getInstance().effects.enableGroundParticles)groundParticles->render(view,projection);
+    if(translucentForest){
+        mapRenderer->renderTranslucent(view,projection);weapon->render(view,projection);
+        groundParticles->render(view,projection);
+    }
     characters->renderFirstPerson(projection);
     if(!pendingScreenshot.empty())captureScreenshot(pendingScreenshot+"-scene",pixelRenderer->getPixelWidth(),pixelRenderer->getPixelHeight());
     pixelRenderer->endPixelRender(fw,fh);

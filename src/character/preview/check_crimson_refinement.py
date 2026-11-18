@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""Fast real-render red/green loop for the two user-marked interrupted seams.
+"""Fast real-render continuity check for the two user-marked interrupted seams.
 Usage: python3 src/character/preview/check_crimson_refinement.py RENDERER OUT_DIR
 The renderer must produce fresh hip.ppm and ads.ppm at exactly 480x300. This
-checks a bright-red 8-connected path through each marked region, excluding dim
+checks a bright crystal-blue 8-connected path through each marked region, excluding dim
 bloom. No world scene, enemies, UI, input, API or timing is needed to reproduce.
 """
 import collections
@@ -30,28 +30,28 @@ def path_check(name, roi, start, end):
     def within(p, bounds):
         x, y = p
         return bounds[0] <= x <= bounds[2] and bounds[1] <= y <= bounds[3]
-    red = set()
+    energy = set()
     for y in range(roi[1], roi[3] + 1):
         for x in range(roi[0], roi[2] + 1):
             r, g, b = data[(y*480+x)*3:(y*480+x)*3+3]
-            if r > 190 and r > 1.5*g and r > 1.5*b:
-                red.add((x, y))
-    begin = [p for p in red if within(p, start)]
-    target = {p for p in red if within(p, end)}
+            if b > 190 and g > 140 and b > 1.15*r:
+                energy.add((x, y))
+    begin = [p for p in energy if within(p, start)]
+    target = {p for p in energy if within(p, end)}
     seen, queue = set(begin), collections.deque(begin)
     while queue:
         x, y = queue.popleft()
         for dx in (-1, 0, 1):
             for dy in (-1, 0, 1):
                 p = x+dx, y+dy
-                if p in red and p not in seen:
+                if p in energy and p not in seen:
                     seen.add(p)
                     queue.append(p)
     passed = bool(target & seen)
     min_gap = min((max(abs(a[0]-b[0]), abs(a[1]-b[1])) for a in seen for b in target), default=None)
-    return {'pose': name, 'passed': passed, 'startRedPixels': len(begin), 'targetRedPixels': len(target),
+    return {'pose': name, 'passed': passed, 'startEmissionPixels': len(begin), 'targetEmissionPixels': len(target),
             'roi': roi, 'targetDistanceFromStartComponentPixels': min_gap,
-            'threshold': 'R>190 and R>1.5*G and R>1.5*B, 8-connectivity'}
+            'threshold': 'B>190 and G>140 and B>1.15*R, 8-connectivity'}
 
 checks = [path_check('hip', (295, 215, 339, 248), (296, 218, 307, 226), (324, 239, 332, 247)),
           path_check('ads', (220, 180, 260, 299), (225, 184, 255, 212), (225, 278, 255, 299))]

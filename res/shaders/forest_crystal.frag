@@ -95,21 +95,24 @@ void main() {
     // Broad normal-defined planes survive at 320x200. Fixed material palette
     // approximates the cold sky reflection; the interior supplies emission.
     float facet=0.45+0.30*abs(n.x)+0.25*abs(n.z);
-    vec3 tint=mix(vec3(0.13,0.18,0.36),vec3(0.21,0.13,0.35),clamp(phase,0.0,1.0));
-    vec3 surface=tint*(0.60+0.55*facet)+authored*0.12;
-    vec3 coreColor=mix(vec3(0.20,0.38,0.78),vec3(0.40,0.24,0.72),phase);
-    vec3 emission=coreColor*integral.x*1.85;
-    emission+=vec3(0.40,0.52,0.88)*integral.y*2.1;
-    emission+=vec3(0.12,0.20,0.42)*integral.z;
-    emission+=vec3(0.055,0.085,0.15)*fresnel;
-    surface+=vec3(0.18,0.28,0.48)*fresnel;
+    vec3 tint=mix(vec3(0.045,0.13,0.22),vec3(0.055,0.10,0.24),clamp(phase,0.0,1.0));
+    vec3 surface=tint*(0.60+0.55*facet)+authored*0.045;
+    vec3 coreColor=mix(vec3(0.28,0.72,1.0),vec3(0.30,0.62,1.0),phase);
+    vec3 emission=coreColor*integral.x*2.45;
+    emission+=vec3(0.75,0.94,1.0)*integral.y*2.2;
+    emission+=vec3(0.12,0.30,0.50)*integral.z;
+    emission+=vec3(0.025,0.09,0.15)*fresnel;
+    surface+=vec3(0.12,0.30,0.48)*fresnel;
     surface+=vec3(0.20,0.25,0.42)*etched*0.10;
-    // Compress only generated radiance, preserving blue/violet saturation and
+    // Compress only generated radiance, preserving crystal-blue saturation and
     // headroom. Opacity never suppresses the independent emitted contribution.
     emission=emission/(vec3(1.0)+emission*0.65);
-    emission=min(emission,vec3(0.53,0.64,0.82));
+    emission=min(emission,vec3(0.60,0.78,0.90));
     float absorption=1.0-transmission;
     // Denser mineral body; retain limited transmission and independent emission.
     float alpha=clamp(0.80+0.14*absorption+0.17*fresnel+0.055*integral.x,0.80,0.95);
-    FragColor=vec4(surface*alpha+emission,alpha);
+    vec3 radiance=surface*alpha+emission;
+    // Preserve hue at glancing highlights and leave headroom for transmission.
+    radiance*=min(1.0,0.94/max(max(radiance.r,radiance.g),max(radiance.b,0.001)));
+    FragColor=vec4(radiance,alpha);
 }

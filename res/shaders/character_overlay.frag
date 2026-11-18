@@ -15,11 +15,12 @@ void main(){
         const vec2 d[8]=vec2[](vec2(1,0),vec2(-1,0),vec2(0,1),vec2(0,-1),vec2(.707,.707),vec2(-.707,.707),vec2(.707,-.707),vec2(-.707,-.707));
         for(int i=0;i<8;++i){glow+=sourceAt(uv+d[i]*texelSize)*.0675;glow+=sourceAt(uv+d[i]*texelSize*2.5)*.033;}
     }
-    vec3 haze=vec3(.95,.007,.026)*glow;
+    vec3 crystalHaze=vec3(.20,.52,.72);
+    vec3 haze=crystalHaze*glow;
     if(coverage>.5){FragColor=vec4(min(color.rgb+haze,vec3(1)),1);}
     else {
         // Straight alpha output; scene detail shows through the low-strength halo.
         float alpha=min(glow*.50,.24);
-        FragColor=vec4(vec3(.95,.007,.026),alpha);
+        FragColor=vec4(crystalHaze,alpha);
     }
 }

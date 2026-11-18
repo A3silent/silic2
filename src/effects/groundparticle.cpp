@@ -13,6 +13,8 @@ std::unique_ptr<GroundParticleSystem> createEnhancedGroundParticleSystem(size_t 
     if (mode == GroundParticleSystem::GParticleMode::FIRE) {
         system->setEmissionRate(50.0f);  // Particles per second for fire
         system->setFireIntensity(3.0f);  // Much brighter, more intense fire
+    } else if (mode == GroundParticleSystem::GParticleMode::CRYSTAL) {
+        system->setEmissionRate(18.0f);
     } else if (mode == GroundParticleSystem::GParticleMode::DUST) {
         system->setEmissionRate(25.0f);  // A different rate for dust
     }

@@ -15,6 +15,7 @@ const glm::vec3 Warm(0.86f, 0.28f, 0.09f);
 const glm::vec3 Hot(1.0f, 0.61f, 0.19f);
 const glm::vec3 Dust(0.34f, 0.32f, 0.26f);
 const glm::vec3 Hit(0.78f, 0.91f, 0.94f);
+const glm::vec3 WeaponCore(0.75f, 0.94f, 1.0f);
 const glm::vec3 Bone(0.68f, 0.64f, 0.49f);
 const glm::vec3 Tissue(0.19f, 0.23f, 0.18f);
 const glm::vec3 Cavity(0.038f, 0.047f, 0.039f);
@@ -336,7 +337,7 @@ void CharacterPresentation::renderFirstPerson(const glm::mat4& projection) {
         if (muzzle > 0) {
             const auto origin = importedWeapon->muzzlePosition(root);
             const auto forward = importedWeapon->muzzleDirection(root);
-            bone(glm::mat4(1), origin, origin + forward*.05f, muzzle, 0, Hit, 1);
+            bone(glm::mat4(1), origin, origin + forward*.05f, muzzle, 0, WeaponCore, 1);
             draw(glm::mat4(1), weaponProjection, true);
         }
         return;

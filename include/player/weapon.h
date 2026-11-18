@@ -34,7 +34,7 @@ struct Bullet {
     Bullet(const glm::vec3& pos, const glm::vec3& dir, float spd = 50.0f)
         : position(pos), prevPosition(pos), direction(glm::normalize(dir)),
           lifetime(0.0f), maxLifetime(3.0f), speed(spd),
-          color(1.0f, 0.025f, 0.04f), intensity(2.0f), length(0.75f) {  // Red emissive tracer
+          color(0.12f, 0.30f, 0.42f), intensity(2.0f), length(0.75f) {  // Crystal blue after emission/rim intensity
         velocity = direction * speed;
     }
 

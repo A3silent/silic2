@@ -42,3 +42,10 @@ User follow-up on 2026-11-12: increase the current reduced sight width by35perce
 only, preserving height, depth, the centered reticle and the rest of the rifle.
 Validate the result and create a local Git version. This explicitly authorizes a
 commit for this delivery; the repository's source-only asset policy still applies.
+
+User visual revision on 2026-11-13: replace the rifle's red energy, hot cores,
+local reflections and halo with pale crystal-blue matching the darker forest.
+Use a matching small blue aiming point and blue projectiles; preserve the current
+geometry/sight tuning, centered aim, 0.75m visual bullet length, speed195 and
+0.03s firing interval. World player light and rising nearby crystal motes are
+integrated by VECTOR; the weapon remains independently self-luminous in first person.

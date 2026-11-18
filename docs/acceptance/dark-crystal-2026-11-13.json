@@ -1,0 +1,222 @@
+{
+  "task": "DARK-ACCEPT",
+  "date": "2026-11-13",
+  "result": "engineering_checks_and_ATLAS_visual_review_passed",
+  "requested_behavior": [
+    "No decorative ground runes/totem/rings",
+    "Dark forest with luminous crystal and faint distant silhouettes",
+    "Crystal-blue rifle energy/reticle/halo/projectiles",
+    "Continuous blue self-light and bounded rising nearby motes"
+  ],
+  "parameters": {
+    "player_light_color": [
+      0.28,
+      0.72,
+      1
+    ],
+    "player_light_intensity": 0.9,
+    "player_light_range_m": 18,
+    "particles": {
+      "emission_per_s": 18,
+      "point_size_px": [
+        3,
+        4
+      ],
+      "spawn_height_m": [
+        0.12,
+        0.7
+      ],
+      "life_s": 3,
+      "rise_speed_m_per_s": [
+        0.65,
+        1.1
+      ],
+      "radial_spawn_m": [
+        0.9,
+        4.2
+      ],
+      "live_cap": 96
+    },
+    "internal_resolution": [
+      480,
+      300
+    ]
+  },
+  "verification": {
+    "final_builds": {
+      "debug": "pass",
+      "release": "pass",
+      "final_commands": [
+        "make -f Makefile.map BUILD=debug -j4 all player-aura-check",
+        "make -f Makefile.map BUILD=release -j4 all player-aura-check"
+      ],
+      "final_logs": [
+        "build-debug.log",
+        "build-release.log"
+      ],
+      "pre_visibility_refinement_checks": "Debug+Release all/procedural-rifle-check/ads-check/player-aura-check passed; see pre-refinement-build-*.log. Only final three particle visibility scalars and corresponding CPU expectations changed afterward."
+    },
+    "final_actual_aura_checks": 12,
+    "ads_checks": 17,
+    "ads_record_version": "Pre-05 visibility scalar refinement. Full17/17 retained; rifle/ADS/lifecycle implementation unchanged. No rerun per ATLAS scoped final-check decision.",
+    "actual_bullet_render": {
+      "poses": 3,
+      "geometry_glow_physics_unchanged_checks_passed": true,
+      "expected_color_uniform": [
+        0.12,
+        0.3,
+        0.42
+      ],
+      "bright_actual_raster_max_rgb": [
+        76,
+        191,
+        255
+      ],
+      "observed": "Pale blue, preserves0.75m visible length, speed195, unchanged glow size and cadence; exact current body/glow transforms and VBO match prior long-bullet render.",
+      "proof": "bullets/blue-render-comparison.json",
+      "record_version": "Pre-05 particle-only refinement; bullet geometry, color, shaders and weapon implementation exactly unchanged."
+    },
+    "weapon_geometry_exactly_unchanged": true,
+    "environment_controlled_views": {
+      "01-arrival-level": {
+        "before_mean_luma": 0.13876151966775596,
+        "after_mean_luma": 0.045934683011982565,
+        "mean_ratio": 0.3310332945471223,
+        "after_peak_rgb": [
+          0.4745098039215686,
+          0.7333333333333333,
+          0.9568627450980393
+        ],
+        "after_clipped_pixel_count": 0
+      },
+      "02-eye-and-spire": {
+        "before_mean_luma": 0.06319595515250545,
+        "after_mean_luma": 0.028006379275599128,
+        "mean_ratio": 0.4431672756272724,
+        "after_peak_rgb": [
+          0.47058823529411764,
+          0.7411764705882353,
+          0.9411764705882353
+        ],
+        "after_clipped_pixel_count": 0
+      },
+      "03-natural-floor": {
+        "before_mean_luma": 0.19749393197167756,
+        "after_mean_luma": 0.07703288277777777,
+        "mean_ratio": 0.39005189682903774,
+        "after_peak_rgb": [
+          0.4627450980392157,
+          0.7333333333333333,
+          0.9607843137254902
+        ],
+        "after_clipped_pixel_count": 0
+      },
+      "04-woodland-edge": {
+        "before_mean_luma": 0.06693603269063181,
+        "after_mean_luma": 0.010949644237472769,
+        "mean_ratio": 0.16358370517835086,
+        "after_peak_rgb": [
+          0.047058823529411764,
+          0.054901960784313725,
+          0.07450980392156863
+        ],
+        "after_clipped_pixel_count": 0
+      },
+      "09-crystal-near": {
+        "before_mean_luma": 0.16096481806644883,
+        "after_mean_luma": 0.09369180727124182,
+        "mean_ratio": 0.5820638844978184,
+        "after_peak_rgb": [
+          0.4627450980392157,
+          0.7333333333333333,
+          0.9607843137254902
+        ],
+        "after_clipped_pixel_count": 0
+      },
+      "10-near-player-floor": {
+        "before_mean_luma": 0.16010711052287582,
+        "after_mean_luma": 0.04656647369825708,
+        "mean_ratio": 0.2908457566074415,
+        "after_peak_rgb": [
+          0.4627450980392157,
+          0.7215686274509804,
+          0.9568627450980393
+        ],
+        "after_clipped_pixel_count": 0
+      },
+      "11-floor-overview": {
+        "before_mean_luma": 0.12284734193355118,
+        "after_mean_luma": 0.03326028739106754,
+        "mean_ratio": 0.2707448681230581,
+        "after_peak_rgb": [
+          0.49411764705882355,
+          0.7529411764705882,
+          0.9764705882352941
+        ],
+        "after_clipped_pixel_count": 0
+      }
+    },
+    "final_hashed_source_files": 654,
+    "final_binary_hashes": {
+      "silic2": "4cef28aaf33872b42ab011ec62a5c5d005905a39b16abd2c8df0ac258a03d9c2",
+      "silic2-release": "5dc5d3c36ac9cd92fcde985bba53b5e10cb09bd73f522f4d9d73dcc920277c15",
+      "bin/macos/debug/procedural-rifle-check": "3990362a36a2bdc31d329312a8bb3d9e6e2823dd9b72a22854d8532964c0938d",
+      "bin/macos/debug/aim-state-check": "d8f18911ff152b6d4b11ccfa93f38774c42fa56932aa27d87f1c3a54ed8f1df7",
+      "bin/macos/debug/player-aura-check": "8ef97734c09beccef9575a769322c53013a8885b86c099d6461b00b15cc74cef",
+      "bin/macos/release/procedural-rifle-check": "401e4bf1ef19f9052e4a2f33c88ea699aa094a631ac754895724f731dbd38948",
+      "bin/macos/release/aim-state-check": "da32d3dc8f79f0e7a3bbe9cf4344628b42f7d2007654cabf0d275cd80d97aba8",
+      "bin/macos/release/player-aura-check": "da7af42984c0d517e901ed197153c401be55b5478aa2670612b11b178da0083e",
+      "artifacts/acceptance/dark-crystal-pass/core/app-aura-check": "37e1c8abebbe99d6cbbf349bbb6308d2f1baedbb44f9e098eeae1056c171970a",
+      "artifacts/acceptance/dark-crystal-pass/core/bullet-preview": "466bc87c997194fa87bf12b6fd8fa42fedb0054335af21225ef06ea5024b27b3"
+    }
+  },
+  "source_preservation": {
+    "baseline_files": 1052,
+    "assigned_changes": [
+      "Makefile.map",
+      "docs/agent-team.md",
+      "docs/forest-crystal-arena.md",
+      "docs/procedural-crimson-rifle.md",
+      "include/effects/particle_system.h",
+      "include/player/weapon.h",
+      "plan/forest-crystal-arena.md",
+      "plan/procedural-crimson-rifle.md",
+      "res/maps/starry_crystal_arena.json",
+      "res/models/forest_arena/generate.py",
+      "res/shaders/character_imported.frag",
+      "res/shaders/character_overlay.frag",
+      "res/shaders/forest_crystal.frag",
+      "res/shaders/forest_detail.frag",
+      "res/shaders/forest_map.frag",
+      "res/shaders/forest_sky.frag",
+      "src/character/character_presentation.cpp",
+      "src/character/preview/ads_weapon_check.cpp",
+      "src/character/preview/check_crimson_refinement.py",
+      "src/character/preview/procedural_rifle_preview.cpp",
+      "src/character/procedural_rifle.cpp",
+      "src/effects/groundparticle.cpp",
+      "src/effects/particle_system.cpp",
+      "src/engine/app.cpp"
+    ],
+    "unchanged": 1028,
+    "forest_changes_lighting_only": true,
+    "Hollow_and_archived_map_preserved": true,
+    "user_untracked_documents_preserved": true,
+    "new_test": "tests/player_aura_test.cpp"
+  },
+  "visual_review": [
+    "env/01-arrival-level-final-comparison.png",
+    "env/player-light-comparison.png",
+    "char/hip-ads-comparison.png",
+    "core/mote-refinement-grid.png",
+    "core/aura-app-refined/idle-hip-scene.png",
+    "core/aura-app-refined/looking-down-scene.png",
+    "core/aura-app-refined/side-idle-scene.png",
+    "core/bullets/hip-oblique.png"
+  ],
+  "limits": [
+    "Actual GL and App checks use synthetic inputs; no human playtest claimed.",
+    "No full performance benchmark, asset generation, commit or push."
+  ],
+  "evidence_root": "artifacts/acceptance/dark-crystal-pass"
+}

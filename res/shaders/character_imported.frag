@@ -20,12 +20,13 @@ void main(){
         vec3 eye=normalize(-cameraPosition);
         float spec=pow(max(dot(normal,normalize(key+eye)),0.0),42.0);
         float rim=pow(1.0-max(dot(normal,eye),0.0),3.0);
-        // Cool facet highlights distinguish near-black armor planes. The red
-        // bounce is local to the energized receiver, not a global light change.
+        // Cold facet highlights and local blue spill keep the dark armor
+        // legible beside its self-lit energy chambers and dorsal seams.
         float chamber=exp(-abs(localPosition.y+.005)*27.0)*exp(-abs(abs(localPosition.x)-.04)*35.0);
         chamber*=smoothstep(-.46,-.29,localPosition.z)*(1.0-smoothstep(.14,.23,localPosition.z));
-        lit=albedo*(.48+.72*diffuse)+vec3(.36,.33,.42)*spec*.55+vec3(.06,.045,.08)*rim;
-        lit+=vec3(.19,.003,.012)*chamber;
+        float dorsal=exp(-abs(localPosition.y-.05)*35.0)*exp(-abs(localPosition.x)*45.0);
+        lit=albedo*(.48+.72*diffuse)+vec3(.28,.42,.55)*spec*.55+vec3(.035,.07,.10)*rim;
+        lit+=vec3(.035,.14,.22)*(chamber*.9+dorsal*.65);
     }
     // Private target protocol: 0 = empty, .5 = opaque, 1 = opaque glow source.
     // The compositor reconstructs coverage; the reticle never enters bloom.

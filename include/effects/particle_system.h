@@ -3,6 +3,8 @@
 #include <glm/glm.hpp>
 #include <vector>
 #include <memory>
+#include <cstdint>
+#include <unordered_map>
 #include <glad/glad.h>
 #include "engine/map.h"
 
@@ -52,12 +54,15 @@ public:
     void setGravity(float pgravity) { defaultGravity = pgravity; }
     void setWindForce(const glm::vec3& wind) { windForce = wind; }
     void setFadeOut(bool enabled) { fadeOutEnabled = enabled; }
+    void setSoftPoints(bool enabled) { use3DBoxes = !enabled; }
     
     // Statistics
     size_t getActiveParticles() const;
     size_t getMaxParticles() const { return maxParticleCount; }
 
 private:
+    friend class GroundParticleSystem;
+    friend struct GroundParticleProbe;
     std::vector<Particle> particles;
     size_t maxParticleCount;
     size_t nextDeadParticle;
@@ -98,7 +103,8 @@ class GroundParticleSystem {
 public:
     enum class GParticleMode{
         FIRE,
-        DUST
+        DUST,
+        CRYSTAL
     };
 
     GroundParticleSystem(size_t maxParticles = 500);
@@ -116,13 +122,20 @@ public:
     void setEmissionRate(float particlesPerSecond) { emissionRate = particlesPerSecond; }
     void setFireIntensity(float intensity) { fireIntensity = intensity; }
     void setEnabled(bool enabled) { particleSystemEnabled = enabled; }
-    void setParticleMode(GParticleMode mode){ currentMode = mode; }
+    void setParticleMode(GParticleMode mode){ currentMode = mode; particleSystem->setSoftPoints(mode==GParticleMode::CRYSTAL); }
+    void setEmitterPosition(const glm::vec3& feet);
+    glm::vec3 getEmitterPosition() const { return emitterPosition; }
+    size_t getActiveParticles() const { return particleSystem->getActiveParticles(); }
     GParticleMode getParticleMode() const { return currentMode; }
     
     bool isEnabled() const { return particleSystemEnabled; }
 
 private:
+    friend struct GroundParticleProbe;
     std::unique_ptr<ParticleSystem> particleSystem;
+    glm::vec3 emitterPosition{0};
+    uint32_t crystalSeed = 42;
+    void updateCrystal(float deltaTime);
     std::vector<glm::vec3> floorPositions;  // Potential spawn points on floor surfaces
     
     // Emission settings
@@ -130,7 +143,7 @@ private:
     float emissionTimer = 0.0f;
     float fireIntensity = 1.0f;
     bool particleSystemEnabled = true;
-    GParticleMode currentMode; //Current Particle Mode
+    GParticleMode currentMode = GParticleMode::FIRE;
     
     struct ParticleConfig {
         glm::vec3 baseColor;

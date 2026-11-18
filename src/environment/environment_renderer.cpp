@@ -18,9 +18,12 @@ EnvironmentRenderer::EnvironmentRenderer(const EnvironmentScene& scene) : scene_
     setParticleCount(scene_.settings.particleCount);
     const auto paths=environmentShaderPaths(scene_.settings.preset);
     sky_ = std::make_unique<Shader>("res/shaders/environment_sky.vert", paths.skyFragment);
-    crystal_ = std::make_unique<Shader>("res/shaders/environment_crystal.vert", paths.detailFragment);
     particles_ = std::make_unique<Shader>(paths.particleVertex, paths.particleFragment);
-    requireLinked(*sky_); requireLinked(*crystal_); requireLinked(*particles_);
+    requireLinked(*sky_); requireLinked(*particles_);
+    if (!scene_.forestWorld) {
+        crystal_ = std::make_unique<Shader>("res/shaders/environment_crystal.vert", paths.detailFragment);
+        requireLinked(*crystal_);
+    }
     glGenVertexArrays(1, &emptyVao_);
     buildCrystals();
 }
@@ -48,6 +51,7 @@ float EnvironmentRenderer::transformation() const {
 void EnvironmentRenderer::buildCrystals() {
     const auto data = buildEnvironmentGeometry(scene_);
     crystalVertices_ = static_cast<GLsizei>(data.size()/7);
+    if (crystalVertices_ == 0) return;
     glGenVertexArrays(1,&crystalVao_); glGenBuffers(1,&crystalVbo_);
     glBindVertexArray(crystalVao_); glBindBuffer(GL_ARRAY_BUFFER,crystalVbo_);
     glBufferData(GL_ARRAY_BUFFER,data.size()*sizeof(float),data.data(),GL_STATIC_DRAW);
@@ -103,12 +107,14 @@ void EnvironmentRenderer::renderSky(const glm::mat4& view, const glm::mat4& proj
     glDepthMask(depthWrite); if(depthTest) glEnable(GL_DEPTH_TEST); if(cull) glEnable(GL_CULL_FACE);
 }
 void EnvironmentRenderer::renderDetails(const glm::mat4& view, const glm::mat4& projection) {
-    crystal_->use(); crystal_->setMat4("view",view); crystal_->setMat4("projection",projection);
-    setObservatoryUniforms(*crystal_);
-    crystal_->setVec3("cameraPosition",glm::vec3(glm::inverse(view)[3]));
-    crystal_->setFloat("phase",transformation()); crystal_->setFloat("time",seconds_);
-    crystal_->setVec4("riftWarnings",warnings_[0],warnings_[1],warnings_[2],warnings_[3]);
-    glBindVertexArray(crystalVao_); glDrawArrays(GL_TRIANGLES,0,crystalVertices_);
+    if (crystalVertices_ != 0) {
+        crystal_->use(); crystal_->setMat4("view",view); crystal_->setMat4("projection",projection);
+        setObservatoryUniforms(*crystal_);
+        crystal_->setVec3("cameraPosition",glm::vec3(glm::inverse(view)[3]));
+        crystal_->setFloat("phase",transformation()); crystal_->setFloat("time",seconds_);
+        crystal_->setVec4("riftWarnings",warnings_[0],warnings_[1],warnings_[2],warnings_[3]);
+        glBindVertexArray(crystalVao_); glDrawArrays(GL_TRIANGLES,0,crystalVertices_);
+    }
     GLboolean depthWrite; glGetBooleanv(GL_DEPTH_WRITEMASK,&depthWrite);
     const bool pointSize = glIsEnabled(GL_PROGRAM_POINT_SIZE);
     // Opaque, one-pixel motes stay depth-tested and never veil the combat scene.

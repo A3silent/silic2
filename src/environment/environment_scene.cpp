@@ -252,46 +252,14 @@ static std::vector<float> buildCombatWorldGeometry(const EnvironmentScene& scene
     return data;
 }
 
-// Distant woodland silhouettes: deterministic, opaque crossed geometry in one
-// static VBO. These are authored low-detail representations, not imported trees.
-static std::vector<float> buildForestGeometry(const EnvironmentScene&) {
-    std::vector<float> data;
-    constexpr float pi=3.14159265359f;
-    auto triangle=[&](glm::vec3 a,glm::vec3 b,glm::vec3 c,float tint){
-        auto n=glm::normalize(glm::cross(b-a,c-a));
-        for(auto p:{a,b,c})data.insert(data.end(),{p.x,p.y,p.z,n.x,n.y,n.z,tint});
-        for(auto p:{c,b,a})data.insert(data.end(),{p.x,p.y,p.z,-n.x,-n.y,-n.z,tint});
-    };
-    for(int row=0;row<3;++row)for(int i=0;i<128;++i){
-        const float a=(i+.31f*row)*2*pi/128;
-        const float radius=135.f+row*42.f+7.f*std::sin(i*3.71f+row);
-        const glm::vec3 base(radius*std::cos(a),0,radius*std::sin(a));
-        const int species=(i+row)%3;
-        const float height=22.f+row*5.f+7.f*(.5f+.5f*std::sin(i*9.17f));
-        const int tiers=species==0?5:species==1?8:4;
-        for(int plane=0;plane<2;++plane){
-            const float angle=a+plane*pi*.5f;
-            const glm::vec3 right(std::cos(angle),0,std::sin(angle));
-            triangle(base-right*.35f,base+right*.35f,base+glm::vec3(0,height,0),3.f+row*.1f);
-            for(int k=0;k<tiers;++k){
-                const float f=float(k)/tiers,y=height*(.22f+f*.68f);
-                const float width=(species==2?5.4f:species==1?4.2f:3.8f)*(1.f-f*.8f);
-                const glm::vec3 center=base+glm::vec3(0,y,0)+right*(species==2?std::sin(k*1.8f)*1.4f:0.f);
-                triangle(center-right*width,center+right*width,center+glm::vec3(0,height*.26f,0),float(species)+row*.08f);
-            }
-        }
-    }
-    return data;
-}
-
 std::vector<float> buildEnvironmentGeometry(const EnvironmentScene& scene) {
-    if(scene.forestWorld) return buildForestGeometry(scene);
+    if(scene.forestWorld) return {};
     if(scene.combatWorld) return buildCombatWorldGeometry(scene);
     if(scene.observatory && scene.settings.preset==EnvironmentPreset::StarryCrystal) return buildObservatoryGeometry(scene);
     switch(scene.settings.preset) {
         case EnvironmentPreset::HollowOrbit: return buildHollowOrbitGeometry(scene);
         case EnvironmentPreset::StarryCrystal: return buildStarryCrystalGeometry(scene);
-        case EnvironmentPreset::ForestCrystal: return buildForestGeometry(scene);
+        case EnvironmentPreset::ForestCrystal: return {};
         case EnvironmentPreset::None: return {};
     }
     return {};

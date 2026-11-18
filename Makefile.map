@@ -336,3 +336,14 @@ $(PROCEDURAL_RIFLE_CHECK_TARGET): $(PROCEDURAL_RIFLE_CHECK_OBJ) $(OBJ_DIR)/chara
 procedural-rifle-check: $(PROCEDURAL_RIFLE_CHECK_TARGET)
 	./$(PROCEDURAL_RIFLE_CHECK_TARGET)
 .PHONY: procedural-rifle-check
+
+# Forest player self-emission lifecycle, CPU only; no GL context needed.
+PLAYER_AURA_CHECK_OBJ := $(OBJ_DIR)/tests/player_aura_test.o
+PLAYER_AURA_CHECK_TARGET := $(BUILD_DIR)/player-aura-check
+$(PLAYER_AURA_CHECK_OBJ): | $(OBJ_DIR)/tests
+-include $(PLAYER_AURA_CHECK_OBJ:.o=.d)
+$(PLAYER_AURA_CHECK_TARGET): $(PLAYER_AURA_CHECK_OBJ) $(filter-out $(OBJ_DIR)/engine/main.o $(OBJ_DIR)/engine/app.o,$(APP_OBJS))
+	$(CXX) $^ -o $@ $(LDFLAGS) $(LIBS)
+player-aura-check: $(PLAYER_AURA_CHECK_TARGET)
+	./$(PLAYER_AURA_CHECK_TARGET)
+.PHONY: player-aura-check
