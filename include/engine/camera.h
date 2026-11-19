@@ -20,7 +20,8 @@ public:
     // Update camera vectors
     void update();
     // Presentation-only roll from resolved actor motion, never from eye bob or keys.
-    void updateMovementLean(const glm::vec3& feet, float deltaTime);
+    // During a dodge, hold the entry angle while tracking the player's feet.
+    void updateMovementLean(const glm::vec3& feet, float deltaTime, bool rollStep = false);
     void resetMovementLean(const glm::vec3& feet);
     void syncMovementLeanPosition(const glm::vec3& feet);
     float getMovementRollDegrees() const { return movementRoll; }

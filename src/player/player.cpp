@@ -2,6 +2,7 @@
 #include "engine/camera.h"
 #include "engine/map.h"
 #include "engine/game_config.h"
+#include <glm/gtc/constants.hpp>
 #include <GLFW/glfw3.h>
 #include <iostream>
 #include <algorithm>
@@ -18,9 +19,16 @@ Player::Player(const glm::vec3& startPosition)
 }
 
 void Player::update(float deltaTime, const Map* map) {
+    rollCooldownLeft = std::max(0.0f, rollCooldownLeft - deltaTime);
     // Update physics (skip if in god mode)
     if (!isGodMode()) {
-        updatePhysics(deltaTime, map);
+        if (rolling) {
+            const float rollTime = std::min(deltaTime, getConfig().rollDuration - rollElapsed);
+            if (rollTime > 0.0f) advanceRoll(rollTime, map);
+            if (deltaTime > rollTime) updatePhysics(deltaTime - rollTime, map);
+        } else {
+            updatePhysics(deltaTime, map);
+        }
     }
     
     // Update FOV
@@ -41,6 +49,8 @@ void Player::update(float deltaTime, const Map* map) {
         } else {
             state = PlayerState::IDLE;
         }
+    } else if (rolling) {
+        state = PlayerState::ROLLING;
     } else {
         if (onGround) {
             if (sliding) {
@@ -79,6 +89,7 @@ void Player::processInput(GLFWwindow* window, Camera* camera, float deltaTime) {
     input.sprint=glfwGetKey(window,GLFW_KEY_LEFT_SHIFT)==GLFW_PRESS;
     input.crouch=glfwGetKey(window,GLFW_KEY_LEFT_CONTROL)==GLFW_PRESS;
     input.godMode=glfwGetKey(window,GLFW_KEY_G)==GLFW_PRESS;
+    input.roll=glfwGetKey(window,GLFW_KEY_C)==GLFW_PRESS;
     processInput(input,camera,deltaTime);
 }
 
@@ -95,13 +106,42 @@ void Player::processInput(const PlayerInput& input, Camera* camera, float deltaT
     
     // Get movement input
     glm::vec3 movement = getMovementInput(input, camera, deltaTime);
+    const bool rollRequested = input.roll && !rollHeld;
+    rollHeld = input.roll;
+    const auto& config = getConfig();
+    if (rollRequested && onGround && !isGodMode() && !isDead() && !rolling &&
+        rollCooldownLeft <= 0.00001f && config.rollDuration > 0.0f && config.rollDistance > 0.0f) {
+        startRoll(input, *camera);
+    }
+
+    if (rolling && !isGodMode()) {
+        // The exit can be steered independently of the committed dodge.
+        rollExitDirection = glm::length(movement) > 0.0f ? glm::normalize(movement) : glm::vec3(0.0f);
+        constexpr float jumpWindow = 0.10f;
+        if (input.jump && !jumpPressed && onGround && config.rollDuration - rollElapsed <= jumpWindow + 0.000001f) {
+            rollJumpQueued = true;
+        }
+        crouchPressed = input.crouch;
+        crouching = crouching && input.crouch;
+        shiftPressed = input.sprint;
+        jumpPressed = input.jump;
+        return;
+    }
     
     if (isGodMode()) {
         // In god mode, apply movement directly to position for free flight
+        rolling = false;
+        rollJumpQueued = false;
+        rollSprint = false;
+        onGround = false;
         position += movement * deltaTime;
         velocity = glm::vec3(0.0f); // Reset velocity in god mode
         momentum = glm::vec3(0.0f); // Reset momentum in god mode
     } else {
+        if (rollSprint && onGround && movement == glm::vec3(0.0f)) {
+            rollSprint = false;
+            momentum.x = momentum.z = 0.0f;
+        }
         // Normal movement physics with momentum system
         if (onGround) {
             if (sliding) {
@@ -125,6 +165,15 @@ void Player::processInput(const PlayerInput& input, Camera* camera, float deltaT
             // In air: preserve momentum from jump, add limited control
             glm::vec2 airInput(movement.x, movement.z);
             glm::vec2 airControlVector = airInput * airControl;
+            if (rollSprint) {
+                // Air steering can redirect the inherited run without adding
+                // a second forward boost on top of its full takeoff speed.
+                const glm::vec2 carry(momentum.x, momentum.z);
+                const glm::vec2 combined = carry + airControlVector;
+                if (glm::length(combined) > config.sprintSpeed) {
+                    airControlVector = glm::normalize(combined) * config.sprintSpeed - carry;
+                }
+            }
             
             // Don't override momentum in air, just add air control on top
             velocity.x = airControlVector.x; // Small direct control
@@ -139,6 +188,7 @@ void Player::processInput(const PlayerInput& input, Camera* camera, float deltaT
         
         // Handle Ctrl press
         if (crouchPressed && !wasCrouchPressed && onGround) {
+            rollSprint = false;
             if (sliding) {
                 // End sliding when Ctrl pressed during slide - convert momentum to sprint velocity
                 sliding = false;
@@ -201,12 +251,12 @@ void Player::processInput(const PlayerInput& input, Camera* camera, float deltaT
         
         // Toggle sprint when Shift is first pressed (only if not crouching or sliding)
         if (shiftPressed && !wasShiftPressed && !crouching && !sliding) {
-            sprintToggled = !sprintToggled;
+            sprintToggled = rollSprint ? false : !sprintToggled;
+            rollSprint = false;
         }
         
         // Update sprinting state - only sprint if toggled and moving forward
-        bool wPressed = input.forward;
-        sprinting = sprintToggled && wPressed && !crouching && !sliding;
+        sprinting = (rollSprint || (sprintToggled && input.forward)) && !crouching && !sliding;
         
         // Jump input
         wasJumpPressed = jumpPressed;
@@ -214,23 +264,7 @@ void Player::processInput(const PlayerInput& input, Camera* camera, float deltaT
         
         // Jump interrupts slide or normal jump
         if (jumpPressed && !wasJumpPressed && onGround) {
-            const auto& config = GameConfig::getInstance().player;
-            velocity.y = config.jumpVelocity;
-            onGround = false;
-            
-            // If sliding, interrupt slide
-            if (sliding) {
-                sliding = false;
-                slideTime = 0.0f;
-            }
-            
-            // Stop crouching when jumping
-            if (crouching) {
-                crouching = false;
-            }
-            
-            // Preserve horizontal momentum when jumping
-            // Don't reset momentum - let it carry through the jump
+            jump();
         }
     }
 }
@@ -247,6 +281,51 @@ float Player::takeDamage(float amount) {
 
 void Player::setPosition(const glm::vec3& pos) {
     position = pos;
+}
+
+float Player::getRollProgress() const {
+    return rolling ? glm::clamp(rollElapsed / getConfig().rollDuration, 0.0f, 1.0f) : 0.0f;
+}
+
+glm::vec3 Player::getVelocity() const {
+    if (rollSprint && !onGround) return velocity + glm::vec3(momentum.x, 0.0f, momentum.z);
+    return velocity;
+}
+
+void Player::jump() {
+    velocity.y = getConfig().jumpVelocity;
+    onGround = false;
+    sliding = false;
+    slideTime = 0.0f;
+    crouching = false;
+    // A roll exit already stored the full run speed in momentum.
+    if (rollSprint) velocity.x = velocity.z = 0.0f;
+}
+
+glm::vec3 Player::getEyePosition() const {
+    const float tuck = std::sin(glm::pi<float>() * getRollProgress());
+    const float eyeHeight = getConfig().eyeHeight + currentCameraHeight - 0.23f * tuck * tuck;
+    return position + glm::vec3(0.0f, eyeHeight, 0.0f);
+}
+
+void Player::startRoll(const PlayerInput& input, const Camera& camera) {
+    glm::vec2 axes(input.right - input.left, input.forward - input.backward);
+    if (axes == glm::vec2(0.0f)) axes.y = 1.0f;
+    axes = glm::normalize(axes);
+    const float yaw = glm::radians(camera.getYaw());
+    const glm::vec3 forward(std::cos(yaw), 0.0f, std::sin(yaw));
+    const glm::vec3 right(-forward.z, 0.0f, forward.x);
+    rollDirection = right * axes.x + forward * axes.y;
+    rollJumpQueued = false;
+    rollSprint = false;
+    rollElapsed = 0.0f;
+    rollCooldownLeft = getConfig().rollCooldown;
+    rolling = true;
+    state = PlayerState::ROLLING;
+    sliding = false;
+    slideTime = 0.0f;
+    velocity.x = velocity.z = 0.0f;
+    momentum.x = momentum.z = 0.0f;
 }
 
 void Player::respawn(const glm::vec3& pos) {
@@ -279,6 +358,14 @@ void Player::respawn(const glm::vec3& pos) {
     sliding = false;
     slideTime = 0.0f;
     slideDirection = glm::vec3(0.0f);
+    rollHeld = false;
+    rolling = false;
+    rollElapsed = 0.0f;
+    rollCooldownLeft = 0.0f;
+    rollDirection = glm::vec3(0.0f);
+    rollExitDirection = glm::vec3(0.0f);
+    rollJumpQueued = false;
+    rollSprint = false;
     crouching = false;
     sprintToggled = false;
 }
@@ -290,13 +377,61 @@ AABB Player::getAABB() const {
     return AABB::fromCenterHalfSize(center, halfSize);
 }
 
-void Player::updatePhysics(float deltaTime, const Map* map) {
-    // Apply gravity
+void Player::applyGravity(float deltaTime) {
     if (!onGround) {
         const auto& config = GameConfig::getInstance().player;
         velocity.y += config.gravity * deltaTime;
         velocity.y = std::max(velocity.y, config.maxFallSpeed);
     }
+}
+
+void Player::advanceRoll(float deltaTime, const Map* map) {
+    const auto& config = getConfig();
+    const float endTime = std::min(rollElapsed + deltaTime, config.rollDuration);
+    const float start = getRollProgress();
+    const float end = endTime / config.rollDuration;
+    // Cruise at exit run speed, front-loading the extra dodge distance.
+    const float cruiseDistance = std::clamp(config.sprintSpeed * config.rollDuration, 0.0f, config.rollDistance);
+    const float extraDistance = config.rollDistance - cruiseDistance;
+    const auto distanceAt = [&](float t) {
+        const float remaining = 1.0f - t;
+        return cruiseDistance * t + extraDistance * (1.0f - remaining * remaining * remaining);
+    };
+    const float peakSpeed = (cruiseDistance + 3.0f * extraDistance) / config.rollDuration;
+    const float maxStepDistance = std::max(0.02f, config.radius * 0.5f);
+    const float maxStepTime = std::min(1.0f / 90.0f, maxStepDistance / peakSpeed);
+    const int steps = std::max(1, static_cast<int>(std::ceil(deltaTime / maxStepTime)));
+    const float stepTime = deltaTime / steps;
+    float previousDistance = distanceAt(start);
+    for (int i = 1; i <= steps; ++i) {
+        const float distance = distanceAt(glm::mix(start, end, static_cast<float>(i) / steps));
+        glm::vec3 movement = rollDirection * (distance - previousDistance);
+        applyGravity(stepTime);
+        movement.y = velocity.y * stepTime;
+        const glm::vec3 actual = applyMovement(movement, map);
+        velocity.x = actual.x / stepTime;
+        velocity.z = actual.z / stepTime;
+        previousDistance = distance;
+    }
+    rollElapsed = endTime;
+    if (endTime >= config.rollDuration - 0.000001f) {
+        finishRoll();
+    }
+}
+
+void Player::finishRoll() {
+    rolling = false;
+    rollSprint = onGround && !isDead() && !crouching && rollExitDirection != glm::vec3(0.0f);
+    sprinting = rollSprint;
+    const glm::vec3 run = rollSprint ? rollExitDirection * getConfig().sprintSpeed : glm::vec3(0.0f);
+    velocity.x = momentum.x = run.x;
+    velocity.z = momentum.z = run.z;
+    if (rollJumpQueued && onGround && !isDead()) jump();
+    rollJumpQueued = false;
+}
+
+void Player::updatePhysics(float deltaTime, const Map* map) {
+    applyGravity(deltaTime);
     
     // Update sliding
     if (sliding) {
@@ -384,10 +519,10 @@ void Player::updatePhysics(float deltaTime, const Map* map) {
         totalVelocity.z += momentum.z;
     }
     
-    // Calculate desired movement
-    glm::vec3 movement = totalVelocity * deltaTime;
+    applyMovement(totalVelocity * deltaTime, map);
+}
     
-    // Move with collision detection
+glm::vec3 Player::applyMovement(const glm::vec3& movement, const Map* map) {
     glm::vec3 actualMovement = moveWithCollision(movement, map);
     
     // Update position
@@ -407,7 +542,9 @@ void Player::updatePhysics(float deltaTime, const Map* map) {
     }
     
     // Check if on ground
-    onGround = checkGroundCollision(map);
+    onGround = velocity.y <= 0.0f && checkGroundCollision(map);
+    if (!onGround) rollJumpQueued = false;
+    return actualMovement;
 }
 
 void Player::handleMapCollision(const Map* map) {
@@ -522,6 +659,9 @@ glm::vec3 Player::moveWithCollision(const glm::vec3& movement, const Map* map) {
             }
             
             AABB brushBox(brushMin, brushMax);
+            if (rolling && axis != 1 && brushMax.y <= originalBox.min.y) {
+                continue; // Tangential contact with the supporting floor.
+            }
             
             if (CollisionSystem::checkAABB(movedBox, brushBox)) {
                 collision = true;
@@ -531,6 +671,7 @@ glm::vec3 Player::moveWithCollision(const glm::vec3& movement, const Map* map) {
                     // Try moving upward
                     AABB stepBox = originalBox;
                     stepBox.min.y = brushBox.max.y;
+                    if (rolling) stepBox.min.y += 0.01f;
                     stepBox.max.y = stepBox.min.y + config.height;
                     stepBox.min += axisMovement;
                     stepBox.max += axisMovement;
@@ -561,7 +702,20 @@ glm::vec3 Player::moveWithCollision(const glm::vec3& movement, const Map* map) {
                     }
                 }
                 
-                if (collision) break;
+                if (collision && rolling) {
+                    // Resolve to the face instead of discarding the entire
+                    // substep. Leave a skin so the next axis can slide along it.
+                    constexpr float skin = 0.0005f;
+                    const float gap = movement[axis] > 0.0f
+                        ? std::max(0.0f, brushMin[axis] - originalBox.max[axis] - skin)
+                        : std::min(0.0f, brushMax[axis] - originalBox.min[axis] + skin);
+                    axisMovement[axis] = movement[axis] > 0.0f
+                        ? std::min(axisMovement[axis], gap) : std::max(axisMovement[axis], gap);
+                    finalMovement[axis] = axisMovement[axis];
+                    collision = false;
+                } else if (collision) {
+                    break;
+                }
             }
         }
         
@@ -673,7 +827,7 @@ void Player::updateCameraEffects(float deltaTime) {
     cameraShakeOffset = glm::vec3(0.0f);
     
     // Only apply effects when not in god mode and on ground
-    if (isGodMode() || !onGround) {
+    if (isGodMode() || !onGround || rolling) {
         bobTime = 0.0f;
         return;
     }

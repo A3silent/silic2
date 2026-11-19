@@ -379,6 +379,14 @@ void Map::parseDocument(const J &d) {
     }
     if (d.hasKey("arena")) {
         object(d["arena"], "arena");
+        const auto profile = str(d["arena"], "encounterProfile", "classic_90", "arena");
+        if (profile == "crystal_survival" || profile == "crystal_150") {
+            if (gameMode != GameMode::ArenaSurvival || environment.preset != EnvironmentPreset::ForestCrystal)
+                fail("arena.encounterProfile", "the Crystal encounter profile requires a Crystal survival arena");
+            arenaLayout.encounterProfile = EncounterProfile::CrystalSurvival;
+        } else if (profile != "classic_90") {
+            fail("arena.encounterProfile", "unknown encounter profile");
+        }
         if (d["arena"].hasKey("floorBrushId"))
             floorBrushId = integer(d["arena"]["floorBrushId"], "arena.floorBrushId", 0, UINT32_MAX);
     }
@@ -487,7 +495,7 @@ void Map::parseDocument(const J &d) {
             if (j.hasKey("intProperty"))
                 e.intProperty = integer(j["intProperty"], p + ".intProperty", INT32_MIN, INT32_MAX);
             if (j.hasKey("slot"))
-                e.slot = integer(j["slot"], p + ".slot", -1, 3);
+                e.slot = integer(j["slot"], p + ".slot", -1, 11);
             entities.push_back(std::move(e));
         }
     }
@@ -588,6 +596,11 @@ void Map::rebuild() {
                                 : SurfaceType::WALL;
         }
     }
+    const size_t riftCount = arenaLayout.encounterProfile == EncounterProfile::CrystalSurvival ? 12 : 4;
+    arenaLayout.rifts.assign(riftCount, glm::vec3(0));
+    arenaLayout.riftRotations.assign(riftCount, glm::vec3(0));
+    arenaLayout.riftScales.assign(riftCount, glm::vec3(1));
+    arenaLayout.riftActive.assign(riftCount, false);
     const Brush *floor = nullptr;
     for (const auto &b : brushes) {
         auto a = bounds(b);
@@ -626,8 +639,8 @@ void Map::rebuild() {
             arenaLayout.playerStart = e.position;
         }
         if (e.type == EntityType::RIFT) {
-            if (e.slot < 0 || e.slot > 3 || arenaLayout.riftActive[e.slot])
-                fail("entities.rift.slot", "requires distinct slots 0..3");
+            if (e.slot < 0 || static_cast<size_t>(e.slot) >= riftCount || arenaLayout.riftActive[e.slot])
+                fail("entities.rift.slot", "requires distinct slots 0.." + std::to_string(riftCount - 1));
             arenaLayout.riftActive[e.slot] = true;
             arenaLayout.rifts[e.slot] = e.position;
             arenaLayout.riftRotations[e.slot] = e.rotation;
@@ -649,7 +662,7 @@ void Map::rebuild() {
             fail("entities.player_start", "arena_survival requires exactly one player start");
         for (bool active : arenaLayout.riftActive)
             if (!active)
-                fail("entities.rift", "arena_survival requires all four slots");
+                fail("entities.rift", "arena_survival requires all " + std::to_string(riftCount) + " slots");
         for (bool active : arenaLayout.sentryActive)
             if (!active)
                 fail("entities.sentry_spawn", "arena_survival requires all three slots");
@@ -695,9 +708,13 @@ void Map::rebuild() {
         spatialDiagnostics=spatialWorld->diagnostics();
         for(const auto& entity:entities)if(entity.type==EntityType::PLAYER_START||entity.type==EntityType::RIFT||entity.type==EntityType::SENTRY_SPAWN){
             float radius=entity.type==EntityType::SENTRY_SPAWN?.6f:.34f;
+            if (entity.type==EntityType::RIFT && arenaLayout.encounterProfile==EncounterProfile::CrystalSurvival) radius=.7f;
             if(!spatialWorld->isWalkable(entity.position,radius))spatialDiagnostics.push_back("Spawn "+entity.name+" lacks support or clearance");
             bool connected=false;for(const auto& node:spatialSettings.nodes)if(spatialWorld->canTraverse(entity.position,node.position,radius)){connected=true;break;}
             if(!connected)spatialDiagnostics.push_back("Spawn "+entity.name+" has no reachable navigation node");
+            if (arenaLayout.encounterProfile == EncounterProfile::CrystalSurvival && entity.type == EntityType::RIFT &&
+                (!connected || !spatialWorld->isWalkable(entity.position, radius)))
+                fail("entities." + entity.name, "Crystal rift requires a clear supported approach");
         }
     }
     lights = sourceLights;
@@ -747,6 +764,8 @@ J Map::toJson() const {
     if(!environment.architecture.empty()){env["architecture"]=J(environment.architecture);env["landmarkPosition"]=jvec(environment.landmarkPosition);env["landmarkScale"]=jvec(environment.landmarkScale);}
     d["environment"] = env;
     J arena = original(d["arena"]);
+    if (arenaLayout.encounterProfile == EncounterProfile::CrystalSurvival)
+        arena["encounterProfile"] = J("crystal_survival");
     if (floorBrushId >= 0)
         arena["floorBrushId"] = J(double(floorBrushId));
     else

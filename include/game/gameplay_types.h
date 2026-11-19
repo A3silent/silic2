@@ -8,8 +8,11 @@ enum class EnemyType : uint8_t {
     Unknown,
     Chaser,
     Sentry,
+    ForkHound, VeilRay, HangingCenser,
     Count
 };
+
+enum class AttackPhase : uint8_t { Idle, Approach, Windup, Attack, Recovery, Interrupted };
 
 enum class DamageSource : uint8_t {
     EnemyContact,
@@ -17,6 +20,7 @@ enum class DamageSource : uint8_t {
     Environment,
     SelfDamage,
     Unknown,
+    HoundDash, RaySweep, CenserBurst,
     Count
 };
 

@@ -12,11 +12,12 @@ RATE = 48000
 ROOT = Path(__file__).resolve().parents[2]
 OUT = ROOT / 'res/audio'
 TAU = math.tau
-VERSION = 'silic2-audio-v2-cosmic-horror'
+VERSION = 'silic2-audio-v3-crystal-enemies'
 DURATIONS = {'player_shot': .18, 'hit': .105, 'kill': .32, 'player_hurt': .32,
              'player_death': 1.5, 'rift_warning': 1.2, 'sentry_charge': 1.0,
              'sentry_fire': .4, 'slide': .7, 'transform': 4., 'ambience': 8.,
-             'ui_confirm': .18, 'victory': 1.6}
+             'ui_confirm': .18, 'victory': 1.6, 'hound_brace': .7,
+             'ray_fold': .85, 'censer_open': 1.2, 'censer_break': .38}
 
 
 class BandPass:
@@ -85,6 +86,20 @@ def synth(name, duration, seed):
             s = (.5*math.sin(TAU*(260*t-170*t*t))+.45*noise*math.exp(-18*t))*math.exp(-9*t)
         elif name == 'slide':
             s = (noise*.15+low_noise*1.5)*math.sin(math.pi*u)**.7*.65
+        elif name == 'hound_brace':
+            # Two dry forefoot contacts followed by a coarse, tightening jaw.
+            knocks = sum(math.exp(-52*(t-onset)) for onset in (0, .16) if t >= onset)
+            s = .65*knocks*(tone(175)+rasp_noise) + (.2+.3*u)*(.74*tone(89)+.26*tone(267))
+        elif name == 'ray_fold':
+            # An airy descending whistle rises above the horizontal rift pulse.
+            whistle = math.sin(TAU*(1750*t-510*t*t)+.28*tone(56))
+            s = (.44*whistle+.35*rasp_noise)*(.35+.65*math.sin(math.pi*u)**.6)
+        elif name == 'censer_open':
+            # Three hollow resonances swell as the underside opens.
+            bell = .40*tone(247)+.26*tone(621)+.18*tone(997)
+            s = (bell+.22*body_noise)*(.25+.75*abs(math.sin(3*math.pi*u))**.65)
+        elif name == 'censer_break':
+            s = (.58*math.sin(TAU*(440*t-440*t*t))+.36*rasp_noise)*math.exp(-9*t)
         elif name == 'transform':
             # Stressed structural ribs and an inward organ contraction, four seconds.
             pressure = math.sin(math.pi*u)**1.3

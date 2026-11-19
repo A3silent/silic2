@@ -13,9 +13,10 @@ uniform bool useForestGroundTexture;
 uniform int materialKind;
 uniform float phase;
 uniform float time;
-uniform vec4 riftWarnings;
-uniform bool riftActive[4];
-uniform mat4 riftWorldToLocal[4];
+uniform int riftCount;
+uniform float forestWarnings[12];
+uniform bool riftActive[12];
+uniform mat4 riftWorldToLocal[12];
 struct Light{vec3 position;vec3 color;float intensity;float range;};
 uniform int numLights;
 uniform Light lights[128];
@@ -66,10 +67,10 @@ void main(){
    base*=1.-step(.965,fine)*.19;
   }
   // Rifts retain their existing warm combat warning; no extra scenery lamp.
-  for(int i=0;i<4;++i)if(riftActive[i] && riftWarnings[i]>=0.){
+  for(int i=0;i<riftCount;++i)if(riftActive[i] && forestWarnings[i]>=0.){
    vec3 p=(riftWorldToLocal[i]*vec4(FragPos,1)).xyz;
    float circle=lineInk(abs(length(p.xz)-1.9),.13);
-   emission+=circle*vec3(.68,.20,.025)*(.65+.35*sin(riftWarnings[i]*25.13));
+   emission+=circle*vec3(.68,.20,.025)*(.65+.35*sin(forestWarnings[i]*25.13));
   }
  }else if(materialKind==23){
   // Broad facets and irregular luminous fictional script on the actual spire.

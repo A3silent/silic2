@@ -3,7 +3,7 @@
   "version": "1.0",
   "gameMode": "arena_survival",
   "environmentPreset": "forest_crystal",
-  "contentVersion": "open-crystal-real-assets-v1",
+  "contentVersion": "open-crystal-survival-v1",
   "worldSettings": {
     "gravity": -9.8,
     "ambientLight": [
@@ -35,7 +35,8 @@
     ]
   },
   "arena": {
-    "floorBrushId": 1
+    "floorBrushId": 1,
+    "encounterProfile": "crystal_survival"
   },
   "geometry": {
     "brushes": [
@@ -2369,6 +2370,166 @@
         -40,
         0,
         0
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        1.5,
+        1.5,
+        1.5
+      ]
+    },
+    {
+      "type": "rift",
+      "name": "Outer crystal rift 1",
+      "slot": 4,
+      "position": [
+        72.0626,
+        0,
+        29.84931
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        1.5,
+        1.5,
+        1.5
+      ]
+    },
+    {
+      "type": "rift",
+      "name": "Outer crystal rift 2",
+      "slot": 5,
+      "position": [
+        29.84931,
+        0,
+        72.0626
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        1.5,
+        1.5,
+        1.5
+      ]
+    },
+    {
+      "type": "rift",
+      "name": "Outer crystal rift 3",
+      "slot": 6,
+      "position": [
+        -29.84931,
+        0,
+        72.0626
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        1.5,
+        1.5,
+        1.5
+      ]
+    },
+    {
+      "type": "rift",
+      "name": "Outer crystal rift 4",
+      "slot": 7,
+      "position": [
+        -72.0626,
+        0,
+        29.84931
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        1.5,
+        1.5,
+        1.5
+      ]
+    },
+    {
+      "type": "rift",
+      "name": "Outer crystal rift 5",
+      "slot": 8,
+      "position": [
+        -72.0626,
+        0,
+        -29.84931
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        1.5,
+        1.5,
+        1.5
+      ]
+    },
+    {
+      "type": "rift",
+      "name": "Outer crystal rift 6",
+      "slot": 9,
+      "position": [
+        -29.84931,
+        0,
+        -72.0626
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        1.5,
+        1.5,
+        1.5
+      ]
+    },
+    {
+      "type": "rift",
+      "name": "Outer crystal rift 7",
+      "slot": 10,
+      "position": [
+        29.84931,
+        0,
+        -72.0626
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        1.5,
+        1.5,
+        1.5
+      ]
+    },
+    {
+      "type": "rift",
+      "name": "Outer crystal rift 8",
+      "slot": 11,
+      "position": [
+        72.0626,
+        0,
+        -29.84931
       ],
       "rotation": [
         0,

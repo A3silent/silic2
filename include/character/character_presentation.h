@@ -10,6 +10,7 @@
 namespace silic2 {
 class Shader;
 class ImportedWeapon;
+class CrystalCreatures;
 struct WeaponAsset;
 
 // Read-only visual snapshot. position is the feet; heading is a world direction.
@@ -25,6 +26,11 @@ struct CharacterView {
     bool aimLocked = false;
     float hitFlash = 0.0f;       // 0..1, typically decays over 0.1 seconds
     float phase = 0.0f;          // stable per-enemy animation offset
+    AttackPhase attackPhase = AttackPhase::Idle;
+    float attackProgress = 0.0f;
+    glm::vec3 attackStart{0}, attackEnd{0};
+    int interruptHits = 0;
+    bool crystalMinion = false;  // Use the mineral Chaser/Sentry for this map.
 };
 
 struct FirstPersonView {
@@ -34,6 +40,7 @@ struct FirstPersonView {
     glm::vec3 feet{0.0f};
     glm::vec3 forward{0.0f, 0.0f, -1.0f};
     float aimBlend = 0.0f; // gameplay-owned smooth ADS state, 0 hip .. 1 sighted
+    float rollProgress = 0.0f; // 0 idle, 0..1 over a dodge
 };
 
 enum class CharacterEffect { Impact, Death, SentryFire };
@@ -56,6 +63,8 @@ public:
               const glm::vec3& direction = glm::vec3(0.0f, 1.0f, 0.0f));
     void renderWorld(const glm::mat4& view, const glm::mat4& projection,
                      const std::vector<CharacterView>& characters);
+    void renderImpactWarnings(const glm::mat4& view, const glm::mat4& projection,
+                              const std::vector<glm::vec3>& landingPositions);
     // Draw after world transparencies, before post-processing/HUD; uses camera
     // local coordinates with a fixed 70-degree lens and preserves the world depth buffer and all touched GL state.
     void renderFirstPerson(const glm::mat4& projection, float projectionOverscan = 1.f);
@@ -70,6 +79,7 @@ private:
     };
     std::unique_ptr<Shader> shader;
     std::unique_ptr<ImportedWeapon> importedWeapon;
+    std::unique_ptr<CrystalCreatures> creatures;
     unsigned int vao = 0, vbo = 0;
     std::vector<Vertex> vertices;
     std::array<Shard, EffectCapacity> shards{};
@@ -88,6 +98,8 @@ private:
     friend struct CharacterGeometryProbe; // CPU-only bounds/budget verification.
     void box(const glm::mat4& transform, const glm::vec3& color, float emission = 0.0f);
     void addCharacter(const CharacterView& character);
+    void crystalGroundCues(const CharacterView& character);
+    void impactRing(glm::vec3 center, float intensity);
     void draw(const glm::mat4& view, const glm::mat4& projection, bool firstPerson);
     void addShard(const glm::vec3& position, const glm::vec3& velocity,
                   const glm::vec3& color, float duration, float size);

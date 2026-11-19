@@ -1,4 +1,5 @@
 #include "enemy/enemy.h"
+#include "enemy/crystal_combat.h"
 #include "engine/map.h"
 #include "enemy/enemy_geometry.h"
 #include "game/arena_definition.h"
@@ -15,20 +16,27 @@ Enemy::Enemy(const glm::vec3& spawnPosition, int hp, EnemyType enemyType)
 }
 
 AABB Enemy::getAABB() const {
-    const float half=type==EnemyType::Sentry ? 0.6f : HALF_W;
-    const float height=type==EnemyType::Sentry ? 1.0f : BOX_HEIGHT;
-    return AABB(position-glm::vec3(half,0,half),position+glm::vec3(half,height,half));
+    auto size=getDimensions();
+    glm::vec3 half(size.x*.5f,0,size.z*.5f);
+    if(crystalCombat::isCrystalEnemy(type)) {
+        const float hx=half.x, hz=half.z;
+        half.x=hx*std::abs(heading.z)+hz*std::abs(heading.x);
+        half.z=hx*std::abs(heading.x)+hz*std::abs(heading.z);
+    }
+    const float wingMargin=type==EnemyType::VeilRay ? .85f*crystalCombat::bodyScale(type) : 0.f;
+    return {position-half-glm::vec3(0,wingMargin,0),
+            position+half+glm::vec3(0,size.y+wingMargin,0)};
 }
 
 bool Enemy::isTouchingPlayer(const glm::vec3& playerPos) const {
-    if (isDead() || type==EnemyType::Sentry) return false;
+    if (isDead() || type!=EnemyType::Chaser) return false;
+    const glm::vec2 horizontal(position.x-playerPos.x,position.z-playerPos.z);
+    if(glm::dot(horizontal,horizontal)>=TOUCH_RANGE*TOUCH_RANGE) return false;
     if(arenaDefinition && arenaDefinition->spatialWorld) {
         if(std::abs(position.y-playerPos.y)>1.4f)return false;
         if(arenaDefinition->spatialWorld->raycast(position+glm::vec3(0,.9f,0),playerPos+glm::vec3(0,.9f,0)).hit)return false;
     }
-    float dx = position.x - playerPos.x;
-    float dz = position.z - playerPos.z;
-    return std::sqrt(dx * dx + dz * dz) < TOUCH_RANGE;
+    return true;
 }
 
 void Enemy::update(float deltaTime, const glm::vec3& playerPos, const Map* map) {
@@ -37,6 +45,11 @@ void Enemy::update(float deltaTime, const glm::vec3& playerPos, const Map* map) 
     movementSpeed=0;
     const auto previousPosition=position;
     secondsSinceDamage+=deltaTime;
+    if(crystalCombat::isCrystalEnemy(type)) {
+        updateCrystal(deltaTime,playerPos,map);
+        movementSpeed=glm::length(position-previousPosition)/deltaTime;
+        return;
+    }
     applyGravityAndGround(deltaTime, map);
     if(type==EnemyType::Sentry) { updateSentry(deltaTime,playerPos,map); return; }
 
@@ -196,24 +209,42 @@ bool Enemy::checkGroundBelow(const Map* map) const {
 }
 
 void Enemy::moveTowardPlayer(float deltaTime, const glm::vec3& playerPos, const Map* map) {
+    constexpr float pursuitSpeed[]={MOVE_SPEED,MOVE_SPEED,4.4f,6.3f,9.3f};
+    const float speed=pursuitSpeed[pressureStage];
     glm::vec3 target=playerPos;
+    if(pressureStage>=2) {
+        auto offset=playerPos-position;offset.y=0;
+        // A third of the pack follows directly. Flanking packs aim ahead,
+        // converging on the real player at close range so a reversal beats the lead.
+        const float lead=std::min(glm::length(offset)/19.f,1.f)*float(id%3)*.8f;
+        target+=playerVelocity*lead;
+    }
     if(arenaEnabled && arenaDefinition) {
         if(arenaDefinition->spatialWorld) {
             navigationRefresh-=deltaTime;
             if(navigationRefresh<=0 || glm::length(glm::vec2(position.x-navigationTarget.x,position.z-navigationTarget.z))<.3f) {
-                navigationTarget=arenaDefinition->nextWaypoint(position,playerPos,HALF_W+0.04f);
+                const auto& world=*arenaDefinition->spatialWorld;
+                const glm::vec3 eye(0,.9f,0);
+                const glm::vec3 delta=target-position;
+                const float reach=std::min(1.f,(speed*.42f+.5f)/std::max(.01f,glm::length(delta)));
+                const auto ahead=position+delta*reach;
+                // Verify only the next short section of a clear sightline. A
+                // distant squad need not sample the whole floor every replan.
+                if(pressureStage && !world.raycast(position+eye,target+eye,HALF_W+.04f).hit &&
+                   world.canTraverse(position,ahead,HALF_W+.04f)) navigationTarget=ahead;
+                else navigationTarget=arenaDefinition->nextWaypoint(position,playerPos,HALF_W+.04f);
                 navigationRefresh=.18f+float(id%6)*.02f;
             }
             target=navigationTarget;
-        } else target=arenaDefinition->nextWaypoint(position,playerPos,HALF_W+0.04f);
+        } else target=arenaDefinition->nextWaypoint(position,target,HALF_W+0.04f);
     }
     glm::vec3 toPlayer(target.x-position.x,0,target.z-position.z);
     float dist=glm::length(toPlayer);
     if(dist<0.01f) return;
     heading=toPlayer/dist;
-    glm::vec3 velocity=heading*MOVE_SPEED+separation;
-    if(glm::length(velocity)>MOVE_SPEED) velocity=glm::normalize(velocity)*MOVE_SPEED;
-    glm::vec3 desired=velocity*std::min(deltaTime,dist/MOVE_SPEED);
+    glm::vec3 velocity=heading*speed+separation;
+    if(glm::length(velocity)>speed) velocity=glm::normalize(velocity)*speed;
+    glm::vec3 desired=velocity*std::min(deltaTime,dist/speed);
 
     if(map && map->getSpatialWorld()) {
         auto move=map->getSpatialWorld()->moveActor(position,desired,HALF_W,BOX_HEIGHT,onGround);

@@ -397,3 +397,37 @@ world-depth/state restoration, 160x100 then 480x300 target resize and missing-co
 initialization. Red-point counting uses only the central 8x8 area because the
 smaller U frame now legitimately enters the old 20x20 test area. Evidence and
 ranked diagnosis are in `artifacts/acceptance/crimson-refinement/`.
+
+## Crystal encounter creatures (2026-11-19)
+
+Fork Hound, Veil Ray and Hanging Censer share one immutable GPU vertex buffer.
+Each triangle references a joint in a small matrix palette. The world pass draws
+one range per animal with its current rigid joint transforms, including the
+hound's two-link planting legs, both ray wing hinges and three censer lip petals.
+Model dimensions are in meters, with the actor bottom at Y=0 and forward along +Z.
+
+CharacterView supplies the gameplay attack phase, progress, locked sweep
+endpoints or volley center, and current exposed-gland hits. Censer reuses the
+actual exposed-organ location in front of the abdomen. Three emissive marks
+extinguish individually. Sweep arrows advance from the first end toward the
+second and disappear as each segment strikes. Released crystal orbs expose
+their own forecast positions for landing rings, independently of the caster.
+
+The additional world assets are src/character/crystal_creatures.cpp and the two
+crystal_creature shaders. Link this translation unit in standalone previews that
+construct CharacterPresentation. The dedicated preview/crystal_creature_check.cpp
+uses the production renderer in a hidden 960x600 GL target, compares interrupt
+marks and tests sweep and landing telegraphs. It accepts one output-directory
+argument for its PPM frames. Final pose, gland and ground contact sheets are in
+artifacts/acceptance/crystal-three-enemies/art/.
+
+The Crystal survival Chaser has a split mineral mask over violet tendons and a
+two-legged alternating stride. The Sentry is a rooted geode with two shoulders
+that unfold around a dilating amber firing chamber. A cold impact flash leaves
+the locked chamber visible. The map selects these variants through
+`CharacterView::crystalMinion`. Classic arenas use their original creatures.
+
+Both common Crystal meshes are built once. The crowd path submits one instanced
+draw per occupied species, streaming position, orientation, gait or charge, and
+hit flash per actor. The creature preview checks the motion, firing aperture,
+classic variant and submitted triangle count for 100 mixed enemies.

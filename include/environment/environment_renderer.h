@@ -19,12 +19,12 @@ public:
     void reset();
     void setTime(float seconds);
     void setObservationState(float progress, bool complete);
-    void setRiftWarnings(const std::array<float, 4>& progress);
+    void setRiftWarnings(const std::vector<float>& progress);
     void setParticleCount(std::size_t count);
     float transformation() const;
     float time() const { return seconds_; }
     std::size_t particleCount() const { return particleCount_; }
-    const std::array<float, 4>& warnings() const { return warnings_; }
+    const std::vector<float>& warnings() const { return warnings_; }
     const EnvironmentScene& scene() const { return scene_; }
     void setMapUniforms(Shader& shader) const;
     void renderSky(const glm::mat4& view, const glm::mat4& projection);
@@ -39,7 +39,7 @@ private:
     float observationProgress_ = 0.f;
     bool observationComplete_ = false;
     void setObservatoryUniforms(Shader& shader) const;
-    std::array<float, 4> warnings_{{-1, -1, -1, -1}};
+    std::vector<float> warnings_;
     void buildCrystals();
 };
 }

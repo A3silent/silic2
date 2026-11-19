@@ -14,7 +14,7 @@ void requireLinked(const Shader& shader) {
     if (!linked) throw std::runtime_error("Environment shader failed to link");
 }
 }
-EnvironmentRenderer::EnvironmentRenderer(const EnvironmentScene& scene) : scene_(scene) {
+EnvironmentRenderer::EnvironmentRenderer(const EnvironmentScene& scene) : scene_(scene), warnings_(scene.rifts.size(), -1.f) {
     setParticleCount(scene_.settings.particleCount);
     const auto paths=environmentShaderPaths(scene_.settings.preset);
     sky_ = std::make_unique<Shader>("res/shaders/environment_sky.vert", paths.skyFragment);
@@ -32,16 +32,16 @@ EnvironmentRenderer::~EnvironmentRenderer() {
     if (crystalVao_) glDeleteVertexArrays(1, &crystalVao_);
     if (emptyVao_) glDeleteVertexArrays(1, &emptyVao_);
 }
-void EnvironmentRenderer::reset() { seconds_ = 0; warnings_.fill(-1); observationProgress_=0; observationComplete_=false; }
+void EnvironmentRenderer::reset() { seconds_ = 0; std::fill(warnings_.begin(), warnings_.end(), -1.f); observationProgress_=0; observationComplete_=false; }
 void EnvironmentRenderer::setObservationState(float progress, bool complete) {
     if (!scene_.observatory) return;
     observationProgress_=std::isfinite(progress)?std::clamp(progress,0.f,1.f):0.f;
     observationComplete_=complete;
 }
 void EnvironmentRenderer::setTime(float seconds) { seconds_ = std::isfinite(seconds) ? std::max(0.f, seconds) : 0.f; }
-void EnvironmentRenderer::setRiftWarnings(const std::array<float, 4>& progress) {
-    for (std::size_t i = 0; i < 4; ++i)
-        warnings_[i] = std::isfinite(progress[i]) && progress[i] >= 0 ? std::min(progress[i], 1.f) : -1.f;
+void EnvironmentRenderer::setRiftWarnings(const std::vector<float>& progress) {
+    for (std::size_t i = 0; i < warnings_.size(); ++i)
+        warnings_[i] = i < progress.size() && std::isfinite(progress[i]) && progress[i] >= 0 ? std::min(progress[i], 1.f) : -1.f;
 }
 void EnvironmentRenderer::setParticleCount(std::size_t count) { particleCount_ = std::min(count, std::size_t(2000)); }
 float EnvironmentRenderer::transformation() const {
@@ -87,7 +87,12 @@ void EnvironmentRenderer::setMapUniforms(Shader& shader) const {
     setObservatoryUniforms(shader);
     shader.setFloat("phase",transformation());
     shader.setFloat("time",seconds_);
-    shader.setVec4("riftWarnings",warnings_[0],warnings_[1],warnings_[2],warnings_[3]);
+    if (scene_.forestWorld) {
+        shader.setInt("riftCount", static_cast<int>(warnings_.size()));
+        glUniform1fv(glGetUniformLocation(shader.ID, "forestWarnings"), static_cast<GLsizei>(warnings_.size()), warnings_.data());
+    } else {
+        shader.setVec4("riftWarnings",warnings_[0],warnings_[1],warnings_[2],warnings_[3]);
+    }
     shader.setVec2("floorCenter",(scene_.minimumXZ+scene_.maximumXZ)*.5f);
     shader.setVec2("floorHalfExtent",(scene_.maximumXZ-scene_.minimumXZ)*.5f);
     for (size_t i = 0; i < scene_.rifts.size(); ++i) {

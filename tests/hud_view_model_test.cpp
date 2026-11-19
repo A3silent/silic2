@@ -39,6 +39,15 @@ void runHudViewModelTests() {
     labels.livingEnemies=0;
     require(hudPhaseLabel(labels)=="EXPLORE" && hudObjectiveLabel(labels)=="EXPLORE THE MAP", "empty legacy map remains exploration");
     labels.arenaSurvival=true;labels.transformationStart=12;labels.transformationDuration=8;
+    require(hudObjectiveLabel(labels)=="HOLD UNTIL 01:30", "classic map generation deadline");
+    labels.endlessSurvival=true;labels.nextSurgeSeconds=45;
+    require(hudReadyObjective(labels).find("45 SECONDS")!=std::string::npos &&
+            hudObjectiveLabel(labels)=="NEXT SURGE 00:45" && hudPhaseLabel(labels)=="FIRST CONTACT",
+            "Crystal begins with its actual escalation interval");
+    labels.pressureStage=4;labels.nextSurgeSeconds=0;labels.livingEnemies=48;
+    require(hudPhaseLabel(labels)=="OVERRUN" && hudObjectiveLabel(labels)=="48 HOSTILES ACTIVE",
+            "final Crystal pressure displays the living horde");
+    labels.endlessSurvival=false;
     labels.combatSeconds=11.9f;require(hudPhaseLabel(labels)=="SURVIVE", "authored transformation has not started");
     labels.combatSeconds=12;require(hudPhaseLabel(labels)=="SHIFTING", "authored transformation starts exactly at boundary");
     labels.combatSeconds=19.9f;require(hudPhaseLabel(labels)=="SHIFTING", "authored transformation duration retained");

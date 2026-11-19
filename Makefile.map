@@ -81,7 +81,7 @@ endif
 # Keep full source paths so files with the same basename can coexist in
 # different modules without object-file collisions.
 ENGINE_SRCS := src/engine/main.cpp \
-               src/engine/app.cpp \
+               src/engine/app.cpp src/engine/app_crystal.cpp \
                src/engine/camera.cpp \
                src/engine/collision.cpp \
                src/engine/shader.cpp \
@@ -100,7 +100,7 @@ ENGINE_C_SRCS := src/engine/glad.c
 PLAYER_SRCS := src/player/player.cpp \
                src/player/weapon.cpp
 
-ENEMY_SRCS := src/enemy/enemy.cpp \
+ENEMY_SRCS := src/enemy/enemy.cpp src/enemy/crystal_enemy.cpp \
               src/enemy/enemy_manager.cpp \
               src/enemy/enemy_projectile_system.cpp
 
@@ -120,7 +120,7 @@ GAME_SRCS := src/game/seed_service.cpp \
              src/game/encounter_director.cpp \
              src/game/exploration_controller.cpp
 
-PRESENTATION_SRCS := src/environment/environment_scene.cpp src/environment/environment_renderer.cpp src/character/character_presentation.cpp src/character/imported_weapon.cpp src/character/weapon_asset.cpp src/character/procedural_rifle.cpp src/audio/audio_system.cpp src/audio/miniaudio_impl.cpp
+PRESENTATION_SRCS := src/character/crystal_creatures.cpp src/environment/environment_scene.cpp src/environment/environment_renderer.cpp src/character/character_presentation.cpp src/character/imported_weapon.cpp src/character/weapon_asset.cpp src/character/procedural_rifle.cpp src/audio/audio_system.cpp src/audio/miniaudio_impl.cpp
 
 CPP_SRCS := $(ENGINE_SRCS) $(PLAYER_SRCS) $(ENEMY_SRCS) $(EFFECTS_SRCS) $(HUD_SRCS) $(GAME_SRCS) $(PRESENTATION_SRCS)
 C_SRCS := $(ENGINE_C_SRCS)
@@ -143,21 +143,22 @@ TEST_SRCS := tests/test_main.cpp \
              tests/enemy_combat_test.cpp \
              tests/audio_system_test.cpp \
              tests/hud_view_model_test.cpp \
-             tests/player_damage_test.cpp
+             tests/player_damage_test.cpp \
+             tests/player_roll_test.cpp
 TEST_OBJS := $(patsubst tests/%.cpp,$(OBJ_DIR)/tests/%.o,$(TEST_SRCS))
 GAME_OBJS := $(patsubst src/%.cpp,$(OBJ_DIR)/%.o,$(GAME_SRCS))
 TEST_SUPPORT_SRCS := src/player/player.cpp src/engine/camera.cpp src/engine/game_config.cpp \
                      src/hud/bitmap_font_renderer.cpp src/hud/hud_view_model.cpp \
-                     src/enemy/enemy_projectile_system.cpp \
+                     src/enemy/enemy_projectile_system.cpp src/enemy/enemy_manager.cpp src/engine/shader.cpp \
                      src/audio/audio_system.cpp \
                      src/audio/miniaudio_impl.cpp \
-                     src/enemy/enemy.cpp \
+                     src/enemy/enemy.cpp src/enemy/crystal_enemy.cpp \
                      src/engine/map.cpp \
                      src/engine/mesh_asset.cpp \
                      src/engine/spatial_world.cpp \
                      src/engine/simple_json.cpp \
                      src/engine/collision.cpp
-TEST_SUPPORT_OBJS := $(patsubst src/%.cpp,$(OBJ_DIR)/%.o,$(TEST_SUPPORT_SRCS))
+TEST_SUPPORT_OBJS := $(patsubst src/%.cpp,$(OBJ_DIR)/%.o,$(TEST_SUPPORT_SRCS)) $(OBJ_DIR)/engine/glad.o
 TEST_TARGET := $(BUILD_DIR)/silic2-tests$(if $(filter windows,$(PLATFORM)),.exe,)
 
 HORROR_PREVIEW_OBJ := $(OBJ_DIR)/tests/horror_scene_preview.o
@@ -201,10 +202,21 @@ test: $(TEST_TARGET)
 	./$(TEST_TARGET)
 
 # Opt-in synthetic GL capture; building this target never opens a window.
-$(HORROR_PREVIEW_TARGET): $(HORROR_PREVIEW_OBJ) $(filter-out $(OBJ_DIR)/engine/main.o $(OBJ_DIR)/engine/app.o,$(APP_OBJS))
+$(HORROR_PREVIEW_TARGET): $(HORROR_PREVIEW_OBJ) $(filter-out $(OBJ_DIR)/engine/main.o $(OBJ_DIR)/engine/app.o $(OBJ_DIR)/engine/app_crystal.o,$(APP_OBJS))
 	$(CXX) $^ -o $@ $(LDFLAGS) $(LIBS)
 
 horror-preview: $(HORROR_PREVIEW_TARGET)
+
+CRYSTAL_POSE_OBJ := $(OBJ_DIR)/character/preview/crystal_creature_check.o
+CRYSTAL_POSE_TARGET := $(BUILD_DIR)/crystal-creature-check$(if $(filter windows,$(PLATFORM)),.exe,)
+$(CRYSTAL_POSE_OBJ): | $(OBJ_DIR)/character/preview
+$(OBJ_DIR)/character/preview:
+	$(make-dir)
+-include $(CRYSTAL_POSE_OBJ:.o=.d)
+$(CRYSTAL_POSE_TARGET): $(CRYSTAL_POSE_OBJ) $(filter-out $(OBJ_DIR)/engine/main.o $(OBJ_DIR)/engine/app.o $(OBJ_DIR)/engine/app_crystal.o,$(APP_OBJS))
+	$(CXX) $^ -o $@ $(LDFLAGS) $(LIBS)
+crystal-creature-check: $(CRYSTAL_POSE_TARGET)
+.PHONY: crystal-creature-check
 
 # Convenience configuration targets
 debug:
@@ -301,7 +313,7 @@ FOREST_GL_CHECK_OBJ := $(OBJ_DIR)/tests/forest_translucency_check.o
 FOREST_GL_CHECK_TARGET := $(BUILD_DIR)/forest-translucency-check
 $(FOREST_GL_CHECK_OBJ): | $(OBJ_DIR)/tests
 -include $(FOREST_GL_CHECK_OBJ:.o=.d)
-$(FOREST_GL_CHECK_TARGET): $(FOREST_GL_CHECK_OBJ) $(filter-out $(OBJ_DIR)/engine/main.o $(OBJ_DIR)/engine/app.o,$(APP_OBJS))
+$(FOREST_GL_CHECK_TARGET): $(FOREST_GL_CHECK_OBJ) $(filter-out $(OBJ_DIR)/engine/main.o $(OBJ_DIR)/engine/app.o $(OBJ_DIR)/engine/app_crystal.o,$(APP_OBJS))
 	$(CXX) $^ -o $@ $(LDFLAGS) $(LIBS)
 forest-translucency-check: $(FOREST_GL_CHECK_TARGET)
 .PHONY: forest-translucency-check
@@ -311,7 +323,7 @@ FOREST_RENDER_PROBE_OBJ := $(OBJ_DIR)/tests/forest_render_probe.o
 FOREST_RENDER_PROBE_TARGET := $(BUILD_DIR)/forest-render-probe
 $(FOREST_RENDER_PROBE_OBJ): | $(OBJ_DIR)/tests
 -include $(FOREST_RENDER_PROBE_OBJ:.o=.d)
-$(FOREST_RENDER_PROBE_TARGET): $(FOREST_RENDER_PROBE_OBJ) $(filter-out $(OBJ_DIR)/engine/main.o $(OBJ_DIR)/engine/app.o,$(APP_OBJS))
+$(FOREST_RENDER_PROBE_TARGET): $(FOREST_RENDER_PROBE_OBJ) $(filter-out $(OBJ_DIR)/engine/main.o $(OBJ_DIR)/engine/app.o $(OBJ_DIR)/engine/app_crystal.o,$(APP_OBJS))
 	$(CXX) $^ -o $@ $(LDFLAGS) $(LIBS)
 forest-render-probe: $(FOREST_RENDER_PROBE_TARGET)
 .PHONY: forest-render-probe
@@ -321,7 +333,7 @@ ADS_CHECK_OBJ := $(OBJ_DIR)/tests/aim_state_test.o
 ADS_CHECK_TARGET := $(BUILD_DIR)/aim-state-check
 $(ADS_CHECK_OBJ): | $(OBJ_DIR)/tests
 -include $(ADS_CHECK_OBJ:.o=.d)
-$(ADS_CHECK_TARGET): $(ADS_CHECK_OBJ) $(filter-out $(OBJ_DIR)/engine/main.o $(OBJ_DIR)/engine/app.o,$(APP_OBJS))
+$(ADS_CHECK_TARGET): $(ADS_CHECK_OBJ) $(filter-out $(OBJ_DIR)/engine/main.o $(OBJ_DIR)/engine/app.o $(OBJ_DIR)/engine/app_crystal.o,$(APP_OBJS))
 	$(CXX) $^ -o $@ $(LDFLAGS) $(LIBS)
 ads-check: $(ADS_CHECK_TARGET)
 	./$(ADS_CHECK_TARGET)
@@ -343,7 +355,7 @@ PLAYER_AURA_CHECK_OBJ := $(OBJ_DIR)/tests/player_aura_test.o
 PLAYER_AURA_CHECK_TARGET := $(BUILD_DIR)/player-aura-check
 $(PLAYER_AURA_CHECK_OBJ): | $(OBJ_DIR)/tests
 -include $(PLAYER_AURA_CHECK_OBJ:.o=.d)
-$(PLAYER_AURA_CHECK_TARGET): $(PLAYER_AURA_CHECK_OBJ) $(filter-out $(OBJ_DIR)/engine/main.o $(OBJ_DIR)/engine/app.o,$(APP_OBJS))
+$(PLAYER_AURA_CHECK_TARGET): $(PLAYER_AURA_CHECK_OBJ) $(filter-out $(OBJ_DIR)/engine/main.o $(OBJ_DIR)/engine/app.o $(OBJ_DIR)/engine/app_crystal.o,$(APP_OBJS))
 	$(CXX) $^ -o $@ $(LDFLAGS) $(LIBS)
 player-aura-check: $(PLAYER_AURA_CHECK_TARGET)
 	./$(PLAYER_AURA_CHECK_TARGET)

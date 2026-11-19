@@ -57,7 +57,7 @@ public:
     // Arena-only, simulation-clock presentation. Safe no-ops on legacy maps.
     void setEnvironmentTime(float combatSeconds);
     void setObservationState(float progress, bool complete);
-    void setRiftWarnings(const std::array<float, 4>& progress);
+    void setRiftWarnings(const std::vector<float>& progress);
     void setEnvironmentParticleCount(size_t count);
     void resetEnvironment();
     float getEnvironmentTime() const;

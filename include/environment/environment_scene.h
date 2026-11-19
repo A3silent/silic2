@@ -28,7 +28,7 @@ struct EnvironmentScene {
     glm::vec2 minimumXZ{0.f};
     glm::vec2 maximumXZ{0.f};
     float floorY = 0.f;
-    std::array<EnvironmentRift, 4> rifts;
+    std::vector<EnvironmentRift> rifts = std::vector<EnvironmentRift>(4);
     bool observatory = false;
     bool combatWorld = false;
     bool forestWorld = false;

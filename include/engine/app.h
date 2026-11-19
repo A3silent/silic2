@@ -1,6 +1,8 @@
 #pragma once
 #include <memory>
 #include <fstream>
+#include <map>
+#include <set>
 #include <vector>
 #include <string>
 #include <glm/glm.hpp>
@@ -16,6 +18,7 @@ class Weapon; class GroundParticleSystem; class EnemyManager; class EnemyProject
 class HudRenderer; class RunController; class EncounterDirector; class AudioSystem;
 class CharacterPresentation; class Shader; class ExplorationController;
 struct HudViewModel;
+struct EnemyAction;
 class App {
 public:
     explicit App(uint64_t runSeed);
@@ -49,7 +52,23 @@ private:
     std::unique_ptr<CharacterPresentation> characters;
     std::unique_ptr<Shader> projectileShader;
     unsigned int projectileVAO=0, projectileVBO=0;
-    std::ofstream runLog, acceptanceLog;
+    std::ofstream runLog, acceptanceLog, combatLog;
+    std::map<uint32_t,float> awaitingFirstThreat;
+    // Director requests and enemy instances advance independently in endless runs.
+    static uint32_t actorAudioSource(uint32_t id) { return id | 0x80000000u; }
+    void handleEnemyAction(const EnemyAction& action);
+    void logCombat(const char* event, EnemyType type, uint32_t id, float value = 0.f);
+    void updateCrystalAcceptance(float dt);
+    std::set<EnemyType> witnessedTypes;
+    std::set<std::string> crystalPoseCaptures;
+    unsigned censerInterrupts = 0;
+    size_t crystalPeakLive=0, crystalFinalPeak=0;
+    float crystalNextSample=0.f;
+    float crystalOuterSeconds = 0, crystalSprintSeconds = 0;
+    bool crystalPaused = false, crystalRestarted = false;
+    float crystalPauseClock = 0;
+    std::vector<glm::vec4> crystalPauseSnapshot;
+    bool isCrystalRoute() const;
     std::string currentMapFile;
     bool arena=false;
     GameState gameState=GameState::READY;
@@ -96,7 +115,7 @@ private:
     HudViewModel makeHud(const glm::mat4& view, const glm::mat4& projection,
                          const ViewLens& lens = {}) const;
     bool visible(const glm::vec3& from,const glm::vec3& to) const;
-    void applyDamage(float amount,DamageSource source,const glm::vec3& origin,bool newEvent=true);
+    float applyDamage(float amount,DamageSource source,const glm::vec3& origin,bool newEvent=true);
     void firePrimary();
     void updateAcceptance(float dt);
     void updateExplorationAcceptance(float dt);

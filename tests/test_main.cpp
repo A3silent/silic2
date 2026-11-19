@@ -17,6 +17,7 @@ void runEnemyCombatTests();
 void runAudioTests();
 void runHudViewModelTests();
 void runPlayerDamageTests();
+void runPlayerRollTests();
 
 int main() {
     try {
@@ -35,6 +36,7 @@ int main() {
         runAudioTests();
         runHudViewModelTests();
         runPlayerDamageTests();
+        runPlayerRollTests();
         std::cout << "All Silic2 tests passed.\n";
         return 0;
     } catch (const std::exception& error) {

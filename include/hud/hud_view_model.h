@@ -32,6 +32,10 @@ struct HudViewModel {
     HudPhase phase = HudPhase::Ready;
     float hp = 100.0f, maxHp = 100.0f;
     float combatSeconds = 0.0f;
+    int generationSeconds = 90;
+    bool endlessSurvival = false;
+    unsigned pressureStage = 0;
+    int nextSurgeSeconds = 0; // Zero while the final horde is sustained.
     float crosshairOpacity = 1.0f; // ADS fades ordinary reticle only; hit feedback remains.
     bool fisheyeEnabled = true;
     float fisheyeHipStrength = .33f;

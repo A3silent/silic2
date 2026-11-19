@@ -96,9 +96,14 @@ void Camera::resetMovementLean(const glm::vec3& feet) {
     movementRoll = movementRollVelocity = 0;
     syncMovementLeanPosition(feet);
 }
-void Camera::updateMovementLean(const glm::vec3& feet, float dt) {
-    if (!(dt > 0) || !std::isfinite(dt)) return;
+void Camera::updateMovementLean(const glm::vec3& feet, float dt, bool rollStep) {
     if (!std::isfinite(feet.x) || !std::isfinite(feet.y) || !std::isfinite(feet.z)) return;
+    if (rollStep) {
+        movementRollVelocity = 0;
+        syncMovementLeanPosition(feet);
+        return;
+    }
+    if (!(dt > 0) || !std::isfinite(dt)) return;
     if (!hasMovementSample) { resetMovementLean(feet); return; }
     const auto displacement = feet - previousFeet;
     syncMovementLeanPosition(feet);

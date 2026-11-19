@@ -41,6 +41,9 @@ const char* toString(EnemyType type) {
     switch (type) {
         case EnemyType::Chaser: return "chaser";
         case EnemyType::Sentry: return "sentry";
+        case EnemyType::ForkHound: return "fork_hound";
+        case EnemyType::VeilRay: return "veil_ray";
+        case EnemyType::HangingCenser: return "hanging_censer";
         case EnemyType::Unknown: return "unknown";
         case EnemyType::Count: break;
     }
@@ -53,6 +56,9 @@ const char* toString(DamageSource source) {
         case DamageSource::EnemyProjectile: return "enemy_projectile";
         case DamageSource::Environment: return "environment";
         case DamageSource::SelfDamage: return "self_damage";
+        case DamageSource::HoundDash: return "hound_dash";
+        case DamageSource::RaySweep: return "ray_sweep";
+        case DamageSource::CenserBurst: return "censer_burst";
         case DamageSource::Unknown: return "unknown";
         case DamageSource::Count: break;
     }

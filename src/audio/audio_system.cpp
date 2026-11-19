@@ -18,7 +18,9 @@ constexpr std::array<CueSpec, static_cast<size_t>(AudioCue::Count)> Specs{{
     {"sentry_charge.wav", .90f, 5, false}, {"sentry_fire.wav", .85f, 5, false},
     {"slide.wav", .38f, 1, false}, {"transform.wav", .22f, 1, false},
     {"ambience.wav", .18f, 0, true}, {"ui_confirm.wav", .32f, 2, false},
-    {"victory.wav", .45f, 3, false}
+    {"victory.wav", .45f, 3, false}, {"hound_brace.wav", .95f, 5, false},
+    {"ray_fold.wav", .90f, 5, false}, {"censer_open.wav", 1.f, 5, false},
+    {"censer_break.wav", .86f, 4, false}
 }};
 bool finite(glm::vec3 v) { return std::isfinite(v.x) && std::isfinite(v.y) && std::isfinite(v.z); }
 }

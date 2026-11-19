@@ -1,5 +1,5 @@
 {
-  "content_version": "silic2-audio-v2-cosmic-horror",
+  "content_version": "silic2-audio-v3-crystal-enemies",
   "sample_rate": 48000,
   "channels": 1,
   "bits": 16,
@@ -173,6 +173,58 @@
       "boundary_slope_error_lsb": 2,
       "max_adjacent_step_lsb": 711,
       "sha256": "66603a51809a023950ed3ff86f272feec2902a381b7a4d2e9e0a801d340aced9"
+    },
+    {
+      "file": "hound_brace.wav",
+      "seconds": 0.7,
+      "frames": 33600,
+      "peak": 0.80401611,
+      "rms": 0.15656158,
+      "mean": 0.00060657,
+      "loop": false,
+      "boundary_step_lsb": 6,
+      "boundary_slope_error_lsb": 13,
+      "max_adjacent_step_lsb": 4517,
+      "sha256": "b03001eeefb037395929ad030c350edffa87538551b4a041a0fb7ff952f53514"
+    },
+    {
+      "file": "ray_fold.wav",
+      "seconds": 0.85,
+      "frames": 40800,
+      "peak": 0.47680664,
+      "rms": 0.20129972,
+      "mean": -9e-08,
+      "loop": false,
+      "boundary_step_lsb": 0,
+      "boundary_slope_error_lsb": 4,
+      "max_adjacent_step_lsb": 4340,
+      "sha256": "7b580a95887ece4f4109cceaa5eb90a55b4c0cac28a1c02e49fd7da91619d02b"
+    },
+    {
+      "file": "censer_open.wav",
+      "seconds": 1.2,
+      "frames": 57600,
+      "peak": 0.6557312,
+      "rms": 0.21994282,
+      "mean": 9.6e-06,
+      "loop": false,
+      "boundary_step_lsb": 3,
+      "boundary_slope_error_lsb": 4,
+      "max_adjacent_step_lsb": 1598,
+      "sha256": "967853a6ece07ca96cd712cce67c0c6bb5983227d9ebac49a756dbe3e2684a36"
+    },
+    {
+      "file": "censer_break.wav",
+      "seconds": 0.38,
+      "frames": 18240,
+      "peak": 0.47271729,
+      "rms": 0.11370393,
+      "mean": 1.59e-06,
+      "loop": false,
+      "boundary_step_lsb": 0,
+      "boundary_slope_error_lsb": 5,
+      "max_adjacent_step_lsb": 2865,
+      "sha256": "722e04807eb50b579848de6a8483b9c4c646b43f4ae4c720208dfc0413c4c51a"
     }
   ]
 }

@@ -831,7 +831,7 @@ public:
             int quantity=int(j.getNumber("intProperty",0));if(ImGui::InputInt("Quantity",&quantity))document.editSelected("Entity quantity",[&](SimpleJson& target){target["intProperty"]=SimpleJson(double(quantity));});
             editVector("Vector / color","vec3Property",j);
             if(j.hasKey("slot"))ImGui::Text("Arena slot: %.0f (fixed)",j.getNumber("slot"));
-            if(document.map().getGameMode()==GameMode::ArenaSurvival)ImGui::TextWrapped("Arena requires one player, four rifts and three sentry markers. Invalid edits keep the previous map.");
+            if(document.map().getGameMode()==GameMode::ArenaSurvival)ImGui::TextWrapped("Arena requires one player, %zu rifts and three sentry markers. Invalid edits keep the previous map.", document.map().getArenaLayout().rifts.size());
             else if(document.map().getGameMode()==GameMode::Exploration)ImGui::TextWrapped("Exploration requires one player. Zones and observation settings are authored in the map JSON and preserved on save.");
         } else {
             const char* lightTypes[]={"point","directional","spot"};int lightType=0;for(int a=0;a<3;++a)if(j.getString("type")==lightTypes[a])lightType=a;

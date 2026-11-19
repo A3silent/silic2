@@ -31,4 +31,4 @@ for seed, ((name, seconds), clip) in enumerate(zip(DURATIONS.items(), manifest['
         assert step == clip['boundary_step_lsb'] and slope_error == clip['boundary_slope_error_lsb']
         assert step <= clip['max_adjacent_step_lsb'] and slope_error <= 8
         print(f'{name}: loop boundary step {step} LSB; slope error {slope_error} LSB')
-print('PASS: 13 PCM/hash/format/duration/peak/RMS/DC checks and fresh deterministic synthesis; no device opened.')
+print(f'PASS: {len(DURATIONS)} PCM/hash/format/duration/peak/RMS/DC checks and fresh deterministic synthesis; no device opened.')

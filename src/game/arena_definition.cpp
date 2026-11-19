@@ -83,6 +83,7 @@ ArenaDefinition ArenaDefinition::fromMap(const Map& map) {
     arena.floorY = layout.floorY;
     arena.spatialWorld=map.getSpatialWorld();
     arena.playerStart = layout.playerStart;
+    arena.encounterProfile = layout.encounterProfile;
     arena.rifts = layout.rifts;
     arena.sentryPositions = layout.sentryPositions;
     if(arena.spatialWorld){for(const auto& node:map.getSpatialSettings().nodes)arena.waypoints.push_back(node.position);return arena;}
@@ -98,7 +99,7 @@ ArenaDefinition ArenaDefinition::fromMap(const Map& map) {
 
 ArenaDefinition ArenaDefinition::starryCrystal() {
     ArenaDefinition arena;
-    arena.rifts = {{{0, 0, -15}, {15, 0, 0}, {0, 0, 15}, {-15, 0, 0}}};
+    arena.rifts = {{0, 0, -15}, {15, 0, 0}, {0, 0, 15}, {-15, 0, 0}};
     arena.sentryPositions = {{{-11, 0, -10}, {11, 0, -10}, {10, 0, 10}}};
     arena.obstacles = {{{-2, 0, -2}, {2, 4.2f, 2}},
                        {{-10, 0, -2}, {-8, 1.4f, 2}},

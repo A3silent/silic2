@@ -129,7 +129,7 @@ private:
     void setupGlowMesh();
     void cleanupDeadBullets();
     void cleanupDeadLights();
-    bool checkBulletCollision(const Bullet& bullet, const Map* map);
+    float firstWallFraction(const Bullet& bullet, const Map* map) const;
     void createImpactLight(const glm::vec3& position, const glm::vec3& color, float intensity);
     
     // Fire cooldown

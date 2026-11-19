@@ -585,7 +585,7 @@ void MapRenderer::setObservationState(float progress, bool complete) {
 void MapRenderer::setEnvironmentTime(float seconds) {
     if (environment) environment->setTime(seconds);
 }
-void MapRenderer::setRiftWarnings(const std::array<float, 4>& progress) {
+void MapRenderer::setRiftWarnings(const std::vector<float>& progress) {
     if (environment) environment->setRiftWarnings(progress);
 }
 void MapRenderer::setEnvironmentParticleCount(size_t count) {

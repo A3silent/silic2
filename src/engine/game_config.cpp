@@ -54,6 +54,9 @@ bool GameConfig::loadFromFile(const std::string& filename) {
             player.moveSpeed = (float)playerObj.getNumber("moveSpeed", player.moveSpeed);
             player.sprintSpeed = (float)playerObj.getNumber("sprintSpeed", player.sprintSpeed);
             player.jumpVelocity = (float)playerObj.getNumber("jumpVelocity", player.jumpVelocity);
+            player.rollDistance = (float)playerObj.getNumber("rollDistance", player.rollDistance);
+            player.rollDuration = (float)playerObj.getNumber("rollDuration", player.rollDuration);
+            player.rollCooldown = (float)playerObj.getNumber("rollCooldown", player.rollCooldown);
             player.gravity = (float)playerObj.getNumber("gravity", player.gravity);
             player.maxFallSpeed = (float)playerObj.getNumber("maxFallSpeed", player.maxFallSpeed);
             player.height = (float)playerObj.getNumber("height", player.height);
@@ -127,6 +130,9 @@ bool GameConfig::saveToFile(const std::string& filename) const {
         file << "    \"moveSpeed\": " << player.moveSpeed << ",\n";
         file << "    \"sprintSpeed\": " << player.sprintSpeed << ",\n";
         file << "    \"jumpVelocity\": " << player.jumpVelocity << ",\n";
+        file << "    \"rollDistance\": " << player.rollDistance << ",\n";
+        file << "    \"rollDuration\": " << player.rollDuration << ",\n";
+        file << "    \"rollCooldown\": " << player.rollCooldown << ",\n";
         file << "    \"gravity\": " << player.gravity << ",\n";
         file << "    \"maxFallSpeed\": " << player.maxFallSpeed << ",\n";
         file << "    \"height\": " << player.height << ",\n";

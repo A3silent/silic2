@@ -47,6 +47,10 @@ struct PlayerConfig {
     float slideSpeed = 15.0f;           // Initial slide speed (faster than sprint)
     float slideFriction = 4.0f;         // Friction during slide (reduced for smoother flow)
     float maxSlideTime = 2.0f;          // Maximum slide duration
+
+    float rollDistance = 5.4f;          // Metres on unobstructed ground
+    float rollDuration = 0.32f;         // Seconds
+    float rollCooldown = 1.0f;          // Seconds between roll starts
     
     // Crouching settings
     float crouchSpeed = 2.0f;           // Movement speed while crouching

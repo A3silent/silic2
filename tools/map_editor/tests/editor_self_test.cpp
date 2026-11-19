@@ -105,7 +105,20 @@ int runEditorSelfTests(const std::string& fixture,const std::string& directory) 
             d.transform(position+glm::vec3(.25f,0,0),scale);check(d.dirty(),"full-map model edit failed: "+d.error());
             check(d.undo() && !d.dirty() && d.map().toJson().toString()==original,"full-map undo changed original");
             check(d.redo(),"full-map redo failed");
+            if(d.map().getArenaLayout().encounterProfile == EncounterProfile::CrystalSurvival) {
+                const auto& entities = d.map().getEntities();
+                auto it=std::find_if(entities.begin(),entities.end(),[](const Entity& e){return e.type==EntityType::RIFT && e.slot==11;});
+                check(it!=entities.end(),"missing last peripheral slot");
+                auto position=it->position+glm::vec3(.25f,0,0);
+                d.select({ObjectKind::Entity,size_t(it-entities.begin())});
+                d.transform(position,d.selectedSize());
+                check(near(d.map().getArenaLayout().rifts.at(11),position),"peripheral rift move failed");
+                check(d.undo() && d.redo() && near(d.map().getArenaLayout().rifts.at(11),position),"rift edit history failed");
+            }
             check(d.save(directory+"/full-crystal.json"),d.error());Map shared;check(shared.loadFromFile(directory+"/full-crystal.json"),shared.getLastError());
+            check(shared.getArenaLayout().encounterProfile==d.map().getArenaLayout().encounterProfile &&
+                  shared.getArenaLayout().rifts==d.map().getArenaLayout().rifts,
+                  "external Save As changed encounter profile or rift positions");
             auto sameMeshes=[&](const auto& a,const auto& b){check(a.size()==b.size(),"compiled mesh count changed");for(size_t i=0;i<a.size();++i)check(a[i].id==b[i].id && a[i].vertices==b[i].vertices && a[i].faces==b[i].faces && a[i].texCoords==b[i].texCoords && a[i].texture==b[i].texture && a[i].material==b[i].material && a[i].color==b[i].color,"compiled mesh/appearance changed after external full-map save");};
             sameMeshes(d.map().getBrushes(),shared.getBrushes());sameMeshes(d.map().getCollisionBrushes(),shared.getCollisionBrushes());
             check(shared.getSpatialSettings().nodes.size()==d.map().getSpatialSettings().nodes.size() && shared.getSpatialSettings().links.size()==d.map().getSpatialSettings().links.size(),"full-map navigation changed");

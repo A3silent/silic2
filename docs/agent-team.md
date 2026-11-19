@@ -756,3 +756,60 @@ lens_aim_regression 负责 `tests/aim_state_test.cpp` 的迁移与字段保留�
 sky_capture 负责构建、测试和隔离目录中的启动验证。ATLAS 负责本地文件迁移、忽略规则及中英文使用说明。
 已完成。Debug 和 Release 构建与测试通过。6 次实机启动通过 39 项检查，覆盖旧配置迁移、
 新旧文件并存时的优先级，以及使用热键后保留手动添加的字段。记录见 `artifacts/acceptance/general-config/final/results.json`。
+
+## Crystal 三敌与 150 秒遭遇（2026-11-19）
+
+按用户确认的完整计划，以下为本轮唯一写入者。交付 ATLAS，在当前工作树集成。
+- EN3-COMBAT ／ VECTOR：include/src/enemy、gameplay_types、run_stats.cpp 的枚举字符串、新战斗配置、tests/enemy_combat_test.cpp，含 AI、调度、命中和弹簇。
+- EN3-WAVES ／ VECTOR 遭遇：arena_definition、encounter_director、map 数据与验证、地图生成器、当前 Crystal JSON、外围裂口场景接入及编辑器往返、关联导演测试。
+- EN3-ART ／ KINETIC：include/src/character、角色专属 shaders，三套程序模型、姿态、扫线与地面攻击提示。
+- EN3-INTEGRATE ／ ATLAS 统筹共享接入：App、构建、HUD、音频、联调、运行验收和文档；专业子任务完成后再交接专属文件。
+
+已集成并完成本机工程验收。种子 42 的 960×600 实机回放分别在 156.5、151.8 和 153.8 秒清场，
+ADS 路线打断三次。Debug/Release、编辑器往返、两张旧图的 90 秒导演均通过。另修复猎犬岩缘退路和旧刷体竞技场出生间隙。
+三招的真人辨认率与主动打断率等待五人各两局的观察；读招、调参与证据见[三敌遭遇](crystal-enemy-expansion.md)。
+
+## Crystal 飞行敌人体型调整
+
+FLY-SIZE 由 VECTOR 负责 enemy 目录、碰撞与战斗回归测试；KINETIC 负责角色渲染与姿态预览。
+ATLAS 负责 App 的瞄准及 HUD 接入、文档、构建与正式地图验收。
+VECTOR 遭遇负责 encounter_director 及其测试，检查放大后裂口处的起飞净空和实体重叠。
+
+已完成。帷膜鳐翼展 8.75 米，悬炉高 8.4 米，猎犬身长 2.8 米。两种飞怪均通过全部 12 个裂口的起飞检查。
+三条 960×600 正式地图回放均清场，开镜路线打断悬炉 3 次。截图和场次记录见 `artifacts/acceptance/crystal-fly-size/`。
+
+## Crystal 普通怪与持续生存
+
+CR-HORDE 由 VECTOR 负责遭遇导演、敌人群体移动和战斗排程及对应测试。
+终盘远距帷膜鳐的避障性能也归 CR-HORDE，必要的空间查询优化由该任务单独写入。
+CR-MINIONS 由 KINETIC 负责角色目录、角色材质和预览，制作 Crystal 地图的追逐者与哨兵。
+CR-RUN 由 VECTOR 集成负责 App、地图配置与编辑器兼容、HUD、实机回放和对应测试。
+ATLAS 负责调参与验收、实机截图、设计说明与运行文档。
+
+已完成。960×600 Release 正式地图的中心、外圈和开镜回放分别在 191.7、199.6 和 193.0 秒自然死亡。
+观察局记录到 89 只同时在场。优化远距帷膜鳐的进场搜索后，终盘 959 个非截图帧的 p99 为 17.35 毫秒。
+Debug、Release 与编辑器七项测试通过。记录与截图见[Crystal 生存竞技场](crystal-enemy-expansion.md)。
+
+## Crystal 高级怪混编
+
+ELITE-MIX 由 VECTOR 负责遭遇导演、敌人管理器、相应头文件及普通怪压力测试入口的运行集成。
+ELITE-CHECK 负责导演与战斗回归测试，覆盖十只硬上限、跨阶段预警和后期怪种。
+ATLAS 负责实机密度、存活时间、性能复核及文档。
+
+已完成。追逐者全局在场上限为 10，从 90、135 秒起分别补到 6、2 只，180 秒停止生成。种子 42 终盘观察局在 3:30 记录到 54 只高级怪、3 只哨兵和 0 只追逐者。三条普通路线分别在 3:03–3:18 自然死亡。记录见 `artifacts/acceptance/crystal-elite-mix/r1/`。
+
+AIR-MIX 由 VECTOR 维护遭遇导演的产量与上限、对应的导演断言，另一位 VECTOR 维护 App 中的回放结束判定，ATLAS 核对配置、同步当前调参说明与构建。本轮按用户要求跳过测试和回放。
+
+## 玩家 C 键翻滚
+
+ROLL-MOVE 由 VECTOR 负责 Player、键位采样和 PlayerConfig。ROLL-VIEW 由 KINETIC 负责镜头和第一人称角色表现。ROLL-INTEGRATE 由 VECTOR 负责 App 接线、暂停输入和动作回归测试。ATLAS 负责游戏内按键说明、README、构建与验收。
+
+已接入地面翻滚。Crystal 和 Hollow Orbit 两张正式地图的出生点通过无窗口位移检查，前滚和侧滚均在 0.32 秒内移动约 4 米。两种碰撞后端的回归覆盖薄墙、滑铲转侧滚、按键冷却、重生和开镜对准。
+
+ROLL-CHAIN 由 VECTOR 独占 Player、PlayerConfig，负责加长位移和奔跑接跳。ROLL-LEVEL 由 KINETIC 负责 Camera 和 App 中该镜头的接线。ROLL-CHECK 由 VECTOR 独占翻滚回归测试。ATLAS 维护操作说明并核对构建和验证结果。
+
+本轮将默认距离调到 5.4 米，时长仍为 0.32 秒。两张竞技场出生点的前滚、侧滚都测得 5.4 米，按住方向收尾的地面速度为 10 米/秒。收尾前 0.10 秒内点按空格可在地面滚完时起跳，侧滚各模拟帧的镜头侧倾为零。
+
+ROLL-KEEP 由 KINETIC 维护 Camera 与翻滚镜头回归。HOUND-FACE 由 VECTOR 负责猎犬朝向、近身移动及敌人战斗回归。ATLAS 负责复核角色绘制路径、正式地图重现和操作说明。
+
+翻滚现保留起滚时已有的镜头倾角。猎犬等待冲刺时沿同一侧绕行，跨过 6 米边界不会换到反向路线。Crystal 四条无窗口回放各运行 900 帧，单帧转向超过 90° 的次数从 37、410、7、622 全部降到零。另在外圈八个方位各观察 20 秒，每只猎犬均发出 7 至 8 次冲刺预警。

@@ -182,7 +182,7 @@ void buildHudGeometry(HudBatch& b,const HudViewModel& m,int logicalWidth,int log
             b.rect(x-1,y-1,52,7,ink);b.rect(x,y,50*ratio(e.hp,e.maxHp),5,warm);
         }
         panel(b,margin,margin,178,63);
-        text(b,m.exploration?"JOURNEY":"COMBAT",margin+12,margin+10,1,muted);
+        text(b,m.exploration?"JOURNEY":m.endlessSurvival?"SURVIVAL TIME":"COMBAT",margin+12,margin+10,1,muted);
         text(b,hudClock(m.combatSeconds),margin+12,margin+29,3);
         const std::string phase=hudPhaseLabel(m);
         centered(b,phase,cx,margin+6,p,amber);
@@ -241,7 +241,7 @@ void buildHudGeometry(HudBatch& b,const HudViewModel& m,int logicalWidth,int log
         b.rect(x+26,y+102,pw-52,1,{0.29f,0.30f,0.27f,1});
         if(m.phase==HudPhase::Ready) {
             text(b,hudReadyObjective(m),x+26,y+123,p);
-            text(b,"WASD     MOVE",x+26,y+161,p,muted);
+            text(b,"WASD     MOVE       C    DODGE ROLL",x+26,y+161,p,muted);
             text(b,"LMB FIRE / HOLD RMB AIM",x+26,y+186,p,muted);
             text(b,"SHIFT    TOGGLE SPRINT",x+26,y+211,p,muted);
             text(b,"CTRL     CROUCH / SLIDE",x+26,y+236,p,muted);
@@ -254,7 +254,7 @@ void buildHudGeometry(HudBatch& b,const HudViewModel& m,int logicalWidth,int log
             text(b,"V  TOGGLE    [  DECREASE    ]  INCREASE",x+26,y+186,p,muted);
             text(b,"ESC  RESUME",x+26,y+232,p,amber);
         } else {
-            const std::string labels[]={"TIME","KILLS","ACCURACY","HP LOST","FATAL SOURCE"};
+            const std::string labels[]={m.endlessSurvival?"SURVIVED":"TIME","KILLS","ACCURACY","HP LOST","FATAL SOURCE"};
             std::string fatal=m.phase==HudPhase::Won?"NONE":hudFatalSource(m.fatalSource);
             if(fatal.size()>20) fatal=fatal.substr(0,19)+".";
             const std::string values[]={hudClock(m.combatSeconds),std::to_string(m.kills),hudAccuracy(m.shotsHit,m.shotsFired),hudHpLoss(m.actualHpLoss),fatal};

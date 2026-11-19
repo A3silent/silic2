@@ -222,6 +222,13 @@ void roundtripAndDerived() {
 void runMapTests() {
     legacyAndMigration();
     dualPresets();
+    auto previousCrystal=read("res/maps/starry_crystal_arena.json");
+    previousCrystal["arena"]["encounterProfile"]=J("crystal_150");
+    Map upgraded;
+    require(upgraded.loadFromJson(previousCrystal,"res/maps") &&
+            upgraded.getArenaLayout().encounterProfile==EncounterProfile::CrystalSurvival &&
+            upgraded.toJson()["arena"]["encounterProfile"].getString()=="crystal_survival",
+            "old Crystal encounters load as survival and save their canonical profile");
     forestViewSettings();
     transactionsAndStrictness();
     roundtripAndDerived();

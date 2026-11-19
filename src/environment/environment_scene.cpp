@@ -332,7 +332,8 @@ EnvironmentScene deriveEnvironmentScene(const Map& map) {
     }
     // Rift slots are semantic identity shared with the director, never a hint
     // from material/name or assumed cardinal world coordinates.
-    for (std::size_t i = 0; i < scene.rifts.size(); ++i) {
+    scene.rifts.resize(std::max(layout.rifts.size(), size_t(4)));
+    for (std::size_t i = 0; i < layout.rifts.size(); ++i) {
         auto& rift = scene.rifts[i];
         rift.active = scene.hasFloor && layout.riftActive[i];
         rift.position = layout.rifts[i];

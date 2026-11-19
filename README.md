@@ -13,9 +13,12 @@ primary weapon, first-person presentation, directional sound, an English bitmap 
 pause/results and same-seed restart. Weapon abilities and progression are later work.
 The **Forest Crystal Arena** is an open slate clearing about 200m across.
 A blue, cloud-veiled eye trembles beside its 140m crystal spire.
-It keeps the same 90-second arrivals and cleanup victory. The prior megastructure
+Its survival clock runs until the player dies. Reinforcements accelerate every
+45 seconds. At most ten Chasers can be alive. Their reinforcements thin out
+from 1:30 as Fork Hounds, Veil Rays and Hanging Censers take over. From 3:00
+onward, fresh waves contain only those three enemies and Sentries. The prior megastructure
 map remains available as `res/maps/crystal_megastructure_arena.json`. See the
-[forest plan](plan/forest-crystal-arena.md) and [delivery record](docs/forest-crystal-arena.md).
+[forest plan](plan/forest-crystal-arena.md) and [encounter and playtest guide](docs/crystal-enemy-expansion.md).
 Both maps share the procedural black/red **Crimson Carapace** rifle, with continuous
 glowing channels and an open red-dot sight. Hold the right mouse button to aim.
 The first-person view curves at the edges and straightens as you aim down sights.
@@ -158,6 +161,7 @@ a header rebuilds only the source files that include it.
 - **Space** - Jump
 - **Shift** - Toggle sprint
 - **Ctrl** - Crouch / slide
+- **C** - Dodge roll up to 5.4 m in 0.32 seconds, with one second between starts. Use WASD to choose the direction, or tap C alone to roll forward. Hold a movement direction through the finish to come out sprinting. Tap Space in the final 0.10 seconds to jump as the roll ends.
 - **Escape** - Pause/resume
 - **R or Left Mouse Button** - Restart one second after death or room clear
 - **G** - Toggle god mode (free flight + noclip)

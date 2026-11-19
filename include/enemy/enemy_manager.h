@@ -32,10 +32,11 @@ public:
     bool spawn(EnemyType type,const glm::vec3& position);
     void setArenaEnabled(bool enabled);
     void setArenaDefinition(std::shared_ptr<const ArenaDefinition> definition);
+    void setPressureStage(unsigned stage) { pressureStage=std::min(stage,4u); }
     size_t count(EnemyType type) const;
     const std::vector<EnemyAction>& actions() const { return pendingActions; }
 
-    void update(float deltaTime, const glm::vec3& playerPos, const Map* map);
+    void update(float deltaTime, const glm::vec3& playerPos, const Map* map,const AABB* playerBounds=nullptr,size_t inFlightVolleys=0);
 
     // Render all live enemies with the same point-light pipeline as the map
     void render(const glm::mat4& view, const glm::mat4& projection,
@@ -43,7 +44,7 @@ public:
                 const std::vector<MapRenderer::LightData>& lights);
 
     // Tests the swept bullet segment and reports the single affected enemy.
-    BulletHitResult checkBulletHit(const glm::vec3& prevPos, const glm::vec3& pos, int damage);
+    BulletHitResult checkBulletHit(const glm::vec3& prevPos, const glm::vec3& pos, int damage,float maxFraction=2);
 
     // Returns total contact damage per second from all touching enemies
     float getContactDps(const glm::vec3& playerPos) const;
@@ -67,6 +68,11 @@ private:
     GLuint boxVBO = 0;
     size_t spawnedEnemyCount = 0;
     uint32_t nextId=1;
+    float heavyCooldown=0;
+    unsigned pressureStage=0;
+    uint32_t lastHeavyId=0;
+    glm::vec3 lastPlayer{}, filteredVelocity{};
+    bool havePlayer=false;
     bool arenaEnabled=false;
     std::shared_ptr<const ArenaDefinition> arenaDefinition;
     std::vector<EnemyAction> pendingActions;

@@ -86,14 +86,15 @@ struct MapObstacle {
     uint32_t brushId = 0;
     glm::vec3 min{0}, max{0};
 };
+enum class EncounterProfile { Classic90, CrystalSurvival };
 struct ArenaLayout {
+    EncounterProfile encounterProfile = EncounterProfile::Classic90;
     bool hasFloor = false, hasPlayerStart = false;
     glm::vec2 minXZ{0}, maxXZ{0};
     float floorY = 0;
     glm::vec3 playerStart{0};
-    std::array<glm::vec3, 4> rifts{}, riftRotations{},
-        riftScales{{glm::vec3(1), glm::vec3(1), glm::vec3(1), glm::vec3(1)}};
-    std::array<bool, 4> riftActive{};
+    std::vector<glm::vec3> rifts, riftRotations, riftScales;
+    std::vector<bool> riftActive;
     std::array<glm::vec3, 3> sentryPositions{};
     std::array<bool, 3> sentryActive{};
     std::vector<MapObstacle> obstacles;

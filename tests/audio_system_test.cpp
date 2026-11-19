@@ -76,7 +76,8 @@ void runAudioTests() {
     // Horror bed/transform must preserve measurable lateral threat contrast.
     // This checks mix routing/headroom, not a human audibility threshold.
     std::vector<float> warmup(72000*2), warningBlock(48000*2);
-    for (const auto cue : {AudioCue::RiftWarning, AudioCue::SentryCharge}) {
+    for (const auto cue : {AudioCue::RiftWarning, AudioCue::SentryCharge,
+                           AudioCue::HoundBrace, AudioCue::RayFold, AudioCue::CenserOpen}) {
         for (const float side : {-1.0f, 1.0f}) {
             audio.reset();
             audio.play(AudioCue::Ambience,{},0,false);

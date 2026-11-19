@@ -13,6 +13,7 @@
 #include "player/weapon.h"
 #include "effects/groundparticle.h"
 #include "enemy/enemy_manager.h"
+#include "enemy/crystal_combat.h"
 #include "enemy/enemy_projectile_system.h"
 #include "game/run_controller.h"
 #include "game/encounter_director.h"
@@ -80,7 +81,9 @@ App::App(const AppOptions& config):options(config) {
         runController=std::make_unique<RunController>(options.seed);
         currentMap=std::make_unique<Map>(); mapRenderer=std::make_unique<MapRenderer>();
         pixelRenderer=std::make_unique<PixelRenderer>();
-        if(!pixelRenderer->init(gc.render.pixelWidth,gc.render.pixelHeight)) throw std::runtime_error("Pixel framebuffer initialization failed");
+        const int sceneWidth=isCrystalRoute()?960:gc.render.pixelWidth;
+        const int sceneHeight=isCrystalRoute()?600:gc.render.pixelHeight;
+        if(!pixelRenderer->init(sceneWidth,sceneHeight)) throw std::runtime_error("Pixel framebuffer initialization failed");
         camera=std::make_unique<Camera>(); player=std::make_unique<Player>();
         weapon=std::make_unique<Weapon>();weapon->init();
         groundParticles=createEnhancedGroundParticleSystem(2000,GroundParticleSystem::GParticleMode::FIRE);
@@ -105,7 +108,7 @@ App::App(const AppOptions& config):options(config) {
         glfwSetCursorPosCallback(window,mouseCallback);glfwSetScrollCallback(window,scrollCallback);
         // This hidden synthetic route invokes focusCallback explicitly; OS focus
         // delivery is covered by ordinary gameplay, not this deterministic harness.
-        if(options.acceptance!="rifle-ads")glfwSetWindowFocusCallback(window,focusCallback);
+        if(options.acceptance!="rifle-ads" && !isCrystalRoute())glfwSetWindowFocusCallback(window,focusCallback);
         setState(GameState::READY);
         int fw,fh;glfwGetFramebufferSize(window,&fw,&fh);
         if(acceptanceLog) acceptanceLog<<"{\"event\":\"configuration\",\"logical_width\":"<<options.width<<",\"logical_height\":"<<options.height<<",\"framebuffer_width\":"<<fw<<",\"framebuffer_height\":"<<fh<<",\"internal_width\":"<<pixelRenderer->getPixelWidth()<<",\"internal_height\":"<<pixelRenderer->getPixelHeight()<<",\"vsync\":"<<(options.vsync?"true":"false")<<",\"audio_available\":"<<(audio->available()?"true":"false")<<",\"synthetic_input\":true}\n";
@@ -118,7 +121,7 @@ bool App::initWindow(){
 #ifdef __APPLE__
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT,GL_TRUE);
 #endif
-    if(options.acceptance=="rifle-ads")glfwWindowHint(GLFW_VISIBLE,GL_FALSE);
+    if(options.acceptance=="rifle-ads" || isCrystalRoute())glfwWindowHint(GLFW_VISIBLE,GL_FALSE);
     window=glfwCreateWindow(options.width,options.height,"SILIC2",nullptr,nullptr);
     if(!window)return false;
     glfwMakeContextCurrent(window);glfwSwapInterval(options.vsync?1:0);return true;
@@ -166,6 +169,11 @@ bool App::loadMap(const std::string& path){
     currentMap=std::move(candidate);
     mapRenderer=std::move(candidateRenderer);
     currentMapFile=path;arena=candidateArena;
+    combatLog.close();
+    if (arena && currentMap->getArenaLayout().encounterProfile==EncounterProfile::CrystalSurvival) {
+        combatLog.open(options.outputDirectory+"/combat-events.jsonl",std::ios::app);
+        if (!combatLog) throw std::runtime_error("Cannot open Crystal combat event log");
+    }
     glfwSetWindowTitle(window,(std::string("SILIC2 | ")+currentMap->getDisplayName()).c_str());
     director=std::make_unique<EncounterDirector>(definition?*definition:ArenaDefinition{});
     exploration=candidateExploration?std::make_unique<ExplorationController>(*currentMap):nullptr;
@@ -184,11 +192,16 @@ void App::setState(GameState next){
     }
     glfwSetInputMode(window,GLFW_CURSOR,next==GameState::PLAYING?GLFW_CURSOR_DISABLED:GLFW_CURSOR_NORMAL);
     audio->setPaused(next==GameState::PAUSED||next==GameState::READY);
-    if(next==GameState::PLAYING) { refocused=true;camera->syncMovementLeanPosition(player->getPosition()); }
+    if(next==GameState::PLAYING) {
+        refocused=true;
+        camera->syncMovementLeanPosition(player->getPosition());
+        player->syncRollButtons(glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS,
+                                glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS);
+    }
 }
 void App::run(){
     std::ofstream completeFrames;
-    if(options.acceptance=="spatial-combat"){
+    if(options.acceptance=="spatial-combat" || options.acceptance=="crystal-horde"){
         completeFrames.open(options.outputDirectory+"/frames-complete.csv");
         completeFrames<<"frame,wall_clock_ms,simulation_seconds,captured,measuring,playing,x,y,z,living\n";
     }
@@ -199,6 +212,7 @@ void App::run(){
         frameStarted=glfwGetTime();const double raw=frameStarted-previous;previous=frameStarted;
         // Simulation stability clamp is independent of the uncapped performance record.
         deltaTime=static_cast<float>(std::min(raw,0.05));
+        if(isCrystalRoute()) deltaTime=1.f/30.f;
         const bool measuring=gameState==GameState::PLAYING&&!refocused;
         // Synthetic flow inputs and assertions share a bounded frame clock.
         // GPU readback / screenshot I/O must not skip an input's press window.
@@ -232,7 +246,7 @@ void App::processInput(){
     if(enter&&!enterWasPressed&&gameState==GameState::READY){setState(GameState::PLAYING);audio->play(AudioCue::UiConfirm,{},0,false);}
     if((gameState==GameState::ROOM_CLEARED||gameState==GameState::PLAYER_DEAD)&&stateTimer>=1&&((r&&!rWasPressed)||(left&&!leftMouseWasPressed)))restartCurrentRun();
     escWasPressed=esc;enterWasPressed=enter;rWasPressed=r;leftMouseWasPressed=left;
-    if(gameState==GameState::PLAYING && options.acceptance!="rifle-ads")
+    if(gameState==GameState::PLAYING && options.acceptance!="rifle-ads" && !isCrystalRoute())
         aimHeld=glfwGetMouseButton(window,GLFW_MOUSE_BUTTON_RIGHT)==GLFW_PRESS;
     if(gameState==GameState::PLAYING&&(options.acceptance.empty()||options.acceptance=="flow")){
         player->processInput(window,camera.get(),deltaTime);if(left)firePrimary();
@@ -253,41 +267,84 @@ bool App::visible(const glm::vec3& from,const glm::vec3& to)const{
         if(hit.collided&&hit.distance<distance-.02f)return false;
     }return true;
 }
-void App::applyDamage(float amount,DamageSource source,const glm::vec3& origin,bool newEvent){
+float App::applyDamage(float amount,DamageSource source,const glm::vec3& origin,bool newEvent){
     // Invulnerability is confined to explicitly labelled synthetic acceptance input.
-    const bool syntheticInvulnerable=options.acceptance=="performance"||options.acceptance=="stress"||options.acceptance=="restarts";
+    const bool syntheticInvulnerable=options.acceptance=="performance"||options.acceptance=="stress"||
+        options.acceptance=="restarts"||options.acceptance=="crystal-horde";
     const float actual=syntheticInvulnerable?0:player->takeDamage(amount);
     runController->stats().recordDamage(actual,source,newEvent);
     if(actual>0){damageAge=0;auto dir=origin-camera->getPosition();damageDirection=std::atan2(glm::dot(dir,camera->getRight()),glm::dot(dir,camera->getFront()));if(newEvent)audio->play(AudioCue::PlayerHurt,{},0,false);}
     if(player->isDead())runController->stats().recordFatalSource(source);
+    return actual;
 }
 void App::updatePlaying(float dt){
     aim.update(aimHeld,dt);
     hitAge+=dt;killAge+=dt;damageAge+=dt;
+    // The final roll displacement may land in a step that ends standing or jumping.
+    const bool rollStep = player->getState() == PlayerState::ROLLING;
     player->update(dt,currentMap.get());
     auto pos=player->getPosition();const auto movement=pos-previousPlayerPosition;
     runController->stats().recordMovement(glm::length(glm::vec2(movement.x,movement.z)),player->getState()==PlayerState::SLIDING?MovementState::Sliding:MovementState::Other,dt);
     previousPlayerPosition=pos;camera->setPosition(player->getEyePosition()+player->getCameraOffset());camera->update();
-    camera->updateMovementLean(pos,dt);
+    camera->updateMovementLean(pos,dt,rollStep);
     const auto result=weapon->update(dt,currentMap.get(),enemyManager.get());
     for(int i=0;i<result.hits;++i){runController->stats().recordHit();hitAge=0;audio->play(AudioCue::Hit,{},0,false);}
     for(auto type:result.killedEnemyTypes){runController->stats().recordKill(type);killAge=0;audio->play(AudioCue::Kill,{},0,false);}
     for(const auto& enemy:enemyManager->getEnemies()){
-        if(enemy.isDead()){audio->stopSource(10000+enemy.getId());characters->emit(CharacterEffect::Death,enemy.getAABB().getCenter());}
+        if(enemy.isDead()){
+            if (crystalCombat::isCrystalEnemy(enemy.getType()))
+                logCombat(enemy.getAttackPhase()==AttackPhase::Windup?"killed_during_windup":"killed",enemy.getType(),enemy.getId());
+            awaitingFirstThreat.erase(enemy.getId());audio->stopSource(actorAudioSource(enemy.getId()));characters->emit(CharacterEffect::Death,enemy.getAABB().getCenter());
+        }
         else if(enemy.getSecondsSinceDamage()==0)characters->emit(CharacterEffect::Impact,enemy.getAABB().getCenter());
     }
     if(arena){
-        DirectorInput input;input.playerPosition=pos;input.liveChasers=enemyManager->count(EnemyType::Chaser);input.liveSentries=enemyManager->count(EnemyType::Sentry);
-        for(const auto& enemy:enemyManager->getEnemies())if(!enemy.isDead()&&enemy.getType()==EnemyType::Sentry)
-            for(size_t i=0;i<3;++i)if(glm::length(enemy.getPosition()-director->arenaDefinition().sentryPositions[i])<1)input.occupiedSentrySlots[i]=true;
-        for(const auto& event:director->update(dt,input)){
-            switch(event.kind){
-                case DirectorEvent::Kind::WarningStarted:audio->play(AudioCue::RiftWarning,event.position,event.requestId);break;
-                case DirectorEvent::Kind::WarningCancelled:audio->stopSource(event.requestId);break;
-                case DirectorEvent::Kind::Spawn:enemyManager->spawn(event.type,event.position);audio->stopSource(event.requestId);break;
-                case DirectorEvent::Kind::Deferred:runController->stats().recordSpawnDelay(toString(event.reason));break;
-                case DirectorEvent::Kind::Cancelled:runController->stats().recordSpawnCancellation(toString(event.reason));audio->stopSource(event.requestId);break;
+        DirectorInput input;
+        input.playerPosition = pos;
+        input.playerVelocity = player->getVelocity();
+        const auto& layout = currentMap->getArenaLayout();
+        if (layout.encounterProfile==EncounterProfile::CrystalSurvival)
+            input.occupiedRifts.resize(layout.rifts.size());
+        for (const auto& enemy : enemyManager->getEnemies()) {
+            if (enemy.isDead()) continue;
+            ++input.liveByType[static_cast<size_t>(enemy.getType())];
+            if (layout.encounterProfile==EncounterProfile::CrystalSurvival)
+                input.liveBounds.push_back(enemy.getAABB());
+            if (enemy.getType()==EnemyType::Sentry) {
+                for (size_t i=0; i<layout.sentryPositions.size(); ++i)
+                    if (glm::distance(enemy.getPosition(),layout.sentryPositions[i])<1.f) input.occupiedSentrySlots[i]=true;
             }
+            if (enemy.getType()!=EnemyType::VeilRay && enemy.getType()!=EnemyType::HangingCenser) {
+                for (size_t i=0; i<input.occupiedRifts.size(); ++i)
+                    if (glm::distance(enemy.getPosition(),layout.rifts[i])<2.f) input.occupiedRifts[i]=true;
+            }
+        }
+        input.liveChasers = input.liveByType[static_cast<size_t>(EnemyType::Chaser)];
+        input.liveSentries = input.liveByType[static_cast<size_t>(EnemyType::Sentry)];
+        for(const auto& event:director->update(dt,input)){
+            const uint32_t riftAudioSource=event.requestId & 0x7fffffffu;
+            switch(event.kind){
+                case DirectorEvent::Kind::WarningStarted:audio->play(AudioCue::RiftWarning,event.position,riftAudioSource);break;
+                case DirectorEvent::Kind::WarningCancelled:audio->stopSource(riftAudioSource);break;
+                case DirectorEvent::Kind::Spawn:
+                    if (enemyManager->spawn(event.type,event.position)) {
+                        const auto id=enemyManager->getEnemies().back().getId();
+                        logCombat("spawn", event.type, id);
+                        if (crystalCombat::isCrystalEnemy(event.type))
+                            awaitingFirstThreat[id]=runController->stats().snapshot().runTime;
+                    }
+                    audio->stopSource(riftAudioSource);
+                    break;
+                case DirectorEvent::Kind::Deferred:runController->stats().recordSpawnDelay(toString(event.reason));break;
+                case DirectorEvent::Kind::Cancelled:runController->stats().recordSpawnCancellation(toString(event.reason));audio->stopSource(riftAudioSource);break;
+            }
+        }
+        enemyManager->setPressureStage(director->pressureStage());
+        // The player's bullets resolve first. In finite encounters the last survivor wins
+        // immediately, including when an older volley would land this tick.
+        if (director->complete(enemyManager->getLiveCount())) {
+            finishCurrentRun(RoomResult::Cleared,RunEndReason::Completed);
+            return;
         }
     }
     if(exploration) {
@@ -297,20 +354,13 @@ void App::updatePlaying(float dt){
         if(events.calibrated) audio->play(AudioCue::Transform,{},0,false);
         if(events.completed) { finishCurrentRun(RoomResult::Cleared,RunEndReason::Completed); return; }
     }
-    enemyManager->update(dt,pos,currentMap.get());
-    for(const auto& action:enemyManager->actions()){
-        if(action.kind==EnemyAction::Kind::Charge)audio->play(AudioCue::SentryCharge,action.position,10000+action.sourceId);
-        else if(action.kind==EnemyAction::Kind::CancelCharge)audio->stopSource(10000+action.sourceId);
-        else if(action.kind==EnemyAction::Kind::Fire){
-            audio->stopSource(10000+action.sourceId);
-            if(hostileProjectiles->spawn(action.position,action.direction,action.sourceId)){
-                runController->stats().recordHostileShot();audio->play(AudioCue::SentryFire,action.position);characters->emit(CharacterEffect::SentryFire,action.position,action.direction);
-            }
-        }
-    }
+    const auto playerBounds=player->getAABB();
+    enemyManager->update(dt,pos,currentMap.get(),&playerBounds,hostileProjectiles->activeVolleyCount());
+    for(const auto& action : enemyManager->actions()) handleEnemyAction(action);
     const float dps=enemyManager->getContactDps(pos);
-    if(dps>0){glm::vec3 origin=pos;for(const auto& e:enemyManager->getEnemies())if(e.isTouchingPlayer(pos)){origin=e.getPosition();break;}applyDamage(dps*dt,DamageSource::EnemyContact,origin,!contactDamageActive);}contactDamageActive=dps>0;
-    if(!player->isDead())for(const auto& hit:hostileProjectiles->update(dt,currentMap.get(),player->getAABB())){runController->stats().recordHostileHit();applyDamage(hit.damage,DamageSource::EnemyProjectile,hit.origin);if(player->isDead())break;}
+    if(dps>0 && !player->isDead()){glm::vec3 origin=pos;for(const auto& e:enemyManager->getEnemies())if(e.isTouchingPlayer(pos)){origin=e.getPosition();break;}applyDamage(dps*dt,DamageSource::EnemyContact,origin,!contactDamageActive);}contactDamageActive=dps>0;
+    if(!player->isDead())for(const auto& hit:hostileProjectiles->update(dt,currentMap.get(),player->getAABB())){runController->stats().recordHostileHit();const auto actual=applyDamage(hit.damage,hit.source,hit.origin);
+        logCombat("damage",hit.source==DamageSource::CenserBurst?EnemyType::HangingCenser:EnemyType::Sentry,hit.sourceId,actual);if(player->isDead())break;}
     const float time=runController->stats().snapshot().runTime;
     if(!exploration&&currentMap->getEnvironmentPreset()!=EnvironmentPreset::None&&!transformationPlayed&&time>=currentMap->getEnvironment().transformationStart){audio->play(AudioCue::Transform,{},0,false);transformationPlayed=true;}
     updateFirstPerson(dt);
@@ -318,26 +368,41 @@ void App::updatePlaying(float dt){
         groundParticles->setEmitterPosition(player->getPosition());groundParticles->update(dt);
     } else if(!arena&&!exploration)groundParticles->update(dt);
     if(player->isDead())finishCurrentRun(RoomResult::PlayerDied,RunEndReason::PlayerDied);
-    else if((arena&&director->complete(enemyManager->getLiveCount()))||(!arena&&!exploration&&enemyManager->hasSpawnedEnemies()&&enemyManager->allEnemiesDead()))finishCurrentRun(RoomResult::Cleared,RunEndReason::Completed);
+    else if(!arena&&!exploration&&enemyManager->hasSpawnedEnemies()&&enemyManager->allEnemiesDead())finishCurrentRun(RoomResult::Cleared,RunEndReason::Completed);
 }
 void App::updateFirstPerson(float dt){
     const auto pos=player->getPosition();
     FirstPersonView fp;fp.aimBlend=aim.blend();fp.speed=glm::length(glm::vec2(player->getVelocity().x,player->getVelocity().z));fp.feet=pos;fp.forward=camera->getFront();fp.grounded=player->isOnGround();fp.sliding=player->getState()==PlayerState::SLIDING;
+    fp.rollProgress=player->getRollProgress();
     if(dt>0 && fp.sliding&&!wasSliding)audio->play(AudioCue::Slide,{},0,false);wasSliding=fp.sliding;characters->update(dt,fp);
 }
 void App::finishCurrentRun(RoomResult room,RunEndReason reason){
     if(!runController->state().active)return;
     runController->endRoom(room);runController->endRun(reason);
+    if (combatLog.is_open()) combatLog.flush();
     const auto line=runController->stats().formatRunResult();runLog<<line<<'\n';runLog.flush();std::cout<<line<<'\n';
     audio->stopAll();hostileProjectiles->clear();
     setState(reason==RunEndReason::Completed?GameState::ROOM_CLEARED:GameState::PLAYER_DEAD);
     audio->play(reason==RunEndReason::Completed?AudioCue::Victory:AudioCue::PlayerDeath,{},0,false);
 }
-glm::vec3 App::getPlayerStartPosition()const{auto* start=currentMap->getPlayerStart();return start?start->position:glm::vec3(0,2,0);}
+glm::vec3 App::getPlayerStartPosition() const {
+    const auto* start=currentMap->getPlayerStart();
+    if (!start) return {0,2,0};
+    auto feet=start->position;
+    const auto& layout=currentMap->getArenaLayout();
+    // Legacy brush sweeps treat touching a box as intersecting it. Leave the
+    // usual support clearance when an arena spawn lies exactly on its floor.
+    if (arena && layout.hasFloor && !currentMap->getSpatialWorld() &&
+        std::abs(feet.y-layout.floorY)<.0001f) feet.y=layout.floorY+.015f;
+    return feet;
+}
 void App::resetRuntimeState(){
     runController->stats().setExecutionContext(!options.acceptance.empty(),options.acceptance);
     runController->stats().setContentVersion(currentMap->getContentVersion());
     aim.reset();aimHeld=false;
+    awaitingFirstThreat.clear();witnessedTypes.clear();censerInterrupts=0;
+    crystalPeakLive=crystalFinalPeak=0;crystalNextSample=0;
+    crystalOuterSeconds=crystalSprintSeconds=0;
     audio->reset();hostileProjectiles->clear();enemyManager->clear();weapon->reset();characters->reset();groundParticles->reset();mapRenderer->resetEnvironment();
     if(exploration)exploration->reset();
     director->reset(runController->state().seed);player->respawn(getPlayerStartPosition());previousPlayerPosition=player->getPosition();
@@ -364,6 +429,11 @@ HudViewModel App::makeHud(const glm::mat4& view, const glm::mat4& projection,
                           const ViewLens& lens) const {
     HudViewModel vm;const auto& s=runController->stats().snapshot();
     vm.arenaSurvival=arena;vm.mapName=currentMap->getDisplayName();
+    vm.endlessSurvival=arena && director->isEndless();
+    if (vm.endlessSurvival) {
+        vm.pressureStage=director->pressureStage();
+        if (vm.pressureStage<4) vm.nextSurgeSeconds=static_cast<int>((vm.pressureStage+1)*EncounterDirector::PressureInterval);
+    } else vm.generationSeconds=static_cast<int>(director->generationDeadline());
     vm.hasTransformation=!exploration&&currentMap->getEnvironmentPreset()!=EnvironmentPreset::None;
     if(exploration) { vm.exploration=true; vm.zoneName=exploration->snapshot().zoneName; vm.objective=exploration->objective(); vm.observationProgress=exploration->snapshot().observationProgress; vm.observationAvailable=exploration->snapshot().phase==ExplorationPhase::Observe; vm.calibrated=exploration->snapshot().calibrated; }
     vm.transformationStart=currentMap->getEnvironment().transformationStart;
@@ -391,13 +461,14 @@ HudViewModel App::makeHud(const glm::mat4& view, const glm::mat4& projection,
     }
     const auto& layout=currentMap->getArenaLayout();
     if(layout.hasFloor){vm.mapMinXZ=layout.minXZ;vm.mapMaxXZ=layout.maxXZ;}
-    if(arena){auto warnings=director->warningProgress();for(size_t i=0;i<4;++i){auto r=layout.rifts[i];vm.rifts.push_back({{r.x,r.z},warnings[i]>=0});}}
+    if(arena){auto warnings=director->warningProgress();for(size_t i=0;i<layout.rifts.size();++i){auto r=layout.rifts[i];vm.rifts.push_back({{r.x,r.z},warnings[i]>=0});}}
     const glm::mat4 viewProjection = projection * view;
     for(const auto& enemy:enemyManager->getEnemies()){
-        HudEnemy e;auto pos=enemy.getPosition(),center=enemy.getAABB().getCenter();e.worldXZ={pos.x,pos.z};e.hp=enemy.getHp();e.maxHp=enemy.getMaxHp();e.alive=!enemy.isDead();e.sentry=enemy.getType()==EnemyType::Sentry;e.secondsSinceDamage=enemy.getSecondsSinceDamage();
+        const auto bounds=enemy.getAABB();
+        HudEnemy e;auto pos=enemy.getPosition(),center=bounds.getCenter();e.worldXZ={pos.x,pos.z};e.hp=enemy.getHp();e.maxHp=enemy.getMaxHp();e.alive=!enemy.isDead();e.sentry=enemy.getType()==EnemyType::Sentry;e.secondsSinceDamage=enemy.getSecondsSinceDamage();
         e.inView = hudPosition(viewProjection, center, lens).has_value();
         e.unobstructed=e.inView&&visible(camera->getPosition(),center);
-        const auto above = pos + glm::vec3(0, enemy.getAABB().getSize().y + .2f, 0);
+        const glm::vec3 above(center.x,bounds.max.y+.2f,center.z);
         e.healthAnchor = hudPosition(viewProjection, above, lens).value_or(glm::vec2(-1.f));
         vm.enemies.push_back(e);
     }return vm;
@@ -406,7 +477,7 @@ void App::renderProjectiles(const glm::mat4& view,const glm::mat4& projection){
     if(hostileProjectiles->size()==0)return;
     projectileShader->use();projectileShader->setMat4("view",view);projectileShader->setMat4("projection",projection);projectileShader->setInt("numLights",0);projectileShader->setVec3("ambientLight",glm::vec3(1));projectileShader->setVec3("enemyColor",{1,.3f,.08f});
     glBindVertexArray(projectileVAO);for(const auto& p:hostileProjectiles->projectiles()){
-        auto model=glm::scale(glm::translate(glm::mat4(1),p.position),glm::vec3(EnemyProjectileSystem::RADIUS));projectileShader->setMat4("model",model);glDrawArrays(GL_TRIANGLES,0,24);
+        auto model=glm::scale(glm::translate(glm::mat4(1),p.position),glm::vec3(p.ballistic ? .22f : EnemyProjectileSystem::RADIUS));projectileShader->setMat4("model",model);glDrawArrays(GL_TRIANGLES,0,24);
     }glBindVertexArray(0);
 }
 void App::render(){
@@ -426,14 +497,23 @@ void App::render(){
     if(currentMap->getEnvironmentPreset()==EnvironmentPreset::ForestCrystal)
         mapRenderer->addDynamicLight(player->getPosition()+glm::vec3(0,1.4f,0),{.28f,.72f,1.f},.9f,18.f);
     if(exploration)mapRenderer->setObservationState(exploration->snapshot().observationProgress,exploration->snapshot().calibrated);
-    mapRenderer->setEnvironmentTime(runController->stats().snapshot().runTime);mapRenderer->setRiftWarnings(arena?director->warningProgress():std::array<float,4>{-1,-1,-1,-1});
+    mapRenderer->setEnvironmentTime(runController->stats().snapshot().runTime);mapRenderer->setRiftWarnings(arena?director->warningProgress():std::vector<float>{});
     mapRenderer->render(view,projection);
     const bool translucentForest=currentMap->getEnvironmentPreset()==EnvironmentPreset::ForestCrystal;
     if(!translucentForest)weapon->render(view,projection);
     std::vector<CharacterView> cv;for(const auto& e:enemyManager->getEnemies())if(!e.isDead()){
-        CharacterView c;c.type=e.getType();c.position=e.getPosition();c.heading=e.getHeading();c.dimensions=e.getAABB().getSize();c.charging=e.isCharging();c.chargeProgress=e.getChargeProgress();c.aimLocked=e.isAimLocked();c.hitFlash=e.getHitFlash();c.phase=e.getId()*.731f;c.movement=glm::clamp(e.getMovementSpeed()/3.f,0.f,1.f);cv.push_back(c);
+        CharacterView c;c.type=e.getType();c.position=e.getPosition();c.heading=e.getHeading();c.dimensions=e.getDimensions();
+        c.crystalMinion=arena && director->isEndless();
+        c.attackPhase=e.getAttackPhase();c.attackProgress=e.getPhaseProgress();c.interruptHits=e.getInterruptHits();
+        c.attackStart=e.getSweepStart();c.attackEnd=e.getType()==EnemyType::VeilRay?e.getSweepEnd():e.getLockedTarget();
+        c.charging=e.isCharging();c.chargeProgress=e.getChargeProgress();c.aimLocked=e.isAimLocked();c.hitFlash=e.getHitFlash();c.phase=e.getId()*.731f;c.movement=glm::clamp(e.getMovementSpeed()/(e.getType()==EnemyType::ForkHound?crystalCombat::HoundApproach:3.f),0.f,1.f);cv.push_back(c);
     }
-    characters->renderWorld(view,projection,cv);renderProjectiles(view,projection);
+    characters->renderWorld(view,projection,cv);
+    std::vector<glm::vec3> landingPositions;
+    for (const auto& orb : hostileProjectiles->projectiles())
+        if (orb.ballistic) landingPositions.push_back(orb.target);
+    if (!landingPositions.empty()) characters->renderImpactWarnings(view,projection,landingPositions);
+    renderProjectiles(view,projection);
     if(!translucentForest&&!arena&&!exploration&&GameConfig::getInstance().effects.enableGroundParticles)groundParticles->render(view,projection);
     if(translucentForest){
         mapRenderer->renderTranslucent(view,projection);weapon->render(view,projection);
@@ -444,7 +524,7 @@ void App::render(){
     pixelRenderer->endPixelRender(fw,fh,lens);
     hudRenderer->render(makeHud(view,projection,lens),lw,lh,fw,fh);
     if(!pendingScreenshot.empty()){captureScreenshot(pendingScreenshot);pendingScreenshot.clear();}
-    if((options.acceptance=="flow"||options.acceptance=="screenshots"||options.acceptance=="spatial-combat"||options.acceptance=="camera-lean"||options.acceptance=="rifle-ads")&&glGetError()!=GL_NO_ERROR)
+    if((isCrystalRoute()||options.acceptance=="flow"||options.acceptance=="screenshots"||options.acceptance=="spatial-combat"||options.acceptance=="camera-lean"||options.acceptance=="rifle-ads")&&glGetError()!=GL_NO_ERROR)
         throw std::runtime_error("OpenGL error during runtime acceptance render");
     if(options.acceptance=="flow") {
         if(screenshotStage==0&&gameState==GameState::READY){captureScreenshot("flow-ready");++screenshotStage;}
@@ -551,6 +631,7 @@ void App::updateAdsAcceptance(float dt){
 }
 
 void App::updateAcceptance(float dt){
+    if(isCrystalRoute()){updateCrystalAcceptance(dt);return;}
     if(options.acceptance=="rifle-ads"){updateAdsAcceptance(dt);return;}
     if(options.acceptance=="camera-lean") {
         const float t=float(flowPlaybackSeconds);
@@ -612,14 +693,24 @@ void App::updateAcceptance(float dt){
             ++acceptanceRuns;restartCurrentRun();acceptanceFrames=0;if(acceptanceRuns>=options.restartCycles)glfwSetWindowShouldClose(window,GL_TRUE);
         }return;
     }
-    if(options.acceptance=="performance"&&gameState==GameState::ROOM_CLEARED){
-        recordPerformance();++acceptanceRuns;if(acceptanceRuns>=3){glfwSetWindowShouldClose(window,GL_TRUE);return;}restartCurrentRun();return;
+    if(options.acceptance=="performance"){
+        const float seconds=runController->stats().snapshot().runTime;
+        if(gameState==GameState::ROOM_CLEARED || (director->isEndless() && seconds>=210.f)){
+            recordPerformance();++acceptanceRuns;
+            if(acceptanceRuns>=3)glfwSetWindowShouldClose(window,GL_TRUE);
+            else restartCurrentRun();
+            return;
+        }
+        if(!director->isEndless() && seconds>180){
+            acceptanceFailed=true;recordPerformance();glfwSetWindowShouldClose(window,GL_TRUE);return;
+        }
     }
-    if(options.acceptance=="performance"&&runController->stats().snapshot().runTime>180){acceptanceFailed=true;recordPerformance();glfwSetWindowShouldClose(window,GL_TRUE);return;}
     if(options.acceptance=="stress"){
         mapRenderer->setEnvironmentParticleCount(2000);
         const auto& a=director->arenaDefinition();
-        while(enemyManager->count(EnemyType::Chaser)<18)enemyManager->spawn(EnemyType::Chaser,{float(enemyManager->count(EnemyType::Chaser)%6)*2-5,0,-12});
+        const size_t chaserLimit=director->isEndless() ? EncounterDirector::crystalMaxAlive(EnemyType::Chaser) : EncounterDirector::ChaserCap;
+        for(size_t i=enemyManager->count(EnemyType::Chaser);i<chaserLimit;++i)
+            if(!enemyManager->spawn(EnemyType::Chaser,{float(i%6)*2-5,0,-12})) break;
         while(enemyManager->count(EnemyType::Sentry)<3)enemyManager->spawn(EnemyType::Sentry,a.sentryPositions[enemyManager->count(EnemyType::Sentry)]);
         while(hostileProjectiles->size()<32)hostileProjectiles->spawn({float(hostileProjectiles->size()%8)-4,1,-8},{0,0,1});
         if(elapsed>30){captureScreenshot("stress");recordPerformance();glfwSetWindowShouldClose(window,GL_TRUE);return;}
@@ -692,12 +783,21 @@ void App::updateSpatialCombatAcceptance(float dt) {
         acceptanceFailed|=!passed;
         acceptanceLog<<"{\"event\":\"spatial_combat_end\",\"passed\":"<<(passed?"true":"false")<<",\"reason\":\""<<reason<<"\",\"synthetic_input\":true,\"seconds\":"<<stats.runTime<<",\"route_laps\":"<<combatLap<<",\"route_node\":"<<journeyNode<<",\"kills\":"<<stats.kills<<",\"shots\":"<<stats.shotsFired<<",\"damage\":"<<stats.damageTaken<<",\"distance\":"<<stats.distanceTravelled<<",\"first_fire_seconds\":"<<firstFireSeconds<<",\"longest_no_visible_with_living_seconds\":"<<longestNoVisible<<",\"generation_gap_seconds\":"<<longestGenerationGap<<",\"cleanup_gap_seconds\":"<<longestCleanupGap<<",\"remaining_enemies\":"<<enemyManager->getLiveCount()<<"}\n";
         for(const auto& e:enemyManager->getEnemies())if(!e.isDead()){auto p=e.getPosition();acceptanceLog<<"{\"event\":\"remaining_enemy\",\"type\":\""<<toString(e.getType())<<"\",\"position\":["<<p.x<<','<<p.y<<','<<p.z<<"],\"speed\":"<<e.getMovementSpeed()<<"}\n";}
-        recordPerformance();pendingScreenshot=passed?"combat-cleared":"combat-failed";glfwSetWindowShouldClose(window,GL_TRUE);
+        recordPerformance();pendingScreenshot=passed?(director->isEndless()?"combat-result":"combat-cleared"):"combat-failed";glfwSetWindowShouldClose(window,GL_TRUE);
     };
     if(gameState==GameState::PAUSED){acceptanceLog<<"{\"event\":\"synthetic_focus_resume\"}\n";setState(GameState::PLAYING);}
-    if(gameState==GameState::PLAYER_DEAD){finish(false,"player_dead");return;}
-    if(gameState==GameState::ROOM_CLEARED){finish(stats.runTime>=90&&combatLap>=1&&stats.kills>0&&stats.shotsFired>0,"generation_and_cleanup_complete");return;}
-    if(stats.runTime>210 || route.empty()){finish(false,"timeout_or_missing_route");return;}
+    const bool exercisedSurvival=director->isEndless() && stats.kills>0 && stats.distanceTravelled>50.f;
+    if(gameState==GameState::PLAYER_DEAD){
+        finish(exercisedSurvival && player->getHp()<=0 && stats.fatalSource!=DamageSource::Unknown,"player_dead");
+        return;
+    }
+    if(gameState==GameState::ROOM_CLEARED){finish(stats.runTime>=director->generationDeadline()&&combatLap>=1&&stats.kills>0&&stats.shotsFired>0,"generation_and_cleanup_complete");return;}
+    if(route.empty()){finish(false,"missing_route");return;}
+    if(stats.runTime>210){
+        if(director->isEndless()) finish(exercisedSurvival && gameState==GameState::PLAYING && player->getHp()>0,"survived_observation_window");
+        else finish(false,"timeout");
+        return;
+    }
     if(gameState!=GameState::PLAYING)return;
     glm::vec3 position=player->getPosition();const size_t node=journeyNode%route.size();auto delta=route[node]-position;delta.y=0;
     if(glm::length(delta)<.35f && std::abs(position.y-route[node].y)<.45f) {
@@ -715,12 +815,12 @@ void App::updateSpatialCombatAcceptance(float dt) {
     } else {
         if(enemyManager->getLiveCount()>0){
             float previousGap=noVisibleSeconds;noVisibleSeconds+=dt;longestNoVisible=std::max(longestNoVisible,noVisibleSeconds);
-            if(stats.runTime<90){generationGap+=dt;longestGenerationGap=std::max(longestGenerationGap,generationGap);}else {cleanupGap+=dt;longestCleanupGap=std::max(longestCleanupGap,cleanupGap);}
+            if(stats.runTime<director->generationDeadline()){generationGap+=dt;longestGenerationGap=std::max(longestGenerationGap,generationGap);}else {cleanupGap+=dt;longestCleanupGap=std::max(longestCleanupGap,cleanupGap);}
             if(previousGap<5&&noVisibleSeconds>=5)for(const auto& e:enemyManager->getEnemies())if(!e.isDead()){auto p=e.getPosition();acceptanceLog<<"{\"event\":\"visibility_gap_enemy\",\"seconds\":"<<stats.runTime<<",\"type\":\""<<toString(e.getType())<<"\",\"position\":["<<p.x<<','<<p.y<<','<<p.z<<"]}\n";}
         }else noVisibleSeconds=generationGap=cleanupGap=0;
         // After the generation interval, approach the remaining enemy through the same
         // supported navigation used by actors; movement still uses ordinary WASD.
-        if(stats.runTime>=90&&combatLap>=1){
+        if(stats.runTime>=director->generationDeadline()&&combatLap>=1){
             cleanupRefresh-=dt;
             if(cleanupRefresh<=0||glm::length(cleanupWaypoint-position)<.4f){
                 float distance=1e9f;glm::vec3 target=position;

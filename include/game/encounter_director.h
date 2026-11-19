@@ -2,6 +2,8 @@
 
 #include "game/arena_definition.h"
 #include "game/gameplay_types.h"
+#include "game/seed_service.h"
+#include "engine/collision.h"
 #include <array>
 #include <cstddef>
 #include <cstdint>
@@ -10,15 +12,21 @@
 namespace silic2 {
 
 enum class SpawnDelayReason : uint8_t {
-    None, UnsafePlayerDistance, ActiveCap, LocationBusy, Deadline, Count
+    None, UnsafePlayerDistance, ActiveCap, LocationBusy, Deadline, StageChanged, Count
 };
 const char* toString(SpawnDelayReason reason);
+
+using EnemyCounts = std::array<size_t, static_cast<size_t>(EnemyType::Count)>;
 
 struct DirectorInput {
     glm::vec3 playerPosition{0.0f, 0.0f, 13.0f};
     size_t liveChasers = 0;
     size_t liveSentries = 0;
     std::array<bool, 3> occupiedSentrySlots{};
+    EnemyCounts liveByType{};
+    std::vector<bool> occupiedRifts;
+    std::vector<AABB> liveBounds;
+    glm::vec3 playerVelocity{};
 };
 
 struct DirectorEvent {
@@ -35,6 +43,7 @@ struct DirectorEvent {
 };
 
 struct DirectorMetrics {
+    EnemyCounts spawnedByType{};
     size_t spawnedChasers = 0;
     size_t spawnedSentries = 0;
     size_t delayedRequests = 0;
@@ -49,6 +58,7 @@ struct DirectorMetrics {
 class EncounterDirector {
 public:
     static constexpr double GenerationDeadline = 90.0;
+    static constexpr double PressureInterval = 45.0;
     static constexpr double WarningDuration = 1.2;
     static constexpr double RetryInterval = 0.25;
     static constexpr size_t ChaserCap = 18;
@@ -60,10 +70,15 @@ public:
     // Consume all Spawn events before the next call and supply fresh live counts.
     std::vector<DirectorEvent> update(double dt, const DirectorInput& input);
     double combatSeconds() const { return elapsed; }
+    bool isEndless() const { return arena.encounterProfile == EncounterProfile::CrystalSurvival; }
+    unsigned pressureStage() const;
+    static size_t crystalCap(EnemyType type,unsigned stage);
+    static size_t crystalMaxAlive(EnemyType type);
     size_t pendingCount() const;
-    bool generationFinished() const { return elapsed >= GenerationDeadline; }
+    double generationDeadline() const;
+    bool generationFinished() const { return elapsed >= generationDeadline(); }
     bool complete(size_t livingEnemies) const;
-    std::array<float, 4> warningProgress() const; // -1 inactive; [0,1] active
+    std::vector<float> warningProgress() const; // -1 inactive; [0,1] active
     const DirectorMetrics& metrics() const { return counters; }
     const ArenaDefinition& arenaDefinition() const { return arena; }
 
@@ -74,16 +89,25 @@ private:
         double scheduled = 0.0;
         double nextAttempt = 0.0;
         double warningStart = -1.0;
-        std::array<int, 4> candidateOrder{};
+        std::vector<int> candidateOrder;
         int location = -1;
         bool finished = false;
         bool delayed = false;
         SpawnDelayReason lastBlocker = SpawnDelayReason::None;
     };
+    bool legalRift(EnemyType type, int slot, glm::vec3 player) const;
+    size_t cap(EnemyType type,double time) const;
+    void enqueue(EnemyType type,double time);
+    void nextCrystalPulse(const EnemyCounts& live);
     ArenaDefinition arena;
+    std::vector<std::array<bool, 2>> takeoffClear; // Ray, censer. Geometry is immutable for a director.
     std::vector<Request> requests;
     DirectorMetrics counters;
     double elapsed = 0.0;
+    SeedService random{42};
+    uint32_t nextId=1;
+    double nextPulse=PressureInterval;
+    unsigned pulseInStage=0;
 };
 
 } // namespace silic2

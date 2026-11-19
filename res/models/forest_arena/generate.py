@@ -57,7 +57,8 @@ def rim_section(sector):
              vertices=vertices,faces=faces)
 
 base=json.loads((REPO/'res/maps/crystal_megastructure_arena.json').read_text())
-base.update(contentVersion='open-crystal-real-assets-v1' if REAL else 'open-crystal-development-v1',environmentPreset='forest_crystal')
+base.update(contentVersion='open-crystal-survival-v1' if REAL else 'open-crystal-survival-development-v1',environmentPreset='forest_crystal')
+base['arena']['encounterProfile']='crystal_survival'
 base['worldSettings']={'gravity':-9.8,'ambientLight':[.028,.045,.07],'backgroundColor':[.002,.004,.01],'farPlane':600}
 base['environment']={'architecture':'forest_crystal','transformationStart':45,'transformationDuration':4,'particleCount':96,'landmarkPosition':[0,0,0],'landmarkScale':[14,140,14]}
 base['geometry']={'brushes':[rim_section(i) for i in range(RIM_SECTORS)],'objects':[{'id':1,'name':'Open limestone clearing','shape':'plane','position':[0,0,0],'size':[220,0,220],'rotation':[0,0,0],'collision':True,'type':'floor','material':'forest_ground','color':[.56,.54,.58]}],'models':[]}
@@ -77,6 +78,10 @@ else:
 # Initial authored proposal; shared gameplay owner reviews spawn and navigation.
 base['entities']=[{'type':'player_start','name':'South forest arrival','position':[0,0,60],'rotation':[0,-90,0]}]
 for i,p in enumerate([[0,0,40],[40,0,0],[0,0,-40],[-40,0,0]]):base['entities'].append({'type':'rift','name':f'Forest rift {i}','slot':i,'position':p,'rotation':[0,0,0],'scale':[1.5,1.5,1.5]})
+for i in range(8):
+ a=math.radians(22.5+i*45)
+ p=[round(78*math.cos(a),5),0,round(78*math.sin(a),5)]
+ base['entities'].append({'type':'rift','name':f'Outer crystal rift {i+1}','slot':i+4,'position':p,'rotation':[0,0,0],'scale':[1.5,1.5,1.5]})
 for i,p in enumerate([[-26,0,-15],[26,0,-15],[0,0,30]]):base['entities'].append({'type':'sentry_spawn','name':f'Forest sentry {i}','slot':i,'position':p})
 base['lights']=[{'type':'point','position':[0,12,0],'color':[.28,.72,1.],'intensity':.85,'range':108}]
 nodes=[];links=[]

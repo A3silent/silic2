@@ -1,4 +1,6 @@
 #include "character/character_presentation.h"
+#include "character/crystal_creatures.h"
+#include "enemy/crystal_combat.h"
 #include "engine/shader.h"
 #include "character/imported_weapon.h"
 #include "character/procedural_rifle.h"
@@ -58,6 +60,8 @@ bool CharacterPresentation::init(const std::string& weaponConfigPath) {
     }
     glBindVertexArray(previousVao);
     glBindBuffer(GL_ARRAY_BUFFER, previousBuffer);
+    creatures=std::make_unique<CrystalCreatures>();
+    if (!creatures->init()) { shutdown(); return false; }
     std::string weaponStatus;
     auto weaponAsset=resolveWeaponPresentation(weaponConfigPath,weaponStatus);
     const auto sourceStatus=weaponStatus;
@@ -70,6 +74,7 @@ bool CharacterPresentation::init(const std::string& weaponConfigPath) {
 }
 
 void CharacterPresentation::shutdown() {
+    creatures.reset();
     importedWeapon.reset();
     if (vao) glDeleteVertexArrays(1, &vao);
     if (vbo) glDeleteBuffers(1, &vbo);
@@ -309,7 +314,11 @@ void CharacterPresentation::renderWorld(const glm::mat4& view, const glm::mat4& 
                                         const std::vector<CharacterView>& characters) {
     if (!shader) return;
     vertices.clear();
-    for (const auto& character : characters) addCharacter(character);
+    for (const auto& character : characters) {
+        if (crystalCombat::isCrystalEnemy(character.type)) crystalGroundCues(character);
+        else if (!character.crystalMinion) addCharacter(character);
+    }
+    if (creatures) creatures->draw(view,projection,characters,time);
     for (const auto& shard : shards) {
         if (shard.age >= shard.duration) continue;
         const float t = shard.age;
@@ -322,11 +331,83 @@ void CharacterPresentation::renderWorld(const glm::mat4& view, const glm::mat4& 
     draw(view, projection, false);
 }
 
+void CharacterPresentation::impactRing(glm::vec3 center, float intensity) {
+    const float radius=crystalCombat::BurstRadius;
+    const glm::vec3 color=glm::mix(glm::vec3(.55f,.23f,.07f),Hot,intensity);
+    constexpr int arcs=18;
+    // Gaps preserve the slate underneath and distinguish the blast circles from rifts.
+    center.y+=.045f;
+    for(int i=0;i<arcs;++i) {
+        const float a=i*(2*Pi/arcs), b=(i+.80f)*(2*Pi/arcs);
+        const glm::vec3 ra(std::cos(a),0,std::sin(a)), rb(std::cos(b),0,std::sin(b));
+        const auto outerA=center+radius*ra, outerB=center+radius*rb;
+        const auto innerA=center+(radius-.12f)*ra,innerB=center+(radius-.12f)*rb;
+        triangle(innerA,outerA,outerB,color,.9f); triangle(innerA,outerB,innerB,color,.9f);
+    }
+}
+
+void CharacterPresentation::renderImpactWarnings(const glm::mat4& view,const glm::mat4& projection,
+                                                const std::vector<glm::vec3>& landingPositions) {
+    if(!shader||landingPositions.empty()) return;
+    vertices.clear();
+    for(auto target:landingPositions) impactRing(target,1.f);
+    draw(view,projection,false);
+}
+
+void CharacterPresentation::crystalGroundCues(const CharacterView& c) {
+    const bool windup=c.attackPhase==AttackPhase::Windup;
+    const float progress=saturate(c.attackProgress);
+    if(c.type==EnemyType::HangingCenser && windup) {
+        for(auto target:crystalCombat::volleyTargets(c.attackEnd)) impactRing(target,.35f+.55f*progress);
+        return;
+    }
+    if(c.type!=EnemyType::VeilRay||(!windup&&c.attackPhase!=AttackPhase::Attack)) return;
+    const glm::vec3 delta=c.attackEnd-c.attackStart;
+    const glm::vec3 dir=directionOr(glm::vec3(delta.x,0,delta.z),glm::vec3(0,0,1));
+    const glm::vec3 side(dir.z,0,-dir.x);
+    const float halfWidth=crystalCombat::SweepWidth*.5f;
+    constexpr int sections=crystalCombat::SweepSegments;
+    const int first=windup?0:std::min(sections,int(progress*sections+.5f));
+    auto bar=[&](glm::vec3 a,glm::vec3 b,glm::vec3 offset,glm::vec3 color) {
+        triangle(a-offset,a+offset,b+offset,color,1);
+        triangle(a-offset,b+offset,b-offset,color,1);
+    };
+    for(int i=first;i<sections;++i) {
+        auto a=c.attackStart+delta*(float(i)/sections)+glm::vec3(0,.045f,0);
+        auto b=a+delta*(.88f/sections);
+        const auto tint=windup?glm::mix(Warm,Hot,progress*.5f):Hot;
+        for(float sign:{-1.f,1.f}) {
+            const auto margin=side*(sign*(halfWidth-.05f));
+            bar(a+margin,b+margin,side*.055f,tint);
+        }
+        // Arrows indicate sweep order; their tips stay inside the actual strip.
+        const auto middle=(a+b)*.5f;
+        for(float sign:{-1.f,1.f})
+            bar(middle+side*(.32f*sign)-dir*.16f,middle+dir*.18f,side*.055f,tint);
+    }
+    if(!windup && progress>0.f) {
+        // Render the active falling needle only ahead of its impact instant.
+        const float u=progress*sections;
+        const float within=u-std::floor(u);
+        if(within<.5f && u<sections) {
+            const auto ground=c.attackStart+delta*((std::floor(u)+.5f)/sections);
+            const float fall=(.5f-within)*2.f;
+            const auto tip=ground+glm::vec3(0,fall*std::max(.1f,c.position.y-ground.y),0);
+            bone(glm::mat4(1),tip+glm::vec3(0,.45f,0),tip,.12f,.015f,Hot,1);
+        }
+    }
+}
+
 void CharacterPresentation::renderFirstPerson(const glm::mat4& projection, float projectionOverscan) {
     if (!shader) return;
     vertices.clear();
-    const glm::mat4 root = firstPersonWeaponRoot(stepPhase, playerState.speed,
-                                                  playerState.grounded, slideBlend, recoil, playerState.aimBlend);
+    glm::mat4 root = firstPersonWeaponRoot(stepPhase, playerState.speed,
+                                           playerState.grounded, slideBlend, recoil, playerState.aimBlend);
+    const float p = glm::clamp(playerState.rollProgress, 0.f, 1.f);
+    const float arc = 4.f * p * (1.f - p);
+    const float tuck = arc * arc * (1.f - glm::clamp(playerState.aimBlend, 0.f, 1.f));
+    root[3].y -= .08f * tuck;
+    root[3].z += .025f * tuck;
     // Keep the same lens and animation for both the optional imported asset and
     // procedural fallback. Only the visual muzzle moves; gameplay aim does not.
     glm::mat4 weaponProjection = projection;

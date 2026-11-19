@@ -12,7 +12,7 @@
 #include <algorithm>
 #include <filesystem>
 int main(int argc,char** argv) {
- using namespace silic2;bool functionalOnly=false;std::string mapPath="res/maps/starry_crystal_arena.json";for(int i=2;i<argc;++i){const std::string arg=argv[i];if(arg=="--functional-only")functionalOnly=true;else if(arg=="--map"&&i+1<argc)mapPath=argv[++i];}const std::string output=argc>1?argv[1]:"artifacts/acceptance/crystal-combat/cpu";std::filesystem::create_directories(output);
+ using namespace silic2;bool functionalOnly=false;std::string mapPath="res/maps/crystal_megastructure_arena.json";for(int i=2;i<argc;++i){const std::string arg=argv[i];if(arg=="--functional-only")functionalOnly=true;else if(arg=="--map"&&i+1<argc)mapPath=argv[++i];}const std::string output=argc>1?argv[1]:"artifacts/acceptance/crystal-combat/cpu";std::filesystem::create_directories(output);
  Map map;if(!map.loadFromFile(mapPath)){std::cerr<<map.getLastError()<<'\n';return 1;}
  auto world=map.getSpatialWorld();if(!world)return 2;int failures=0;
  auto check=[&](const std::string& name,bool passed){std::cout<<"CHECK "<<name<<" "<<(passed?"PASS":"FAIL")<<std::endl;if(!passed)++failures;};

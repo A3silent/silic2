@@ -1,5 +1,6 @@
 #pragma once
 
+#include "engine/map.h"
 #include <array>
 #include <memory>
 #include <vector>
@@ -21,7 +22,8 @@ struct ArenaDefinition {
     float floorY = 0.0f;
     std::shared_ptr<const SpatialWorld> spatialWorld;
     glm::vec3 playerStart{0.0f, 0.0f, 13.0f};
-    std::array<glm::vec3, 4> rifts{}; // N, E, S, W
+    EncounterProfile encounterProfile = EncounterProfile::Classic90;
+    std::vector<glm::vec3> rifts; // Stable authored slots, four or twelve.
     std::array<glm::vec3, 3> sentryPositions{};
     std::vector<ArenaObstacle> obstacles;
     std::vector<glm::vec3> waypoints;

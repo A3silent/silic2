@@ -1,5 +1,7 @@
 #include "player/weapon.h"
 #include "enemy/enemy_manager.h"
+#include "enemy/enemy_geometry.h"
+#include <limits>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <glm/gtc/matrix_transform.hpp>
@@ -154,17 +156,11 @@ WeaponUpdateResult Weapon::update(float deltaTime, const Map* map, EnemyManager*
     for (auto it = bullets.begin(); it != bullets.end(); ) {
         it->update(deltaTime);
         
-        // Check collision with map walls
-        bool hitWall = map && checkBulletCollision(*it, map);
-        if (hitWall && bulletLightingEnabled) {
-            createImpactLight(it->position, it->color, it->intensity);
-        }
-
-        // Check collision with enemies using swept segment (prevents tunneling)
+        const float wallFraction = firstWallFraction(*it, map);
+        const bool hitWall = wallFraction <= 1.0f;
         bool hitEnemy = false;
-        if (!hitWall && enemies && (it->cameraCentered || it->lifetime > 0.02f)) {
-            const auto hitResult =
-                enemies->checkBulletHit(it->prevPosition, it->position, 1);
+        if (enemies && (it->cameraCentered || it->lifetime > 0.02f)) {
+            const auto hitResult = enemies->checkBulletHit(it->prevPosition, it->position, 1, wallFraction);
             hitEnemy = hitResult.hit;
             if (hitResult.hit) {
                 ++result.hits;
@@ -175,6 +171,9 @@ WeaponUpdateResult Weapon::update(float deltaTime, const Map* map, EnemyManager*
             }
         }
 
+        if (hitWall && !hitEnemy && bulletLightingEnabled) {
+            createImpactLight(glm::mix(it->prevPosition, it->position, wallFraction), it->color, it->intensity);
+        }
         if (hitWall || hitEnemy) {
             it = bullets.erase(it);
         } else if (!it->isAlive()) {
@@ -211,42 +210,20 @@ void Weapon::cleanupDeadLights() {
     );
 }
 
-// Segment-AABB slab test (t in [0,1])
-static bool segmentHitsAABB(const glm::vec3& start, const glm::vec3& end,
-                             const glm::vec3& bMin, const glm::vec3& bMax) {
-    glm::vec3 d = end - start;
-    float tMin = 0.0f, tMax = 1.0f;
-    for (int i = 0; i < 3; ++i) {
-        if (std::abs(d[i]) < 1e-8f) {
-            if (start[i] < bMin[i] || start[i] > bMax[i]) return false;
-        } else {
-            float t1 = (bMin[i] - start[i]) / d[i];
-            float t2 = (bMax[i] - start[i]) / d[i];
-            if (t1 > t2) std::swap(t1, t2);
-            tMin = std::max(tMin, t1);
-            tMax = std::min(tMax, t2);
-            if (tMin > tMax) return false;
-        }
+float Weapon::firstWallFraction(const Bullet& bullet, const Map* map) const {
+    float nearest = std::numeric_limits<float>::infinity();
+    if (!map || (!bullet.cameraCentered && bullet.lifetime <= 0.02f)) return nearest;
+    if (auto world = map->getSpatialWorld()) {
+        const auto hit = world->raycast(bullet.prevPosition, bullet.position);
+        return hit.hit ? hit.fraction : nearest;
     }
-    return true;
-}
-
-bool Weapon::checkBulletCollision(const Bullet& bullet, const Map* map) {
-    if (!map || (!bullet.cameraCentered && bullet.lifetime <= 0.02f)) return false;
-    if(auto world=map->getSpatialWorld())return world->raycast(bullet.prevPosition,bullet.position).hit;
-
     for (const auto& brush : map->getBrushes()) {
         if (brush.vertices.empty()) continue;
-        glm::vec3 bMin = brush.vertices[0], bMax = brush.vertices[0];
-        for (const auto& v : brush.vertices) {
-            bMin = glm::min(bMin, v);
-            bMax = glm::max(bMax, v);
-        }
-        if (segmentHitsAABB(bullet.prevPosition, bullet.position, bMin, bMax)) {
-            return true;
-        }
+        float fraction;
+        if (enemyGeometry::segment(bullet.prevPosition, bullet.position, enemyGeometry::bounds(brush), fraction))
+            nearest = std::min(nearest, fraction);
     }
-    return false;
+    return nearest;
 }
 
 void Weapon::createImpactLight(const glm::vec3& position, const glm::vec3& color, float intensity) {

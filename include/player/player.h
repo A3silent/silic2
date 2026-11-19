@@ -13,7 +13,7 @@ class Camera;
 class Map;
 
 // Key states shared by GLFW sampling and labelled synthetic acceptance.
-struct PlayerInput { bool forward=false, backward=false, left=false, right=false, jump=false, sprint=false, crouch=false, godMode=false; };
+struct PlayerInput { bool forward=false, backward=false, left=false, right=false, jump=false, sprint=false, crouch=false, godMode=false, roll=false; };
 
 // Player states
 enum class PlayerState {
@@ -23,7 +23,8 @@ enum class PlayerState {
     CROUCHING,
     JUMPING,
     FALLING,
-    SLIDING
+    SLIDING,
+    ROLLING
 };
 
 
@@ -42,16 +43,18 @@ public:
     
     // Get player position
     glm::vec3 getPosition() const { return position; }
-    glm::vec3 getEyePosition() const { 
-        const auto& config = GameConfig::getInstance().player;
-        return position + glm::vec3(0.0f, config.eyeHeight + currentCameraHeight, 0.0f); 
-    }
+    glm::vec3 getEyePosition() const;
     
     // Get player velocity
-    glm::vec3 getVelocity() const { return velocity; }
+    glm::vec3 getVelocity() const;
     
     // Get player state
     PlayerState getState() const { return state; }
+    float getRollProgress() const;
+    void syncRollButtons(bool cHeld, bool jumpHeld) {
+        rollHeld = cHeld;
+        jumpPressed = jumpHeld;
+    }
     bool isOnGround() const { return onGround; }
     bool isSprinting() const { return sprinting; }
     bool isGodMode() const { return GameConfig::getInstance().player.enableGodMode; }
@@ -127,6 +130,15 @@ private:
     bool sliding = false;                   // Currently sliding
     float slideTime = 0.0f;                // Time spent sliding
     glm::vec3 slideDirection = glm::vec3(0.0f); // Direction of slide
+
+    bool rollHeld = false;
+    bool rolling = false;
+    float rollElapsed = 0.0f;
+    float rollCooldownLeft = 0.0f;
+    glm::vec3 rollDirection{0.0f};
+    glm::vec3 rollExitDirection{0.0f};
+    bool rollJumpQueued = false;
+    bool rollSprint = false;
     
     // Crouching system
     bool crouching = false;                 // Currently crouching
@@ -136,6 +148,12 @@ private:
     
     // Physics update
     void updatePhysics(float deltaTime, const Map* map);
+    void startRoll(const PlayerInput& input, const Camera& camera);
+    void advanceRoll(float deltaTime, const Map* map);
+    void finishRoll();
+    void jump();
+    void applyGravity(float deltaTime);
+    glm::vec3 applyMovement(const glm::vec3& movement, const Map* map);
     
     // Handle collision with map
     void handleMapCollision(const Map* map);

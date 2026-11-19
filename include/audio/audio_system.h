@@ -8,7 +8,8 @@
 namespace silic2 {
 enum class AudioCue : uint8_t {
     PlayerShot, Hit, Kill, PlayerHurt, PlayerDeath, RiftWarning, SentryCharge,
-    SentryFire, Slide, Transform, Ambience, UiConfirm, Victory, Count
+    SentryFire, Slide, Transform, Ambience, UiConfirm, Victory,
+    HoundBrace, RayFold, CenserOpen, CenserBreak, Count
 };
 struct AudioDiagnostics {
     size_t activeVoices = 0, criticalVoices = 0, loadedFrames = 0;
